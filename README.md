@@ -37,14 +37,15 @@ https://github.com/The-OpenROAD-Project/OpenSTA'
 ### ngspice
 
 After downloading the tarball from https://sourceforge.net/projects/ngspice/files/ to a local directory, unpack it using:
-
-$ tar -zxvf ngspice-xx.tar.gz
-$ cd ngspice-xx
+```
+$ tar -zxvf ngspice-37.tar.gz
+$ cd ngspice-37
 $ mkdir release
 $ cd release
 $ ../configure  --with-x --with-readline=yes --disable-debug
 $ make
 $ sudo make install
+```
 
 ![](Imgs/ngspice.png)
 
