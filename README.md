@@ -173,6 +173,8 @@ endmodule
   
 ### Hierarchical vs Flat Synthesis
   
+  A hierarchical design contains `sub-modules` identified in the picture as `Ux` components 
+  
   ![](Imgs/l2-1.png)
   
   Sometime the RTL generated from netlist can have different gates than the original verilog code but overall has the same function. 
@@ -182,6 +184,7 @@ endmodule
   `flatten` command is eliminating the `sub_modules` and will generate just a bih module with the same elements.
   
   Sub-module instantiation `synth -top module_name`:
+  - the `Ux sub-modules` are not seen anymore in the diagram or in the code
   - preferred when we have multiple instances of same module so we synthesize just one and copy the generated netlist in the main netlist  
   - massive design will not work optimized for the tools so can be divided in smaller circuits
   
