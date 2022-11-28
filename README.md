@@ -141,8 +141,10 @@ endmodule
   
   - read_liberty filename -read specific sky130 library  
   - read_verilog filename - read the verilog design file , for more file we need to read all files
-  - synth option modulename - this comand is telling what is the module we need to synthesize
-  - abc -liberty fileanme - generate the gate netlist , the logic design will be realized in format of the gates specified in the library 
+  - synth option modulename - this command is telling what is the module we need to synthesize
+  - abc -liberty filename - generate the gate netlist , the logic design will be realized in format of the gates specified in the library 
+  
+  ![](Imgs/l1-4.png)
   
 #Aknolegment:
 
