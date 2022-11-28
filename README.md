@@ -1,9 +1,15 @@
-# VSDhdp
+# VSD Hardware Digital Program -Digital 
 
 # Table of contents
-  [Day 1 - Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
-  - Introduction to Yosys and Logic synthesis
-  - Labs using Yosys and Sky130 PDKs
+  + [Tools install](#tools-install)
+  + [Day 1 - Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
+	  - Introduction to iverilog and gtkwave for simualtions + labs
+	  - Introduction to Yosys and Logic synthesis + labs
+  + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)
+	 - Introduction to .libs
+	 - Hierarchical vs Flat Synthesis
+	 - Various Flop Coding Styles and optimization
+
 
 # Tools install
 
@@ -139,14 +145,56 @@ endmodule
   ![](Imgs/l1-2.png)
   ![](Imgs/l1-3.png)
   
-  - read_liberty filename -read specific sky130 library  
+  - read_liberty -lib filename -read specific sky130 library  
   - read_verilog filename - read the verilog design file , for more file we need to read all files
   - synth option modulename - this command is telling what is the module we need to synthesize
   - abc -liberty filename - generate the gate netlist , the logic design will be realized in format of the gates specified in the library 
   
   ![](Imgs/l1-4.png)
   
-#Aknolegment:
+  - write_verilog filename - will generate the verilog file from the netlist , `-noattr` - will reduce the informaion in the file
+
+# Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles
+### Understanding the libs content 
+
+  Library naming `sky130_fd_sc_hd__tt_025C_1v80`:
+   -`sky130_fd_sc_hd : process name
+  PVT variations
+   - `tt` - typical process from (slow, fast , typical) 
+   - `025C` - temperature
+   - '1V8' - voltage
+  
+  Other info:
+   - technology name 
+   -`cell` construct will define all the cells  
+   - features off the cell : e.g leakage power in certain conditions, pin parameter, area , timing etc.
+  
+  ![](Imgs/d2-1.png)
+  
+### Hierarchical vs Flat Synthesis
+  
+  ![](Imgs/l2-1.png)
+  
+  Sometime the RTL generated from netlist can have different gates than the original verilog code but overall has the same function. 
+  The tools will always want to optimize the circuit for example a NOR+INV = NAND .
+  Usually when a stacked PMOS can be replaced buy circuit with stacked NMOS the circuit will be more optimized  
+  
+  `flatten` command is eliminating the `sub_modules` and will generate just a bih module with the same elements.
+  
+  Sub-module instantiation `synth -top module_name`:
+  - preferred when we have multiple instances of same module so we synthesize just one and copy the generated netlist in the main netlist  
+  - massive design will not work optimized for the tools so can be divided in smaller circuits
+  
+  ![](Imgs/l2-2.png)
+  
+### Flop Coding Styles and optimization
+
+
+
+# Acknowledgements
+- [Kunal Ghosh](https://github.com/kunalg123)
+- [VLSI System Design](https://www.vlsisystemdesign.com/)
+- [VSD-IAT](https://vsdiat.com/)
 
   
   
