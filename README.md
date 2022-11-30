@@ -198,10 +198,20 @@ endmodule
 
  The value of the flop must be known all the time for this signals like `reset` or `set` are used to control the initial state . This can be synchronous or asynchronous. 
 
-![](Imgs/d2-2.png)
+![](Imgs/d2-4.png)
 
 ![](Imgs/l2-3.png)
 ![](Imgs/l2-4.png)
+
+Example of some HW optimizations:
+`2*a[2:0] = y[3:0]` is acctually just apending a `1'b0` to the `a[2:0]`.
+
+`y=9*a`
+can be considered  8*a+1*a = y[5:0]  -> apending 000 to a[2:0] + 1*a -> a000+ a =aa
+This can be ralised just by wirings.
+
+![](Imgs/l2-5.png)
+
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
