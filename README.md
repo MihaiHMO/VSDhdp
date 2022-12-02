@@ -8,7 +8,13 @@
   + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)
 	 - Introduction to .libs
 	 - Hierarchical vs Flat Synthesis
-	 - Various Flop Coding Styles and optimization
+	 - Various Flop Coding Styles 
+  + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)
+ 	 - Introduction to optimizations
+	 - Combinational logic optimizations
+	 - Sequential logic optimizations
+	 - Sequential optimizations for unused outputs
+
 
 
 # Tools install
@@ -204,13 +210,34 @@ endmodule
 ![](Imgs/l2-4.png)
 
 Example of some HW optimizations:
-`2*a[2:0] = y[3:0]` is acctually just apending a `1'b0` to the `a[2:0]`.
+`2*a[2:0] = y[3:0]` is actually just appending a `1'b0` to the `a[2:0]`.
 
 `y=9*a`
-can be considered  8*a+1*a = y[5:0]  -> apending 000 to a[2:0] + 1*a -> a000+ a =aa
-This can be ralised just by wirings.
+can be considered  8*a+1*a = y[5:0]  -> appending 000 to a[2:0] + 1*a -> a000+ a =aa
+This can be realized just by wiring.
 
 ![](Imgs/l2-5.png)
+
+# Day 3 - Combinational and sequential optimizations 
+### Introduction to optimizations
+This is used usally to have an optimized PPA.
+Constant propagation example :
+Y=((AB)+C)' in case A=0 -> Y=((0)+C)' = (C)'
+The propagation of a constant can generate a more optimized combination different than initial one: 6 vs 2 transistors used.
+
+!!!![insert Image transistors} 
+
+Boolean optimization example : 
+assign y=a?(b?c:(c?a:0)):(!c)  
+y=a'c'+a[bc+b'ac]=a'c'+abc+ab'c = a'c'+ac[b+b'] =a'c'+ac= a xor c
+This is an example of const propag, k-map and boolean optimization.
+
+!!!![insert Image muxes} 
+
+### Combinational logic optimizations
+###    Sequential logic optimizations
+###    Sequential optimizations for unused outputs
+
 
 
 # Acknowledgements
