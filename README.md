@@ -225,17 +225,29 @@ Constant propagation example :
 Y=((AB)+C)' in case A=0 -> Y=((0)+C)' = (C)'
 The propagation of a constant can generate a more optimized combination different than initial one: 6 vs 2 transistors used.
 
-!!!![insert Image transistors} 
-
+![](Imgs/d3-1.png)
 Boolean optimization example : 
 assign y=a?(b?c:(c?a:0)):(!c)  
 y=a'c'+a[bc+b'ac]=a'c'+abc+ab'c = a'c'+ac[b+b'] =a'c'+ac= a xor c
 This is an example of const propag, k-map and boolean optimization.
 
-!!!![insert Image muxes} 
+![](Imgs/d3-2.png)
 
-### Combinational logic optimizations
-###    Sequential logic optimizations
+### Sequential  optimization:
+State optimization - Optimization of unused state
+
+Cloning - When flops are far away between them , the 'driving' flop A can be doubled so the overall delays between B and C can be eliminated .
+
+![](Imgs/d3-3.png)
+
+Re-timing: 
+Lets assume the circuit below and Clk to Q delay Setup and hold time ~ 0.
+
+![](Imgs/d3-4.png)
+
+If initial we have 2 logic cells that can work at 200Mhz and 500Mhz and overall time needed to perform 2 states is ~7ns - the max working frequency will be limited to lower 200Mhz. 
+If possible the logic can be change to move some parts from first cell to second one and to keep the ~7ns execution time. But with more comparable working frequencies per cell we can optimize the overall working frequency 
+
 ###    Sequential optimizations for unused outputs
 
 
