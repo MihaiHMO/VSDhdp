@@ -243,10 +243,36 @@ Cloning - When flops are far away between them , the 'driving' flop A can be dou
 Re-timing: 
 Lets assume the circuit below and Clk to Q delay Setup and hold time ~ 0.
 
-![](Imgs/d3-4.png)
+![](Imgs/d-4.png)
 
 If initial we have 2 logic cells that can work at 200Mhz and 500Mhz and overall time needed to perform 2 states is ~7ns - the max working frequency will be limited to lower 200Mhz. 
 If possible the logic can be change to move some parts from first cell to second one and to keep the ~7ns execution time. But with more comparable working frequencies per cell we can optimize the overall working frequency 
+Labs:
+When running the examples the command to execute optimization is : `opt_clean -purge`
+
+![](Imgs/l3-1.png)
+
+Example of a mux with an input tight to 0 -> y=a'0+b =ab
+```
+module opt_check (input a , input b , output y);
+	assign y = a?b:0;
+endmodule
+```
+Here you can see that was optimized to an AND gate
+
+![](Imgs/l3-2.png)
+
+Opt_check3 example:
+```
+module opt_check3 (input a , input b, input c , output y);
+	assign y = a?(c?b:0):0;
+endmodule
+```
+![](Imgs/l3-3.png)
+
+a'+a[c'0+cb] = 0+abc = abc
+
+Opt and multiple_module opt must be done with flatten design before opt_clean . 
 
 ###    Sequential optimizations for unused outputs
 
