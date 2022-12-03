@@ -285,16 +285,33 @@ y= [[ac]b+b'c]a+a'c' = abc+ab'c+a'c' = ac[b+b']+a'c' = ac+a'c'
 - Multiple_module_opt2 example :
 The code , hierarchical and flatten design :
 
-![](Imgs/l3-4.png)
+![](Imgs/l3-5.png)
 
 Optimized design :
 
-![](Imgs/l3-4.png)
+![](Imgs/l3-6.png)
 
+Sequential logic optimization:
 
+In some cases libraries wil contain separated libraries for flops and lathes (sequential circuits)   and separate combinational circuits.
+
+-`dfflibmap -liberty filepath` - like in this cases here we need to use the command to map the sequential circuits from the library .
+
+![](Imgs/l3-7.png)
+
+First example is a flop with `reset` and second with `set' behavior.
+In the first circuit we see the a flop was infered (#DFF_PP0) and in second circuit was not identified any.
+
+The second circuit is an example of seq constant optimization.
+
+Dff_const3:
+An example of circuit containing flops with constant value at the input that will not be optimized because the circuit will toggle based on reset/set and clock states. So the constant value from the input will not propagate at the output of the flop.
+This is visible in the waveforms were Q and Q1 are toggling because of values sampled on clock edge.  
+![](Imgs/l3-8.png)
+
+In the diagram we can see the flops , one with reset and one with set . The inverters are generated because the cells are active low and the code is used like an active high signal for reset and set.
 
 ###    Sequential optimizations for unused outputs
-
 
 
 # Acknowledgements
