@@ -311,6 +311,9 @@ This is visible in the waveforms were Q and Q1 are toggling because of values sa
 
 In the diagram we can see the flops , one with reset and one with set . The inverters are generated because the cells are active low and the code is used like an active high signal for reset and set.
 
+Here can be seen usecases with diferent set/reset comnination:
+![](Imgs/l3-9.png)
+![](Imgs/l3-10.png)
 ###    Sequential optimizations for unused outputs
 
 
