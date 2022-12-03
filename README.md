@@ -262,7 +262,7 @@ Here you can see that was optimized to an AND gate
 
 ![](Imgs/l3-2.png)
 
-Opt_check3 example:
+- Opt_check3 example:
 ```
 module opt_check3 (input a , input b, input c , output y);
 	assign y = a?(c?b:0):0;
@@ -272,7 +272,26 @@ endmodule
 
 a'+a[c'0+cb] = 0+abc = abc
 
-Opt and multiple_module opt must be done with flatten design before opt_clean . 
+- Opt_check4 example:
+```
+module opt_check4 (input a , input b , input c , output y);
+ assign y = a?(b?(a & c ):c):(!c);
+endmodule
+```
+y= [[ac]b+b'c]a+a'c' = abc+ab'c+a'c' = ac[b+b']+a'c' = ac+a'c'
+
+![](Imgs/l3-4.png)
+
+- Multiple_module_opt2 example :
+The code , hierarchical and flatten design :
+
+![](Imgs/l3-4.png)
+
+Optimized design :
+
+![](Imgs/l3-4.png)
+
+
 
 ###    Sequential optimizations for unused outputs
 
