@@ -14,6 +14,10 @@
 	 - Combinational logic optimizations
 	 - Sequential logic optimizations
 	 - Sequential optimizations for unused outputs
+  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch] (#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
+ 	 - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
+ 	 - Labs on GLS and Synthesis-Simulation Mismatch
+	 - Labs on synth-sim mismatch for blocking statement 
 
 
 
@@ -311,10 +315,69 @@ This is visible in the waveforms were Q and Q1 are toggling because of values sa
 
 In the diagram we can see the flops , one with reset and one with set . The inverters are generated because the cells are active low and the code is used like an active high signal for reset and set.
 
-Here can be seen usecases with diferent set/reset comnination:
+Here can be seen use cases with different set/reset combination:
 ![](Imgs/l3-9.png)
 ![](Imgs/l3-10.png)
+
 ###    Sequential optimizations for unused outputs
+
+The logic that will not affect the output will be optimized , eliminated.
+The following example show:
+For the first code q is affected just by count[0] so the circuit will be simple.
+
+In case the counter is using all 3 bits to the output will contain all flops that affect the 3 bits.
+![](Imgs/l3-11.png)
+
+# Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch
+Gate level syntesis is needed because :
+- we need to verify the corrctness of the design after synthesis 
+- RTL does not contain the notion of timing so now with the specific gate implemenation the design timing must be met
+- GLS needs to run with delay annotation ( for this the gate level models must be timing aware)
+
+![](Imgs/d4-1.png)
+
+Syntesis Mismatch 
+- Missing sensitivity list: Simulators work based on "activity " ( a change in input will triger a change in output ). There are cases when for "always" sblocks are specified less signals that will trigger the changes in the design. So in simulation will not behave as expected.
+
+- Blocking vs Non-Blocking Assignment: inside always block 
+	 - `=` Blocking :Execute the statements in order it is written - first statement is evaluated before second statement
+	 - `<=`Non Blocking : Parallel evaluation - executes all "right hand" statements and assigns to "left hand" statement (e.g: 'a<=b&c;') 
+	 - It si recommended non blocking for sequential circuits
+
+![](Imgs/d4-2.png)
+
+![](Imgs/d4-3.png)
+
+- Non Standard verilog coding 
+
+Lab, running iverilog on GLS :
+'iverilog verilog_model_std_cell(2 files in our case)  net_list test_bench '
+'iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v '
+
+Ternary example: 
+```
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+	endmodule
+```
+![](Imgs/l4-1.png)
+
+For synthesis mismatch behavior : 
+```
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @ (sel)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+In the RTL simulation clearly we can see a bad mux behavior , a flop behavior.
+In synthesized netlist simulation we see a good mux behavior. So a mismatch between them. 
+
+![](Imgs/l4-2.png)
 
 
 # Acknowledgements
