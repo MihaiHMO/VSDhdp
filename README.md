@@ -14,7 +14,7 @@
 	 - Combinational logic optimizations
 	 - Sequential logic optimizations
 	 - Sequential optimizations for unused outputs
-  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch] (#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
+  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
  	 - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
  	 - Labs on GLS and Synthesis-Simulation Mismatch
 	 - Labs on synth-sim mismatch for blocking statement 
@@ -230,12 +230,15 @@ Y=((AB)+C)' in case A=0 -> Y=((0)+C)' = (C)'
 The propagation of a constant can generate a more optimized combination different than initial one: 6 vs 2 transistors used.
 
 ![](Imgs/d3-1.png)
+
 Boolean optimization example : 
 assign y=a?(b?c:(c?a:0)):(!c)  
 y=a'c'+a[bc+b'ac]=a'c'+abc+ab'c = a'c'+ac[b+b'] =a'c'+ac= a xor c
 This is an example of const propag, k-map and boolean optimization.
 
 ![](Imgs/d3-2.png)
+
+![](Imgs/bool_opt.png)
 
 ### Sequential  optimization:
 State optimization - Optimization of unused state
@@ -330,7 +333,7 @@ In case the counter is using all 3 bits to the output will contain all flops tha
 
 # Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch
 Gate level syntesis is needed because :
-- we need to verify the corrctness of the design after synthesis 
+- we need to verify the correctness of the design after synthesis 
 - RTL does not contain the notion of timing so now with the specific gate implemenation the design timing must be met
 - GLS needs to run with delay annotation ( for this the gate level models must be timing aware)
 
@@ -351,8 +354,10 @@ Syntesis Mismatch
 - Non Standard verilog coding 
 
 Lab, running iverilog on GLS :
-'iverilog verilog_model_std_cell(2 files in our case)  net_list test_bench '
-'iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v '
+
+`iverilog verilog_model_std_cell(2 files in our case)  net_list test_bench `
+
+`iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v `
 
 Ternary example: 
 ```
@@ -374,7 +379,7 @@ begin
 end
 endmodule
 ```
-In the RTL simulation clearly we can see a bad mux behavior , a flop behavior.
+In the RTL simulation clearly we can see a bad mux behavior , a flop behavior. 
 In synthesized netlist simulation we see a good mux behavior. So a mismatch between them. 
 
 ![](Imgs/l4-2.png)
