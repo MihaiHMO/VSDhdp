@@ -345,7 +345,7 @@ Syntesis Mismatch
 - Blocking vs Non-Blocking Assignment: inside always block 
 	 - `=` Blocking :Execute the statements in order it is written - first statement is evaluated before second statement
 	 - `<=`Non Blocking : Parallel evaluation - executes all "right hand" statements and assigns to "left hand" statement (e.g: 'a<=b&c;') 
-	 - It si recommended non blocking for sequential circuits
+	 - It si recommended non blocking for sequential circuits, avoid as much as possible and double check your design on paper 
 
 ![](Imgs/d4-2.png)
 
@@ -383,6 +383,21 @@ In the RTL simulation clearly we can see a bad mux behavior , a flop behavior.
 In synthesized netlist simulation we see a good mux behavior. So a mismatch between them. 
 
 ![](Imgs/l4-2.png)
+
+Blocking caveat: Intended design is `y = (a|b)&c' , code is...
+```
+module blocking_caveat (input a , input b , input  c, output reg d); 
+reg x;
+always @ (*)
+begin
+	d = x & c;
+	x = a | b;
+end
+endmodule
+```
+results are: 
+
+![](Imgs/l4-3.png)
 
 
 # Acknowledgements
