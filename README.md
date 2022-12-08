@@ -16,9 +16,10 @@
 	 - Sequential optimizations for unused outputs
   + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
  	 - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
- 	 - Labs on GLS and Synthesis-Simulation Mismatch
-	 - Labs on synth-sim mismatch for blocking statement 
-
+ 	 - Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
+  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis) 
+         - If Case constructs
+	 - for loop and for generate
 
 
 # Tools install
@@ -398,6 +399,137 @@ endmodule
 results are: 
 
 ![](Imgs/l4-3.png)
+
+# Day 5 - Optimization in synthesis
+### If, Case constructs
+```
+if <cond >
+begin
+...
+end
+else  
+      if <cond2>
+      begin
+      ...
+      end
+      else
+      begin
+      ....
+      end
+```
+If creates a priority logic , so the HW will be cascade of MUXes 
+The issues that can appear using the if construct is called "Inferred Latches" , I do not intend to generate a lath but coding style will generate one. Usually when we use "Incomplete IF" 
+
+![](Imgs/d5-1.png)
+
+There are some cases that can be intended - example a counter:
+```
+reg[2:0] count
+always @(posedge clk, posedge reset)
+begin
+   if (reset)
+      count<=3'b000;
+   elseif(en)
+      count <=count+1;
+   end
+```
+![](Imgs/d5-2.png)
+
+In this case if there is no enable the circuit should latch on the previous value.
+In the "conbinational" circuits we do not need to have latches , "sequential" ciruits will have latches .
+
+In the following examples we can see the wrong usage of if.
+First example implements a combo circuit connected to a latch and second one a simple latch .
+
+![](Imgs/l5-1.png)
+
+### Case statement :
+if, case are used inside always block , whatever variable you want to assign in  shpuld be a register variable
+```
+reg y
+alwasy @(*)
+begin                                       |\
+ case (sel)                             c1 -|0|
+ 	2'b00: begin                        | |
+	      C1 ...                    c2 -|1|- y
+	       end                          | |
+	2'b01: beging                   ...-|n|
+	      C2 ...                        |/    
+		end                          |
+        ...                                 sel
+  endcase
+ end
+ ```
+The HW generated is a mux with `Cx`- cases assigned to `y`. 
+ 
+Caveats with case:
+Incomplete cases:
+```
+reg [1:0] sel
+alwasy @(*)
+begin                                      
+  case (sel)                             
+ 	2'b00: begin                        
+	      C1 ...                    
+	       end                        
+	2'b01: beging                   
+	      C2 ...                        
+		end                          
+                                           
+  endcase
+ end
+ ```
+ In case we have incomplete cases (ex just c1 and c2) we generate inferred latches . For this the remained cases must be coded with default states.
+ 
+![](Imgs/d5-3.png)
+
+Lab example: we see that on `sel=00` `y` takes the values for `10` and `11` it latches. 
+We see the mux and the latch generated after synthesis .
+
+![](Imgs/l5-2.png)
+
+A correct example: we can see no latches inferred and the cases `10` and `11` follow the `i2` input. 
+
+![](Imgs/l5-3.png)
+
+Partial assigments in case
+```
+reg[1:0] sel;
+reg x, y;
+alwasys @(*)
+begin
+	case(sel)
+		2'b00: begin
+			x=a;
+			y=b;
+		        end
+		2'b01: begin
+			x=x;
+			end
+		default: begin
+			x=d;
+			y=b;
+		        end
+	endcase
+```
+In this case '`y` was not assygnet for `2'b00`. -> assign all the outputs in all the segmnets.
+
+![image](https://user-images.githubusercontent.com/49897923/206229413-2a3881e5-39d7-442a-ab02-049eb08111c4.png)
+
+Lab example: `y` is defined correctly but `x` has no assignment for `sel=b'01` . Enable condition for the latch is `sel[1]'.sel[0]'+sel[1]=sel[1]+sel[0]'` - redundancy theorem.  
+
+![](Imgs/l5-4.png)
+
+Boolean expression of the synthesized circuit: !!!!
+
+Additional we should not have overlaping case statements (ex: `2'b10` and `2b'1?` `?` means indifferent). This will confuse the tools.
+
+![](Imgs/l5-4.png)
+
+In the first waveform (the RTL version) we see for `sel=b'11` `y` gets a random value.
+In the second waveform (the synthesized netlist) the for `sel=b'11` `y=i3`.  
+
+### for loop and for generate
 
 
 # Acknowledgements
