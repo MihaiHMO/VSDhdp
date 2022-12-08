@@ -524,12 +524,59 @@ Boolean expression of the synthesized circuit: !!!!
 
 Additional we should not have overlaping case statements (ex: `2'b10` and `2b'1?` `?` means indifferent). This will confuse the tools.
 
-![](Imgs/l5-4.png)
+![](Imgs/l5-5.png)
 
 In the first waveform (the RTL version) we see for `sel=b'11` `y` gets a random value.
 In the second waveform (the synthesized netlist) the for `sel=b'11` `y=i3`.  
 
 ### for loop and for generate
+
+There are 2 looping contructs:
+ - for loop - used in allways - used for evaluating expresions (not for generating/instantiate HW) 
+ - generate for loop - outside allways - used to instantiate HW , for example multiple times (and gate x times)
+
+For very wide mux/demux will simplify some circuit code.
+32:1 MUX
+```
+alwasys @(*)                               | integer i; inp[31:0]
+begin                                      | alwasys @(*)
+	case(sel)                          | begin 
+		5'b00000: y=i0             |    for (i=0; i<32; i=i+1) begin
+		5'b00001: y=i1             |       if(i==sel)
+		5'b00010: y=i2             |            y=inp[i];
+		.....                      |     end
+		5'b11111: y=i31            | end
+		
+		end
+	endcase
+```
+1x8 DEMUX
+
+```
+integer i; inp[31:0]
+alwasys @(*)
+begin 
+    op_bus[7:0]=8'b0;  ( initialization) 
+    for (i=0; i<32; i=i+1) begin
+	if (i==sel)
+	   op_bus[i]=input
+	end
+end
+```
+For several instancies and gate 
+
+```
+and u_and1 (.a();.b();.y());     | genvar i;
+and u_and2 (.a();.b();.y());     |   generate 
+....                             |       for (i=0; i<8; i=i+1) begin
+....                             |         and u_and (.a(ina[i]);.b(inb[i]);.y(oy[i]));
+and u_andn (.a();.b();.y());     |        end
+                                 |   endgenerate
+```
+
+Use case Ripple Carry ADDER(RCA) - it will use replicated HW blocks.
+
+![image](https://user-images.githubusercontent.com/49897923/206550469-85e6bace-fc39-4475-8bcb-90bc856e2275.png)
 
 
 # Acknowledgements
