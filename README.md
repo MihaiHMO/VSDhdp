@@ -578,6 +578,69 @@ Use case Ripple Carry ADDER(RCA) - it will use replicated HW blocks.
 
 ![image](https://user-images.githubusercontent.com/49897923/206550469-85e6bace-fc39-4475-8bcb-90bc856e2275.png)
 
+Labs: elegant way to write 
+
+```
+module mux_generate (input i0 , input i1, input i2 ,            | \
+input i3 , input [1:0] sel  , output reg y);               i0---|   \
+wire [3:0] i_int;                                               |   |
+assign i_int = {i3,i2,i1,i0};                              i1---|   | -- y
+integer k;                                                      |   |
+always @ (*)                                               i2---|   |
+ begin                                                          |   |
+   for(k = 0; k < 4; k=k+1) begin                          i3---|  /
+	if(k == sel)                                            | /|
+		y = i_int[k];                                    | |
+     end                                                   sel[1]   sel[0]
+  end
+endmodule
+```
+![](Imgs/l5-6.png)
+
+Demux case vs for
+
+```
+module demux_case (output o0 , output o1, output o2 , output o3, output o4, output o5, output o6 , output o7 , input [2:0] sel  , input i);
+reg [7:0]y_int;
+assign {o7,o6,o5,o4,o3,o2,o1,o0} = y_int;
+integer k;                                                            /|
+always @ (*)                                                         / |
+begin                                                               |  |---y0
+y_int = 8'b0;             # initialization will eliminate latches   |  |---y1
+	case(sel)                                                   |  |---y2
+		3'b000 : y_int[0] = i;                         i ---|  |---y3
+		3'b001 : y_int[1] = i;                              |  |---y4
+		3'b010 : y_int[2] = i;                              |  |---y5
+		3'b011 : y_int[3] = i;                              \  |---y6
+		3'b100 : y_int[4] = i;                              |\ |---y7
+		3'b101 : y_int[5] = i;                              |  
+		3'b110 : y_int[6] = i;                            sel[2:0]
+		3'b111 : y_int[7] = i;                       
+	endcase
+
+end
+endmodule
+```
+![](Imgs/l5-7.png)
+
+```
+module demux_generate (output o0 , output o1, output o2 , output o3, output o4, output o5, output o6 , output o7 , input [2:0] sel  , input i);
+reg [7:0]y_int;
+assign {o7,o6,o5,o4,o3,o2,o1,o0} = y_int;
+integer k;
+always @ (*)
+begin
+y_int = 8'b0;
+for(k = 0; k < 8; k++) begin
+	if(k == sel)
+		y_int[k] = i;
+end
+end
+endmodule
+
+```
+![](Imgs/l5-8.png)
+
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
