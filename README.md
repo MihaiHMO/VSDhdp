@@ -641,6 +641,16 @@ endmodule
 ```
 ![](Imgs/l5-8.png)
 
+For generate for multiple replicated HW - RCA:
+General rule for adders: N bit number + N bit number = N+1 Bit number , N+M =Max(N,M) + 1.
+Another detail is that the variable `i` is not initialized like an `integer` -> is is declared `genvar i`
+In this example the `fa` module is coded in a different file so during the simulation of `rca` circuit we need to insert also the definition file of `fa` module.
+
+`iverilog fa.v rca.v tb_rca.v `
+
+![](Imgs/l5-8.png)
+
+Top waveform if from RTL simulaiton , bottom is from GLS file.
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
