@@ -2,7 +2,6 @@
 
 The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSoc](https://github.com/vsdip/VSDMemSoC) witch contains a [Risc-V CPU](https://github.com/RISCV-MYTH-WORKSHOP/riscv_myth_workshop_nov22-MihaiHMO/settings) connected to a [open source SRAM](https://github.com/vsdip/vsdsram_sky130)
 
-
 - Convertion of TLV to Verilog : `sandpiper-saas -i module/rvmyth.tlv -o rvmyth.v --bestsv --noline -p verilog --outdir output/compiled_tlv`
     - '-i' <tlv-[m4]in-file>: TLV input file>
     - 'o' <tlv-out-file> SV ouput file
@@ -14,11 +13,13 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
   
   
 - RTL simulation: `iverilog testbench.v -I ../include/ vsdmemsoc.v controller.v rvmyth.v sram_32_256_sky130A.v clk_gate.v  -o pre_synth_sim.out -DPRE_SYNTH_SIM`
-  -`iverilog -o output/pre_synth_sim/pre_synth_sim.out -DPRE_SYNTH_SIM  module/testbench.v -I include -I module -I output/compiled_tlv;`    
+  
+    -`iverilog -o output/pre_synth_sim/pre_synth_sim.out -DPRE_SYNTH_SIM  module/testbench.v -I include -I module -I output/compiled_tlv;`    
   `cd output/pre_synth_sim; ./pre_synth_sim.out;`
 
 - GLS simulation: `iverilog ../sky130_gls_model/primitives.v ../sky130_gls_model/sky130_fd_sc_hd.v sram_32_256_sky130A.v testbench.v -I ../include/ vsdmemsoc.synth.v -o post_synth.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1`
-  - 'iverilog -o output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 module/testbench.v -I include -I module -I sky130_gls_model/ -I output/synth`
+  
+    - `iverilog -o output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 module/testbench.v -I include -I module -I sky130_gls_model/ -I output/synth`
 - `yosys -s /VSDMemSoC/src/script/yosys.ys | tee ../output/synth/synth.log`
 
 Yosys Sript :
@@ -40,7 +41,7 @@ rename -enumerate
 stat
 write_verilog -noattr ../output/vsdmemsoc.synth.v
 ```
-  
+```  
   === vsdmemsoc ===
 
    Number of wires:              10173
@@ -99,3 +100,4 @@ write_verilog -noattr ../output/vsdmemsoc.synth.v
      sky130_fd_sc_hd__xnor2_1       26
      sky130_fd_sc_hd__xor2_1        53
      sram_32_256_sky130A             1
+```
