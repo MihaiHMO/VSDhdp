@@ -10,19 +10,19 @@
         - Introduction to .libs  
         - Hierarchical vs Flat Synthesis  
         - Various Flop Coding Styles  
-  + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)
-        - Introduction to optimizations
-        - Combinational logic optimizations
-        - Sequential logic optimizations
-        - Sequential optimizations for unused outputs
-  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
+  + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)  
+        - Introduction to optimizations  
+        - Combinational logic optimizations  
+        - Sequential logic optimizations  
+        - Sequential optimizations for unused outputs  
+  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)  
         - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
         - Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
   + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis)  
         - If Case constructs  
         - for loop and for generate  
   + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)  
-        - Basics of STA 
+        - Basics of STA  
         - Delays and Timing Arcs  
         - Constraining the Design  
         - What is STA , setup , hold quick recap  
@@ -456,16 +456,16 @@ First example implements a combo circuit connected to a latch and second one a s
 if, case are used inside always block , whatever variable you want to assign in  shpuld be a register variable
 ```
 reg y
-alwasy @(*)
-begin                                       |\
- case (sel)                             c1 -|0|
- 	2'b00: begin                        | |
-	      C1 ...                    c2 -|1|- y
-	       end                          | |
-	2'b01: beging                   ...-|n|
-	      C2 ...                        |/    
-		end                          |
-        ...                                 sel
+alwasy @(*)                                 |\
+begin                                       | \    
+ case (sel)                            c1 --|0 |
+ 	2'b00: begin                        |  | 
+	      C1 ...                   c2 --|1 |-- y
+	       end                          |  |
+	2'b01: beging                   ...-|n/
+	      C2 ...                        |/|    
+		end                           |
+        ...                                  sel
   endcase
  end
  ```
