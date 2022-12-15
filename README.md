@@ -679,7 +679,7 @@ The **Arcs** contains the delay information from every input pin to every output
 
 ```
                                               D->Q (DLATCH)
-                 | \                           ____________
+                 | \                          _____________
             i0---|   \                        |           |                         
                  |   |                    --->| D        Q|--->                  
             i1---|   | -- y            setup/ |           |  clk->Q            
@@ -689,7 +689,7 @@ The **Arcs** contains the delay information from every input pin to every output
                     |                         ------A------  
                    sel                              | 
 ```
-For a mux case y can change because of i0, i1 or sel so we will see 3 arcs : i0->y, i1->y, sel->y.
+For a mux case (combinational logic)  y can change because of `i0`, `i1` or `sel` so we will see 3 arcs : `i0->y`, `i1->y`, `sel->y`.
 For a sequential cell  (DFF, DLATCH) arcs will be formed by:
  - Delay from CLk to Q for DFF
  - Delay from Clk to Q. Delay from D to Q for DLATCH
@@ -706,20 +706,55 @@ Setup and hold time of a DFF is around the sampling point
 For pos level latch sampling point is with respect to "next edge ", negative or positive dependent on the type.  
 
 ```
-PosLvl DLATCH                |                 |
-   sampling point    ________V OPAQUE  ________V
-               _____|<------>|________|        |________
-                  Transparent 
-                             |
-               <---SETUP --->|<---HOLD---<
-                             |
-NegLvl DLATCH                |                 |
-   empling point             V________  Transp V________
-                        _____|<------>|________|        |________
-                               OPAQUE 
+PosLvl DLATCH                  |                     |
+   sampling point    __________V  OPAQUE   __________V
+               _____|<-------->|__________|          |__________
+                    Transparent 
+                               |
+                      <-SETUP->|<-HOLD->
+                               |
+NegLvl DLATCH                  |                     |
+   empling point ___           V__________  Transp   V__________
+                    |_________|<--------->|__________|          |__
+                                   OPAQUE 
 
 ```
 ### Design compiler constraints 
+
+**Timing Paths**
+Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
+ - Clk to D - are called _Reg2 Ref Timing Paths_ -> Constrained by _Clock Period_   
+ - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
+							 - _Max delay (Setup) and Min delay (Hold)_  
+							 - _Input Ext Delay, Input Transition and Clock Period_  
+							 - _Output Ext Delay, Output Load and Clock Period_    
+ - IN to OUT - are _not desired IO Timing paths_ 
+
+For the circuit in example we have signal 2 paths A-> C and B-> C. The slowest path will be called "_Critical Path_" .  
+If we calculate T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>, T<sub>CQ_A</sub>=0.5ns T<sub>SETUP</sub>=0.5ns :  
+	T<sub>clk_AC</sub> > 0.5 + 1.2 + 0.5 = 2.2 ns (_Critical Path_)  
+	T<sub>clk_BC</sub> > 0.5 + 0.7 + 0.5 = 1.7 ns   
+The critical path will dictate the working frequency ->  f<sub>clk</sub>(2.2ns) = 456.5 Mhz   
+
+![](Imgs/d7-2.png)  
+
+In a common design usually the working frequency (T<sub>clk</sub>) will be fixed to achieve a certain performance so the components (T<sub>COMBI</sub>) will need to be optimized. The clk period will limit the delays in Reg2Reg Paths - so the synth tools will need to select proper technology cells from the library (.lib file contain T<sub>CQ</sub>, T<sub>SETUP/HOLD</sub>, T<sub>COMBI_cell</sub>). to meet the clock period.  
+
+![](Imgs/d7-3.png)
+
+**Input/output External Delay**  : Because for the external circuit elements we do not have control and we get also other influences like routing - we need to define a timing margin that will decrease our available timing for the "input/output circuit" .
+The Input/output External Delay is defined usually by standards (e.g. SPI, I2C etc.) or IO budgeting and this is given by the designer of the external circuitry organized usually in a module or IP.  
+
+**Input transition**
+Input transition/Output load are the information of the real behavior of the input/output logic signal due to parasitic elements:  
+```
+                                         ________         _______
+Ideal wave form                     ____|        |_______|
+                                         ________         ________
+Wave form with parasitics          _____/        \_______/
+
+```
+This parameters are modeled inside the library based on the tehcnology behavior.  
 
 
 
