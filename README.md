@@ -1,25 +1,34 @@
 # VSD Hardware Digital Program -Digital 
 
 # Table of contents
-  + [Tools install](#tools-install)
-  + [Day 1 - Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
-	  - Introduction to iverilog and gtkwave for simualtions + labs
-	  - Introduction to Yosys and Logic synthesis + labs
-  + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)
-	 - Introduction to .libs
-	 - Hierarchical vs Flat Synthesis
-	 - Various Flop Coding Styles 
+  + [Tools install](#tools-install)  
+
+  + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)  
+        - Introduction to iverilog and gtkwave for simualtions + labs  
+        - Introduction to Yosys and Logic synthesis + labs  
+  + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)  
+        - Introduction to .libs  
+        - Hierarchical vs Flat Synthesis  
+        - Various Flop Coding Styles  
   + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)
- 	 - Introduction to optimizations
-	 - Combinational logic optimizations
-	 - Sequential logic optimizations
-	 - Sequential optimizations for unused outputs
+        - Introduction to optimizations
+        - Combinational logic optimizations
+        - Sequential logic optimizations
+        - Sequential optimizations for unused outputs
   + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
- 	 - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
- 	 - Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
-  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis) 
-         - If Case constructs
-	 - for loop and for generate
+        - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
+        - Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
+  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis)  
+        - If Case constructs  
+        - for loop and for generate  
+  + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)  
+        - Basics of STA 
+        - Delays and Timing Arcs  
+        - Constraining the Design  
+        - What is STA , setup , hold quick recap  
+        - What are constraints  
+        - Constraining the Reg2Reg , Reg2IO , IO2Reg Paths  
+        - Input transition and OutputLoad and its effects on IO delays  
 
 
 # Tools install
@@ -641,16 +650,78 @@ endmodule
 ```
 ![](Imgs/l5-8.png)
 
-For generate for multiple replicated HW - RCA:
+‘For generate’ for multiple replicated HW - RCA:
 General rule for adders: N bit number + N bit number = N+1 Bit number , N+M =Max(N,M) + 1.
 Another detail is that the variable `i` is not initialized like an `integer` -> is is declared `genvar i`
 In this example the `fa` module is coded in a different file so during the simulation of `rca` circuit we need to insert also the definition file of `fa` module.
 
 `iverilog fa.v rca.v tb_rca.v `
 
-![](Imgs/l5-8.png)
+![](Imgs/l5-9.png)
 
-Top waveform if from RTL simulaiton , bottom is from GLS file.
+Top waveform if from RTL simulation , bottom is from GLS file.
+
+# Day 7 - Basic SDC constraints
+
+### Basics of STA
+**Max and Min Delay** : 
+T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>
+If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit. 
+
+T<sub>HOLD_B</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub>
+This defines the constraints given by the HOLD window and this occurs usually when we delay the clock (with delay circuits in red) so we can meet a fixed COMBI delay with a slower clock (e.g T<sub>COMBI</sub> = 8ns , T<sub>clk</sub>=5ns)
+T<sub>HOLD_B</sub>+ T<sub>PUSH</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub> ; T<sub>PUSH</sub> is the time inserted by the delay circuits.
+
+![](Imgs/d7-1.png)
+
+The **Delay** of a cell is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
+The **Arcs** contains the delay information from every input pin to every output pin which it can control
+
+```
+                                              D->Q (DLATCH)
+                 | \                           ____________
+            i0---|   \                        |           |                         
+                 |   |                    --->| D        Q|--->                  
+            i1---|   | -- y            setup/ |           |  clk->Q            
+	         |   |                  hold  |     DFF   |
+                 |  /                         |  (DLATCH) |
+                 | /|                         |    CLK    |
+                    |                         ------A------  
+                   sel                              | 
+```
+For a mux case y can change because of i0, i1 or sel so we will see 3 arcs : i0->y, i1->y, sel->y.
+For a sequential cell  (DFF, DLATCH) arcs will be formed by:
+ - Delay from CLk to Q for DFF
+ - Delay from Clk to Q. Delay from D to Q for DLATCH
+ - Setup and Hold time
+
+|Device        | CLK to Q          |  D to Q          |   Setup          |    Hold          |
+|--------------|-------------------|------------------|------------------|------------------|
+|PosEdge DFF   | from PosEdge Clk  | NA               | to PosEdge Clk   | from PosEdge Clk |
+|NegEdge DFF   | from NegEdge Clk  | NA               | to NegEdge ClK   | from NegEdge Clk |
+|PosLevel DLAT | from PosEdge Clk  | When Clk is high | to NegEdge Clk   | from NegEdge Clk |
+|NegEdge DLAT  | from NegEdge Clk  | When Clk is low  | to PosEdge Clk   | from PosEdge Clk |
+
+Setup and hold time of a DFF is around the sampling point 
+For pos level latch sampling point is with respect to "next edge ", negative or positive dependent on the type.  
+
+```
+PosLvl DLATCH                |                 |
+   sampling point    ________V OPAQUE  ________V
+               _____|<------>|________|        |________
+                  Transparent 
+                             |
+               <---SETUP --->|<---HOLD---<
+                             |
+NegLvl DLATCH                |                 |
+   empling point             V________  Transp V________
+                        _____|<------>|________|        |________
+                               OPAQUE 
+
+```
+### Design compiler constraints 
+
+
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
