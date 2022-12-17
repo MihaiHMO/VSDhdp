@@ -3,33 +3,42 @@
 # Table of contents
   + [Tools install](#tools-install)  
 
-  + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)  
-        - Introduction to iverilog and gtkwave for simualtions + labs  
-        - Introduction to Yosys and Logic synthesis + labs  
-  + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)  
-        - Introduction to .libs  
-        - Hierarchical vs Flat Synthesis  
-        - Various Flop Coding Styles  
-  + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)  
-        - Introduction to optimizations  
-        - Combinational logic optimizations  
-        - Sequential logic optimizations  
-        - Sequential optimizations for unused outputs  
-  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)  
-        - GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
-        - Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
-  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis)  
-        - If Case constructs  
-        - for loop and for generate  
-  + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)  
-        - Basics of STA  
-        - Delays and Timing Arcs  
-        - Constraining the Design  
-        - What is STA , setup , hold quick recap  
-        - What are constraints  
-        - Constraining the Reg2Reg , Reg2IO , IO2Reg Paths  
-        - Input transition and OutputLoad and its effects on IO delays  
-
+  + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
+	- Introduction to iverilog and gtkwave for simualtions + labs
+	- Introduction to Yosys and Logic synthesis + labs
+  + [Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles](#day-2---timing-libsqtmsetms-hierarchical-vs-flat-synthesis-and-efficient-flop-coding-styles)
+	- Introduction to .libs
+	- Hierarchical vs Flat Synthesis
+	- Various Flop Coding Styles
+  + [Day 3 - Combinational and sequential optimizations](#day-3---combinational-and-sequential-optimizations)
+	- Introduction to optimizations
+	- Combinational logic optimizations
+	- Sequential logic optimizations
+	- Sequential optimizations for unused outputs
+  + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
+	- GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
+	- Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
+  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis)
+	- If Case constructs
+	- for loop and for generate
+  + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)
+	- Basics of STA
+	- Delays and Timing Arcs
+	- Constraining the Design
+	- What is STA , setup , hold quick recap
+	- What are constraints
+	- Constraining the Reg2Reg , Reg2IO , IO2Reg Paths
+	- Input transition and OutputLoad and its effects on IO delays
+  + [Day 8 - Advanced SDC Constraints](#day-8---advanced-sdc-constraints)
+	- Clock Skew and Clock Jitter, its modelling in DC  
+	- Writing SDCs [Synopsys Design Constraints]  
+	- Creating Clocks  
+	- Querying Cells  
+	- Specifying IO Delays  
+	- Specifying Clock Waveforms  
+	- Generated Clocks  
+	- Multi Clock Design  
+	- False Paths  
 
 # Tools install
 
@@ -765,11 +774,13 @@ Content higlights :
 - `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate
  	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<subp>in<sub>+C<sub>net+SUM(C<sub>inp.cap</sub>)
 	- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate  
-	![](Imgs/d-7-4.png)
-- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.
-	![](Imgs/d-7-4.png) 
+	![](Imgs/d7-4.png)
+- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.  
+	![](Imgs/d7-5.png) 
 - cell content :
-	- different flavors of the gates e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power 
+	- different flavors of the gates:
+		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
+		-  "sky130_fd_sc_hd__and2**Xb**_1 - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
 	- `pp_pin(VGND)` - power pin 
 	- `pin ("A")` - IO pins attributes 
 	 ```
@@ -798,25 +809,52 @@ Content higlights :
 	timing_sense : "negative_unate"; - for NOT, NAND, NOR gates: - if for the input rise (0->1) the output remains unchanged or output fall (1->0) - neg unateness
 	                                       - XOR  - input rise can case output rise or output fall - non-unate
 	                                       - _unateness_ is used by the tool to know how to propagate the signal at the output of the gate
-	      timing_type : "combinational" ;
+	timing_type : "combinational" ;
 	``` 
 	- sequential timing ARC example
-	``` pin ("Q")
-	    related pin ("CLK")       
-	    timing_sense : "non_unate";                  - in relation with CLK Q is non unate because depends in D  
-            timing_type : "falling_edge","rising_edge";  - this information is telling to the tool if it is a pos/neg edge clock DFF 
-         ```
-	- setup time example (for a pos edge DFF)
-	```
-	timing () {
-                fall_constraint ("vio_3_3_1") {}
-                related_pin : "CLK";
-                rise_constraint ("vio_3_3_1") {}
-                sim_opt : "runlvl=5 accurate=1";
-                timing_type : "**setup_rising**";
-                violation_delay_degrade_pct : 10.000000000;
-	```
-	- 
+	``` 
+	pin ("Q")
+	related pin ("CLK")       
+	timing_sense : "non_unate";                  - in relation with CLK Q is non unate because depends in D  
+	timing_type : "falling_edge","rising_edge";  - this information is telling to the tool if it is a pos/neg edge clock DFF  
+	```  
+	- setup time example (for a pos edge DFF)  
+	```	
+	timing () {  
+        fall_constraint ("vio_3_3_1") {}  
+        related_pin : "CLK";  
+        rise_constraint ("vio_3_3_1") {}  
+        sim_opt : "runlvl=5 accurate=1";  
+        timing_type : "setup_rising";  
+        violation_delay_degrade_pct : 10.000000000;  
+	```  
+ ** Synopsys DC comands **
+ - get_lib_attribute -will perfom on the lib cell, cell or on the cell component lib_pin , port etc.
+ - list attributes - to check all attributes 
+ - get_lib_cell - 
+ - get_ojbect_name
+ 
+# Day 8 - Advanced SDC Constraints
+Clock Skew and Clock Jitter, its modelling in DC
+
+Writing SDCs [Synopsys Design Constraints]
+
+Creating Clocks
+
+Querying Cells
+
+Specifying IO Delays
+
+Specifying Clock Waveforms
+
+Generated Clocks
+
+Multi Clock Design
+
+False Paths
+
+ 
+	
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
