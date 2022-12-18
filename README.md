@@ -734,9 +734,9 @@ NegLvl DLATCH                  |                     |
 Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
  - Clk to D - are called _Reg2 Ref Timing Paths_ -> Constrained by _Clock Period_   
  - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
+							 - _Clock Period_, _Input Ext Delay, Input Transition   
+							 - _Clock Period_, _Output Ext Delay, Output Load       
 							 - _Max delay (Setup) and Min delay (Hold)_  
-							 - _Input Ext Delay, Input Transition and Clock Period_  
-							 - _Output Ext Delay, Output Load and Clock Period_    
  - IN to OUT - are _not desired IO Timing paths_ 
 
 For the circuit in example we have signal 2 paths A-> C and B-> C. The slowest path will be called "_Critical Path_" .  
@@ -828,24 +828,100 @@ Content higlights :
         timing_type : "setup_rising";  
         violation_delay_degrade_pct : 10.000000000;  
 	```  
- ** Synopsys DC comands **
+**Synopsys DC comands**  
  - get_lib_attribute -will perfom on the lib cell, cell or on the cell component lib_pin , port etc.
  - list attributes - to check all attributes 
  - get_lib_cell - 
  - get_ojbect_name
  
 # Day 8 - Advanced SDC Constraints
-Clock Skew and Clock Jitter, its modelling in DC
+**Clock Skew and Clock Jitter, its modelling in DC**
+  
+Clock sources in a chip are Oscillators, PLL, Ext Clock sources - all have inherent variations in the clock period due to stochastic effects :_Jitter_ . 
+	T<sub>clk</sub>-T<sub>jitter</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
+Due to non ideal nature of the clock that will insert delays , different flops will not see the clock in teh same time - this difference is called _Skew_. 
+	T<sub>clk</sub>-T<sub>skew</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
+Clock Jitter and clock skew are called _Clock Uncertainty_.   
+	
+![](Imgs/d7-6.png)
+	
+During Synthesis phase the logic is optimized assuming an ideal clock.   
+Clock is ideal till the CTS stage - were is actually build -when all the routings and loads will affect the clock path to each flop.  
+In order to have a close behavior to the real clock we need to model it before synthesis. 
+	
+Clock Modelling should consider:  
+	- Period  
+	- Source latency : Time taken by clock source to generate the clock  
+	- Clock network : Time taken by clock Distribution NW  
+	- Clock Skew : Delay mismatched due to clock path which generate difference in the arrival clock  
+	- Jitter: Duty cycle or Period  
 
-Writing SDCs [Synopsys Design Constraints]
+**Post CTS** the clock is real, hence **modelled Clock** Skew and Network Latency **MUST BE REMOVED**.  
+	
+	| Stage     | Clock Uncertainty |
+	|-----------|------------------|
+	| Synthesis | JItter+ Skew     |
+	| Poest CTS | Only Jitter      |
 
-Creating Clocks
+![](Imgs/d7-7.png)
 
-Querying Cells
+**Writing SDCs [Synopsys Design Constraints]**  
+**Querying Cells**
+`get_*` - querying commands    
 
-Specifying IO Delays
+Getting the ports:  
+`get_ports clk;`  
+`get_ports *clk*;`  - return a collection of ports whose name contains clk e,g clk1  
+`get_ports *;` - get all ports of the design  
+`get_ports * -filter "direction==in";` - filtering based on condition , all ports with direction = in , all in ports  
 
-Specifying Clock Waveforms
+Getting the clock:   
+`get_clocks *;` - all clocks in the design  
+`get_clocks *clk*;` - all clocks with name clk in it  
+`get_clocks  *` -filter "period>10"  
+
+`get_attribute [get_clock my_clk] is_generated`  
+`report_clocks my_clk` - will list the parameters of clock  
+
+Getting cell:  
+![dc1-1](https://user-images.githubusercontent.com/49897923/208296367-c3780cb5-258f-413a-9290-ce717ae5becf.png)
+
+**Create clocks**
+
+`create_clock -name <clk_name> -per <period> [clock definition port]`  
+e.g. `create_clock -name MY_CLK -per 5 [get_port CLK]`  
+
+ ![image](https://user-images.githubusercontent.com/49897923/208296349-c60abd56-691e-4eba-ad3a-95df3a72516e.png)
+
+`Set_clok_latency 3 MY_CLK ;` #The latency , modelling the clock delay in network  
+`Set_clock_uncertainty 0.5 MY_CLK;` # This is for setting the clock network (skew +jitter)  - POST CTS need to be modified to contain only jitter e.g `set_clock_nn... 0.2`  
+ 
+**Specifying Clock Waveforms**  
+Default setup is : Clock starting pahse is high and duty cicle 50%  
+ `create_clock -name <clk_name> -per <perid> [clock definition port]`  
+
+Changing starting phase, duty cycle is don't just with `-wave ` option :  
+`create_clock -name <clk_name> -per <perid> [clock definition port] -wave {first rise edge time, next fall edge time}  
+ 
+ ![image](https://user-images.githubusercontent.com/49897923/208297913-4d29398d-d40a-44ec-a424-52a9c447bdf9.png)
+
+**Specifying IO Delays**  
+Constrain the IO path in a time window relative to a clock. So it may come in min 0.5n-max 3ns . Also input transition is modeled.  
+```
+set_input_delay -max 3 -clock [get_clocks MY_ClK] [get_ports IN_*]`  # * will affect all port starting with `IN_`
+set_input_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports IN_*]
+set_input_transition -max 1.5 [get_ports IN_*];
+set_input_transition -max 1.5 [get_ports IN_*];
+
+set_output_delay -max 3 -clock [get_clocks MY_ClK] [get_ports OUT_y]`  
+set_output_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports OUT_y]
+set_ouput_load -in 20 [get_ports OUT_y];
+set_ouput_load -max 80 [get_ports OUT_y];
+
+#NOTE: Both inputs IN_A and IN_B are coming w.r.t clock my_CLOCK created on port CLK
+```
+![image](https://user-images.githubusercontent.com/49897923/208297654-a17e7cc2-afef-40de-a76b-e531c24856dc.png)
+	
 
 Generated Clocks
 
