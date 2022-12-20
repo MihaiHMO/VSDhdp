@@ -45,7 +45,8 @@ Functional diagram :
     - `iverilog -o output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 module/testbench.v -I include -I module -I sky130_gls_model/ -I output/synth`
 
 RTL and GLS simulations :  
-![](Imgs/rtl_gls_sim.png)
+
+![](Imgs/VSDMemSoC_sims.png)
     
 ```  
   === synthesized vsdmemsoc components === 
