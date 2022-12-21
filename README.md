@@ -672,19 +672,19 @@ Top waveform if from RTL simulation , bottom is from GLS file.
 
 # Day 7 - Basic SDC constraints
 
-### Basics of STA
-**Max and Min Delay** : 
-T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>
-If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit. 
+**Max Delay/Setup Timing** :   
+T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
+If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit.  
 
-T<sub>HOLD_B</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub>
-This defines the constraints given by the HOLD window and this occurs usually when we delay the clock (with delay circuits in red) so we can meet a fixed COMBI delay with a slower clock (e.g T<sub>COMBI</sub> = 8ns , T<sub>clk</sub>=5ns)
+**Min Delay/ Hold Timing**
+T<sub>HOLD_B</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub>  
+This defines the constraints given by the HOLD window and this occurs usually when we delay the clock (with delay circuits in red) so we can meet a fixed COMBI delay with a slower clock (e.g T<sub>COMBI</sub> = 8ns , T<sub>clk</sub>=5ns)  
 T<sub>HOLD_B</sub>+ T<sub>PUSH</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub> ; T<sub>PUSH</sub> is the time inserted by the delay circuits.
 
 ![](Imgs/d7-1.png)
 
-The **Delay** of a cell is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
-The **Arcs** contains the delay information from every input pin to every output pin which it can control
+The **Cell Delay** is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
+The **Arcs** contains the delay information from every input pin to every output pin which it can control  
 
 ```
                                               D->Q (DLATCH)
@@ -698,21 +698,21 @@ The **Arcs** contains the delay information from every input pin to every output
                     |                         ------A------  
                    sel                              | 
 ```
-For a mux case (combinational logic)  y can change because of `i0`, `i1` or `sel` so we will see 3 arcs : `i0->y`, `i1->y`, `sel->y`.
-For a sequential cell  (DFF, DLATCH) arcs will be formed by:
- - Delay from CLk to Q for DFF
- - Delay from Clk to Q. Delay from D to Q for DLATCH
- - Setup and Hold time
+For a mux case (combinational logic)  `y` can change because of `i0`, `i1` or `sel` so we will see 3 arcs : `i0->y`, `i1->y`, `sel->y`.  
+For a sequential cell  (DFF, DLATCH) arcs will be formed by:  
+ - Delay from CLk to Q for DFF  
+ - Delay from Clk to Q. Delay from D to Q for DLATCH  
+ - Setup and Hold time  
 
 |Device        | CLK to Q          |  D to Q          |   Setup          |    Hold          |
 |--------------|-------------------|------------------|------------------|------------------|
 |PosEdge DFF   | from PosEdge Clk  | NA               | to PosEdge Clk   | from PosEdge Clk |
 |NegEdge DFF   | from NegEdge Clk  | NA               | to NegEdge ClK   | from NegEdge Clk |
 |PosLevel DLAT | from PosEdge Clk  | When Clk is high | to NegEdge Clk   | from NegEdge Clk |
-|NegEdge DLAT  | from NegEdge Clk  | When Clk is low  | to PosEdge Clk   | from PosEdge Clk |
+|NegLevel DLAT | from NegEdge Clk  | When Clk is low  | to PosEdge Clk   | from PosEdge Clk |
 
-Setup and hold time of a DFF is around the sampling point 
-For pos level latch sampling point is with respect to "next edge ", negative or positive dependent on the type.  
+Setup and hold time of a DFF is around the sampling point.  
+For _Pos/Neg level_ latch sampling point is with respect to _"next edge"_, negative or positive dependent on the type.    
 
 ```
 PosLvl DLATCH                  |                     |
@@ -732,7 +732,7 @@ NegLvl DLATCH                  |                     |
 
 **Timing Paths**
 Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
- - Clk to D - are called _Reg2 Ref Timing Paths_ -> Constrained by _Clock Period_   
+ - Clk to D - are called _Reg2Reg Timing Paths_ -> Constrained by _Clock Period_   
  - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
 							 - _Clock Period_, _Input Ext Delay, Input Transition   
 							 - _Clock Period_, _Output Ext Delay, Output Load       
@@ -767,12 +767,12 @@ This parameters are modeled inside the library based on the tehcnology behavior.
 
 **Undestanding .LIB file**
 There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file .  
-Content higlights :
+Content higlights :  
 - the technology e.g. CMOS  
 - units used by the parameters   
-- `default_operating_conditions : "tt_025C_1v80";` - thease proces-voltage-temp (PVT) conditions  
-- `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate
- 	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<subp>in<sub>+C<sub>net+SUM(C<sub>inp.cap</sub>)
+- `default_operating_conditions : "tt_025C_1v80";` - thease proces-voltage-temp (PVT) conditions    
+- `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate  
+ 	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<sub>in</sub>+C<sub>net</sub>+SUM(C<sub>inp.cap</sub>)   
 	- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate  
 	![](Imgs/d7-4.png)
 - `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.  
@@ -780,7 +780,7 @@ Content higlights :
 - cell content :
 	- different flavors of the gates:
 		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
-		-  "sky130_fd_sc_hd__and2**Xb**_1 - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
+		-  'sky130_fd_sc_hd__and2**Xb**_1' - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
 	- `pp_pin(VGND)` - power pin 
 	- `pin ("A")` - IO pins attributes 
 	 ```
@@ -922,9 +922,21 @@ set_ouput_load -max 80 [get_ports OUT_y];
 ```
 ![image](https://user-images.githubusercontent.com/49897923/208297654-a17e7cc2-afef-40de-a76b-e531c24856dc.png)
 	
+**Generated Clocks**
+Generated clocks are propagated clokcs, they are always modeled with respect to a master clock (source clock - OSC, PLL, ot Primary IO port).  
+`create_generated_clock -name MY_GEN_CLK -master [get_clocks MY_ClK] -source [get_ports CLK] -div1 [get_ports OUT_CLK]` it will e creatd a clock with name MY_GEN_CLK at port OUT_CLK from source MY_CLK conected at port CLK.  
+In the next example e have a design with multiplexed INPUT adn CLK (real example of a mux pin function : I2C and SPI)) . In this case the SEL signal is "static", it will not toggle during the ciruit usage .
 
-Generated Clocks
+![](Imgs/d8-5.png)
+	
+- IN_DAT and IN_CLK has 2 functionalities 
+- In one fucntionality IN_DATA and IN_CLK gets the data and clock coresponding to A and in other functionality it is getting data and clk coresponding to B
+- Same for OUT_DATA, OUT_CLK , can get from A or B
+- While operating for for A the clock and data from input goes only to A, and when operation for  goes only to B
 
+- The clocks (both CLK_A and CLK_B) will be propageted by the tools (DC, OpenSTA) dowstream based on timing arcs . Even if in really we know hat they will have separate paths.
+- ALl the timing arcs from the definition point will see the clock propagation by default.
+	
 Multi Clock Design
 
 False Paths
