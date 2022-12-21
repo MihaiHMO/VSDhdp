@@ -673,7 +673,7 @@ Top waveform if from RTL simulation , bottom is from GLS file.
 # Day 7 - Basic SDC constraints
 
 **Max Delay/Setup Timing** :   
-T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
+T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
 If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit.  
 
 **Min Delay/ Hold Timing**
@@ -683,7 +683,7 @@ T<sub>HOLD_B</sub>+ T<sub>PUSH</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub> ; T<su
 
 ![](Imgs/d7-1.png)
 
-The **Cell Delay** is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
+The **Module Delay** is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
 The **Arcs** contains the delay information from every input pin to every output pin which it can control  
 
 ```
@@ -765,8 +765,9 @@ Wave form with parasitics          _____/        \_______/
 ```
 This parameters are modeled inside the library based on the tehcnology behavior.  
 
-**Undestanding .LIB file**
-There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file .  
+**Undestanding .LIB file**  
+There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file.  
+
 Content higlights :  
 - the technology e.g. CMOS  
 - units used by the parameters   
@@ -780,7 +781,7 @@ Content higlights :
 - cell content :
 	- different flavors of the gates:
 		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
-		-  'sky130_fd_sc_hd__and2**Xb**_1' - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
+		-  `sky130_fd_sc_hd__and2**Xb**_1` - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
 	- `pp_pin(VGND)` - power pin 
 	- `pin ("A")` - IO pins attributes 
 	 ```
@@ -835,13 +836,13 @@ Content higlights :
  - get_ojbect_name
  
 # Day 8 - Advanced SDC Constraints
-**Clock Skew and Clock Jitter, its modelling in DC**
-  
+**Clock Skew and Clock Jitter, its modelling in DC**  
+
+Clock _Jitter_ and clock _Skew_ are called _Clock Uncertainty_.   
 Clock sources in a chip are Oscillators, PLL, Ext Clock sources - all have inherent variations in the clock period due to stochastic effects :_Jitter_ . 
 	T<sub>clk</sub>-T<sub>jitter</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
-Due to non ideal nature of the clock that will insert delays , different flops will not see the clock in teh same time - this difference is called _Skew_. 
-	T<sub>clk</sub>-T<sub>skew</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
-Clock Jitter and clock skew are called _Clock Uncertainty_.   
+Due to non ideal nature of the clock that will insert delays , different flops will not see the clock in the same time- this difference is called _Skew_. 
+	T<sub>clk</sub>-T<sub>skew</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub> 
 	
 ![](Imgs/d7-6.png)
 	
@@ -851,18 +852,17 @@ In order to have a close behavior to the real clock we need to model it before s
 	
 Clock Modelling should consider:  
 	- Period  
-	- Source latency : Time taken by clock source to generate the clock  
-	- Clock network : Time taken by clock Distribution NW  
-	- Clock Skew : Delay mismatched due to clock path which generate difference in the arrival clock  
-	- Jitter: Duty cycle or Period  
+	- Source latency             : Time taken by clock source to generate the clock  
+	- Clock network(N/W) latency : Time taken by clock Distribution NW  ; `set_clock_latency  
+	- Clock Skew                 : Delay imbalance bewteen flops  
+	- Jitter                     : Random variation in clock edge - Duty cycle or Period  
 
-**Post CTS** the clock is real, hence **modelled Clock** Skew and Network Latency **MUST BE REMOVED**.  
+**Post CTS** the clock is real, hence **modeled Clock** Skew and Network Latency **MUST BE REMOVED**.  
 	
-	| Stage     | Clock Uncertainty |
-	|-----------|------------------|
-	| Synthesis | JItter+ Skew     |
-	| Poest CTS | Only Jitter      |
-
+| Stage     | Clock Uncertainty |
+|-----------|-------------------|
+| Synthesis | JItter+ Skew      |
+| Poest CTS | Only Jitter       |
 ![](Imgs/d7-7.png)
 
 **Writing SDCs [Synopsys Design Constraints]**  
@@ -888,22 +888,29 @@ Getting cell:
 
 **Create clocks**
 
-`create_clock -name <clk_name> -per <period> [clock definition port]`  
-e.g. `create_clock -name MY_CLK -per 5 [get_port CLK]`  
+`create_clock -name <clk_name> -per <period> [get_port <port_name>]` - the clock is defined to a certain port   
+e.g. `create_clock -name MY_CLK -per 5 [get_port clk]`  
 
  ![image](https://user-images.githubusercontent.com/49897923/208296349-c60abd56-691e-4eba-ad3a-95df3a72516e.png)
 
-`Set_clok_latency 3 MY_CLK ;` #The latency , modelling the clock delay in network  
-`Set_clock_uncertainty 0.5 MY_CLK;` # This is for setting the clock network (skew +jitter)  - POST CTS need to be modified to contain only jitter e.g `set_clock_nn... 0.2`  
+`Set_clock_latency -source x [get_clocks MYCLK];` - definition of clock _source_ latency in X ns for clock MYCLK 
+`Set_clok_latency 3 [get_clocks MYCLK] ;` - modelling the clock delay/latency  _in network_  in 3 ns
+`Set_clock_uncertainty -mix/max 0.5 [get_clocks MYCLK];` - This is for setting the clock min(hold)/max(setup) network skew +jitter (uncertaninty) in ns 
+	- POST CTS need to be modified to contain only jitter e.g `set_clock_nn... 0.2`  
  
 **Specifying Clock Waveforms**  
 Default setup is : Clock starting pahse is high and duty cicle 50%  
  `create_clock -name <clk_name> -per <perid> [clock definition port]`  
 
 Changing starting phase, duty cycle is don't just with `-wave ` option :  
-`create_clock -name <clk_name> -per <perid> [clock definition port] -wave {first rise edge time, next fall edge time}  
+`create_clock -name <clk_name> -per <perid> [clock definition port] -wave {_first rise edge time_ _next fall edge time_}`  
  
  ![image](https://user-images.githubusercontent.com/49897923/208297913-4d29398d-d40a-44ec-a424-52a9c447bdf9.png)
+
+T<sub>CQ_A</sub> + T<sub>COMBI</sub> < T<sub>clk</sub> -T<sub>SETUP_B</sub> - T<sub>uncert</sub>   
+ARRIVAL Time < REQUIRED Time  -> Required time - Arrival time = Slack
+
+![](Imgs/d8-6.png)
 
 **Specifying IO Delays**  
 Constrain the IO path in a time window relative to a clock. So it may come in min 0.5n-max 3ns . Also input transition is modeled.  
@@ -921,23 +928,24 @@ set_ouput_load -max 80 [get_ports OUT_y];
 #NOTE: Both inputs IN_A and IN_B are coming w.r.t clock my_CLOCK created on port CLK
 ```
 ![image](https://user-images.githubusercontent.com/49897923/208297654-a17e7cc2-afef-40de-a76b-e531c24856dc.png)
-	
-**Generated Clocks**
-Generated clocks are propagated clokcs, they are always modeled with respect to a master clock (source clock - OSC, PLL, ot Primary IO port).  
-`create_generated_clock -name MY_GEN_CLK -master [get_clocks MY_ClK] -source [get_ports CLK] -div1 [get_ports OUT_CLK]` it will e creatd a clock with name MY_GEN_CLK at port OUT_CLK from source MY_CLK conected at port CLK.  
-In the next example e have a design with multiplexed INPUT adn CLK (real example of a mux pin function : I2C and SPI)) . In this case the SEL signal is "static", it will not toggle during the ciruit usage .
+
+
+**Generated Clocks**  
+Generated clocks are propagated clocks, they are always modeled with respect to a master clock (source clock - OSC, PLL, ot Primary IO port).  
+`create_generated_clock -name MY_GEN_CLK -master [get_clocks MY_ClK] -source [get_ports CLK] -div1 [get_ports OUT_CLK]` it will e created a clock with name MY_GEN_CLK at port OUT_CLK from source MY_CLK connected at port CLK.  
+In the next example e have a design with multiplexed INPUT and CLK (real example of a mux pin function: I2C and SPI)) . In this case the SEL signal is "static", it will not toggle during the circuit usage.  
 
 ![](Imgs/d8-5.png)
 	
-- IN_DAT and IN_CLK has 2 functionalities 
-- In one fucntionality IN_DATA and IN_CLK gets the data and clock coresponding to A and in other functionality it is getting data and clk coresponding to B
+- IN_DAT and IN_CLK has 2 functionalities  
+- In one functionality IN_DATA and IN_CLK gets the data and clock corresponding to A and in other functionality it is getting data and clk corresponding to B
 - Same for OUT_DATA, OUT_CLK , can get from A or B
 - While operating for for A the clock and data from input goes only to A, and when operation for  goes only to B
 
-- The clocks (both CLK_A and CLK_B) will be propageted by the tools (DC, OpenSTA) dowstream based on timing arcs . Even if in really we know hat they will have separate paths.
-- ALl the timing arcs from the definition point will see the clock propagation by default.
-	
-Multi Clock Design
+- The clocks (both CLK_A and CLK_B) will be propagated by the tools (DC, OpenSTA) downstream based on timing arcs . Even if in really we know hat they will have separate paths.
+- All the timing arcs from the definition point will see the clock propagation by default.
+
+**Multi Clock Design**
 
 False Paths
 
