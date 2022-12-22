@@ -49,62 +49,65 @@ RTL and GLS simulations :
 ![](Imgs/VSDMemSoC_sims.png)
     
 ```  
-  === synthesized vsdmemsoc components === 
+ === vsdmemsoc ===
 
-   Number of wires:              10173
-   Number of wire bits:          12442
-   Number of public wires:       10173
-   Number of public wire bits:   12442
+   Number of wires:              10184
+   Number of wire bits:          12453
+   Number of public wires:       10184
+   Number of public wire bits:   12453
    Number of memories:               0
    Number of memory bits:            0
    Number of processes:              0
-   Number of cells:              12332
-     sky130_fd_sc_hd__a2111oi_0     28
-     sky130_fd_sc_hd__a211oi_1      33
-     sky130_fd_sc_hd__a21boi_0      25
+   Number of cells:              12343
+     sky130_fd_sc_hd__a2111oi_0     29
+     sky130_fd_sc_hd__a211oi_1      68
+     sky130_fd_sc_hd__a21boi_0      22
      sky130_fd_sc_hd__a21o_2         8
-     sky130_fd_sc_hd__a21oi_1     1760
-     sky130_fd_sc_hd__a221oi_1     289
+     sky130_fd_sc_hd__a21oi_1     1791
+     sky130_fd_sc_hd__a221oi_1     286
      sky130_fd_sc_hd__a22o_2        39
-     sky130_fd_sc_hd__a22oi_1      546
-     sky130_fd_sc_hd__a311oi_1      15
-     sky130_fd_sc_hd__a31o_2         2
-     sky130_fd_sc_hd__a31oi_1      258
+     sky130_fd_sc_hd__a22oi_1      541
+     sky130_fd_sc_hd__a2bb2oi_1      1
+     sky130_fd_sc_hd__a311oi_1      13
+     sky130_fd_sc_hd__a31o_2         5
+     sky130_fd_sc_hd__a31oi_1      205
      sky130_fd_sc_hd__a32o_1         5
-     sky130_fd_sc_hd__a32oi_1        2
-     sky130_fd_sc_hd__a41oi_1        7
+     sky130_fd_sc_hd__a32oi_1        1
+     sky130_fd_sc_hd__a41oi_1        6
      sky130_fd_sc_hd__and2_2        13
-     sky130_fd_sc_hd__and3_2         7
-     sky130_fd_sc_hd__clkinv_1    1187
+     sky130_fd_sc_hd__and3_2         5
+     sky130_fd_sc_hd__clkinv_1    1197
      sky130_fd_sc_hd__dfxtp_1     2080
+     sky130_fd_sc_hd__lpflow_inputiso0p_1      2
      sky130_fd_sc_hd__mux2i_1       11
-     sky130_fd_sc_hd__nand2_1     1551
-     sky130_fd_sc_hd__nand3_1      611
-     sky130_fd_sc_hd__nand3b_1       3
-     sky130_fd_sc_hd__nand4_1      242
-     sky130_fd_sc_hd__nor2_1       939
-     sky130_fd_sc_hd__nor3_1        99
-     sky130_fd_sc_hd__nor3b_1        3
-     sky130_fd_sc_hd__nor4_1        44
+     sky130_fd_sc_hd__nand2_1     1545
+     sky130_fd_sc_hd__nand3_1      604
+     sky130_fd_sc_hd__nand3b_1       4
+     sky130_fd_sc_hd__nand4_1      241
+     sky130_fd_sc_hd__nor2_1       979
+     sky130_fd_sc_hd__nor3_1       100
+     sky130_fd_sc_hd__nor3b_1        2
+     sky130_fd_sc_hd__nor4_1        49
      sky130_fd_sc_hd__nor4b_1        1
-     sky130_fd_sc_hd__o2111ai_1     16
-     sky130_fd_sc_hd__o211ai_1     121
-     sky130_fd_sc_hd__o21a_1        19
-     sky130_fd_sc_hd__o21ai_0     1876
-     sky130_fd_sc_hd__o21bai_1      50
+     sky130_fd_sc_hd__o2111ai_1     15
+     sky130_fd_sc_hd__o211ai_1     124
+     sky130_fd_sc_hd__o21a_1        18
+     sky130_fd_sc_hd__o21ai_0     1832
+     sky130_fd_sc_hd__o21bai_1      49
      sky130_fd_sc_hd__o221a_2        2
-     sky130_fd_sc_hd__o221ai_1      26
+     sky130_fd_sc_hd__o221ai_1      22
      sky130_fd_sc_hd__o22a_2         1
-     sky130_fd_sc_hd__o22ai_1      257
+     sky130_fd_sc_hd__o22ai_1      273
      sky130_fd_sc_hd__o311a_2        1
      sky130_fd_sc_hd__o311ai_0       7
-     sky130_fd_sc_hd__o31ai_1       17
+     sky130_fd_sc_hd__o31ai_1       16
      sky130_fd_sc_hd__o32a_2         1
-     sky130_fd_sc_hd__o32ai_1        4
+     sky130_fd_sc_hd__o32ai_1        3
      sky130_fd_sc_hd__o41ai_1       13
      sky130_fd_sc_hd__or2_2         32
      sky130_fd_sc_hd__or4_2          1
-     sky130_fd_sc_hd__xnor2_1       26
-     sky130_fd_sc_hd__xor2_1        53
+     sky130_fd_sc_hd__xnor2_1       24
+     sky130_fd_sc_hd__xor2_1        55
      sram_32_256_sky130A             1
+
 ```
