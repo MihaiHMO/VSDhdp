@@ -919,7 +919,17 @@ set_input_delay -max 3 -clock [get_clocks MY_ClK] [get_ports IN_*]`  # * will af
 set_input_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports IN_*]
 set_input_transition -max 1.5 [get_ports IN_*];
 set_input_transition -max 1.5 [get_ports IN_*];
+```
+T<sub>clk</sub>-T<sub>Uncert</sub>-T<sub>IO_delay</sub> = Available time  
+For Max Delay:  
+- _neg delay_ for will _relax_ the Setup timing path , the clock is delayed relative to the data  
+- _pos delay_ for will _tighten_ the setup timing path  
 
+For Min delay:  
+- _neg delay_ data comes before clk edge, will _tighten_ the hold timing path  
+- _pos delay_ data comes after  clk edge, will _relax_ the hold timing path  
+
+```
 set_output_delay -max 3 -clock [get_clocks MY_ClK] [get_ports OUT_y]`  
 set_output_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports OUT_y]
 set_ouput_load -in 20 [get_ports OUT_y];
@@ -927,9 +937,37 @@ set_ouput_load -max 80 [get_ports OUT_y];
 
 #NOTE: Both inputs IN_A and IN_B are coming w.r.t clock my_CLOCK created on port CLK
 ```
-![image](https://user-images.githubusercontent.com/49897923/208297654-a17e7cc2-afef-40de-a76b-e531c24856dc.png)
+T<sub>clk</sub>-T<sub>Uncert</sub>-T<sub>IO_delay</sub> = Available time  
+For Out Max Delay:  
+- _neg delay_ for will _relax_ the Setup timing path , the clock is delayed relative to the data  
+- _pos delay_ for will _tighten_ the setup timing path  
 
+For Out Min delay:  
+- _neg delay_ data comes before clk edge, will _tighten_ the hold timing path  
+- _pos delay_ data comes after  clk edge, will _relax_ the hold timing path
 
+![](Imgs/d8-7.png)
+
+For Purely Combinational logic can be used:  
+1. `set_max_latency <value> -from[get_ports <in_port>] -to [get_ports <out_port>]`  
+2. `create_clock -name <MyVCLK> -period <value>` - Virtual Clock usage. Similar like the path would be used at system level.  
+   !! This will _not_ have a _clock definition point_ and _no latency_ .  
+   With respect to this Virtual Clock can be set input, out delays. 
+
+Appended input constrains :  
+
+In this case we have 2 flops , one NegEdge, with the same clock signal , with different timing paths.
+
+![](Imgs/d8-8.png)
+
+`-clock_fall ` - is specifies the delay w.r.t. neg edge
+`add` - is used to mention to the tool to append the constrain from FF2 , if not used the second command will overweight the previous one.  
+
+**Driving** capability of **cell** used to model the transition parameter
+`set_driving_cell -lib_cell <lib_cell_name> <pots>` - is recommended for more accurate and is recommended to be used for all internal paths  
+`set_input_transition` - is recommended just for TOP level PRIMARY IOs , because we do not know the driving capability of the external connected element  
+
+	
 **Generated Clocks**  
 Generated clocks are propagated clocks, they are always modeled with respect to a master clock (source clock - OSC, PLL, ot Primary IO port).  
 `create_generated_clock -name MY_GEN_CLK -master [get_clocks MY_ClK] -source [get_ports CLK] -div1 [get_ports OUT_CLK]` it will e created a clock with name MY_GEN_CLK at port OUT_CLK from source MY_CLK connected at port CLK.  
