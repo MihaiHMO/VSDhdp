@@ -952,15 +952,14 @@ For Purely Combinational logic can be used:
 1. `set_max_latency <value> -from[get_ports <in_port>] -to [get_ports <out_port>]`  
 2. `create_clock -name <MyVCLK> -period <value>` - Virtual Clock usage. Similar like the path would be used at system level.  
    !! This will _not_ have a _clock definition point_ and _no latency_ .  
-   With respect to this Virtual Clock can be set input, out delays. 
+   With respect to this Virtual Clock can be set input, out delays.  
 
 Appended input constrains :  
-
 In this case we have 2 flops , one NegEdge, with the same clock signal , with different timing paths.
 
 ![](Imgs/d8-8.png)
 
-`-clock_fall ` - is specifies the delay w.r.t. neg edge
+`-clock_fall ` - is specifies the delay w.r.t. neg edge  
 `add` - is used to mention to the tool to append the constrain from FF2 , if not used the second command will overweight the previous one.  
 
 **Driving** capability of **cell** used to model the transition parameter
@@ -974,7 +973,8 @@ Generated clocks are propagated clocks, they are always modeled with respect to 
 In the next example e have a design with multiplexed INPUT and CLK (real example of a mux pin function: I2C and SPI)) . In this case the SEL signal is "static", it will not toggle during the circuit usage.  
 
 ![](Imgs/d8-5.png)
-	
+
+**Multi Clock Design**
 - IN_DAT and IN_CLK has 2 functionalities  
 - In one functionality IN_DATA and IN_CLK gets the data and clock corresponding to A and in other functionality it is getting data and clk corresponding to B
 - Same for OUT_DATA, OUT_CLK , can get from A or B
@@ -982,8 +982,6 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 
 - The clocks (both CLK_A and CLK_B) will be propagated by the tools (DC, OpenSTA) downstream based on timing arcs . Even if in really we know hat they will have separate paths.
 - All the timing arcs from the definition point will see the clock propagation by default.
-
-**Multi Clock Design**
 
 False Paths
 
