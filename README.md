@@ -670,7 +670,82 @@ In this example the `fa` module is coded in a different file so during the simul
 
 Top waveform if from RTL simulation , bottom is from GLS file.
 
-# Day 7 - Basic SDC constraints
+# Day 7 - Basic SDC constraints  
+
+The circuit is structured in hierahical way : top module -> ports -> nets -> cells (physical or logical)  
+!!! In Digital Design a net can be connected to only one Driving element.  
+
+![](Imgs/d7.png)   
+
+**Undestanding .LIB file**  
+There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file.  
+
+Content higlights :  
+- the technology e.g. CMOS  
+- units used by the parameters   
+- `default_operating_conditions : "tt_025C_1v80";` - thease proces-voltage-temp (PVT) conditions    
+- `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate  
+ 	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<sub>in</sub>+C<sub>net</sub>+SUM(C<sub>inp.cap</sub>)   
+	- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate  
+	![](Imgs/d7-4.png)
+- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.  
+	![](Imgs/d7-5.png) 
+- cell content :
+	- different flavors of the gates:
+		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
+		-  `sky130_fd_sc_hd__and2**Xb**_1` - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
+	- `pp_pin(VGND)` - power pin 
+	- `pin ("A")` - IO pins attributes 
+	 ```
+	 capacitance : 0.0016000000;
+         clock : "false", "true";             - if it is or isn’t a clock pin (special handling)
+         direction : "input", "output"
+	 function: "(A$B)"                     - just for output pin
+         fall_capacitance : 0.0015630000;
+         internal_power () {               
+              fall_power ("power_inputs_1") {  - parameter defined with a look-up table -> _index 1 , Index 2_ combination we have the _values _      
+                 index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
+                 values("0.0028340000, 0.0028350000, 0.0028374000, 0.0028381000, 0.0028398000, 0.0028435000, 0.0028523000");
+              }
+             rise_power ("power_inputs_1") {
+                 index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
+                 values("-0.002302000, -0.002304800, -0.002311300, -0.002307200, -0.002297900, -0.002276400, -0.002226700");
+              }
+	 max_transition : 1.5000000000;  - max transition per pin
+	 ```  
+	- combinational timing ARC example and unateness 
+	``` 
+	pin ("X") 
+	related pin ("A")
+	rise_transition ("del_1_7_7"){}  
+	timing_sense : "positive_unate"; - for AND, OR gates: - if for the input rise (0->1) the output remains unchanged or follows the input -pos unateness
+	timing_sense : "negative_unate"; - for NOT, NAND, NOR gates: - if for the input rise (0->1) the output remains unchanged or output fall (1->0) - neg unateness
+	                                       - XOR  - input rise can case output rise or output fall - non-unate
+	                                       - _unateness_ is used by the tool to know how to propagate the signal at the output of the gate
+	timing_type : "combinational" ;
+	``` 
+	- sequential timing ARC example
+	``` 
+	pin ("Q")
+	related pin ("CLK")       
+	timing_sense : "non_unate";                  - in relation with CLK Q is non unate because depends in D  
+	timing_type : "falling_edge","rising_edge";  - this information is telling to the tool if it is a pos/neg edge clock DFF  
+	```  
+	- setup time example (for a pos edge DFF)  
+	```	
+	timing () {  
+        fall_constraint ("vio_3_3_1") {}  
+        related_pin : "CLK";  
+        rise_constraint ("vio_3_3_1") {}  
+        sim_opt : "runlvl=5 accurate=1";  
+        timing_type : "setup_rising";  
+        violation_delay_degrade_pct : 10.000000000;  
+	```  
+**Synopsys DC comands**  
+ - get_lib_attribute -will perfom on the lib cell, cell or on the cell component lib_pin , port etc.
+ - list attributes - to check all attributes 
+ - get_lib_cell - 
+ - get_ojbect_name
 
 **Max Delay/Setup Timing** :   
 T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
@@ -765,76 +840,8 @@ Wave form with parasitics          _____/        \_______/
 ```
 This parameters are modeled inside the library based on the tehcnology behavior.  
 
-**Undestanding .LIB file**  
-There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file.  
 
-Content higlights :  
-- the technology e.g. CMOS  
-- units used by the parameters   
-- `default_operating_conditions : "tt_025C_1v80";` - thease proces-voltage-temp (PVT) conditions    
-- `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate  
- 	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<sub>in</sub>+C<sub>net</sub>+SUM(C<sub>inp.cap</sub>)   
-	- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate  
-	![](Imgs/d7-4.png)
-- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.  
-	![](Imgs/d7-5.png) 
-- cell content :
-	- different flavors of the gates:
-		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
-		-  `sky130_fd_sc_hd__and2**Xb**_1` - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
-	- `pp_pin(VGND)` - power pin 
-	- `pin ("A")` - IO pins attributes 
-	 ```
-	 capacitance : 0.0016000000;
-         clock : "false", "true";             - if it is or isn’t a clock pin (special handling)
-         direction : "input", "output"
-	 function: "(A$B)"                     - just for output pin
-         fall_capacitance : 0.0015630000;
-         internal_power () {               
-              fall_power ("power_inputs_1") {  - parameter defined with a look-up table -> _index 1 , Index 2_ combination we have the _values _      
-                 index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
-                 values("0.0028340000, 0.0028350000, 0.0028374000, 0.0028381000, 0.0028398000, 0.0028435000, 0.0028523000");
-              }
-             rise_power ("power_inputs_1") {
-                 index_1("0.0100000000, 0.0230506000, 0.0531329000, 0.1224740000, 0.2823110000, 0.6507430000, 1.5000000000");
-                 values("-0.002302000, -0.002304800, -0.002311300, -0.002307200, -0.002297900, -0.002276400, -0.002226700");
-              }
-	 max_transition : 1.5000000000;  - max transition per pin
-	 ```  
-	- combinational timing ARC example and unateness 
-	``` 
-	pin ("X") 
-	related pin ("A")
-	rise_transition ("del_1_7_7"){}  
-	timing_sense : "positive_unate"; - for AND, OR gates: - if for the input rise (0->1) the output remains unchanged or follows the input -pos unateness
-	timing_sense : "negative_unate"; - for NOT, NAND, NOR gates: - if for the input rise (0->1) the output remains unchanged or output fall (1->0) - neg unateness
-	                                       - XOR  - input rise can case output rise or output fall - non-unate
-	                                       - _unateness_ is used by the tool to know how to propagate the signal at the output of the gate
-	timing_type : "combinational" ;
-	``` 
-	- sequential timing ARC example
-	``` 
-	pin ("Q")
-	related pin ("CLK")       
-	timing_sense : "non_unate";                  - in relation with CLK Q is non unate because depends in D  
-	timing_type : "falling_edge","rising_edge";  - this information is telling to the tool if it is a pos/neg edge clock DFF  
-	```  
-	- setup time example (for a pos edge DFF)  
-	```	
-	timing () {  
-        fall_constraint ("vio_3_3_1") {}  
-        related_pin : "CLK";  
-        rise_constraint ("vio_3_3_1") {}  
-        sim_opt : "runlvl=5 accurate=1";  
-        timing_type : "setup_rising";  
-        violation_delay_degrade_pct : 10.000000000;  
-	```  
-**Synopsys DC comands**  
- - get_lib_attribute -will perfom on the lib cell, cell or on the cell component lib_pin , port etc.
- - list attributes - to check all attributes 
- - get_lib_cell - 
- - get_ojbect_name
- 
+
 # Day 8 - Advanced SDC Constraints
 **Clock Skew and Clock Jitter, its modelling in DC**  
 
