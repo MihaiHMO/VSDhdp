@@ -672,7 +672,7 @@ Top waveform if from RTL simulation , bottom is from GLS file.
 
 # Day 7 - Basic SDC constraints  
 
-The circuit is structured in hierahical way : top module -> ports -> nets -> cells (physical or logical)  
+The circuit is structured in hierahical way : top module -> ports -> nets ->pins -> cells (physical or logical)  
 !!! In Digital Design a net can be connected to only one Driving element.  
 
 ![](Imgs/d7.png)   
@@ -746,6 +746,9 @@ Content higlights :
  - list attributes - to check all attributes 
  - get_lib_cell - 
  - get_ojbect_name
+ - pinr attribute  `_clock_` vs `_clocks_` :
+ 	- `clock` - will specify which pin is ment to be a clock
+	- `clocks` - will specifiy which clock will be connected to a pin
 
 **Max Delay/Setup Timing** :   
 T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
