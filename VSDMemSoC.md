@@ -2,54 +2,47 @@
 
 The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSoc](https://github.com/vsdip/VSDMemSoC) witch contains a [Risc-V CPU](https://github.com/RISCV-MYTH-WORKSHOP/riscv_myth_workshop_nov22-MihaiHMO/settings) connected to a [open source SRAM](https://github.com/vsdip/vsdsram_sky130)  
 
-Functional diagram :  
+## Functional diagram :  
 ![SoC Diagram](Imgs/SoC_struct.png)  
 
-- Convertion of TLV to Verilog of **_rvmyth_** core : `sandpiper-saas -i module/rvmyth.tlv -o rvmyth.v --bestsv --noline -p verilog --outdir output/compiled_tlv`  
-    - `-i` - <tlv-[m4]in-file >: TLV input file>
-    - `o` - < tlv-out-file >: SV ouput file
-    - `--bestsv` - Optimize the readability/maintainability of the generated SV, unconstrained by correlation w/ TLV source.
-    - `--noline` - Disable `line directive in SV output
+### Folder structure
+```
+├── gds                 # SRAM GDS Model.
+├── gls_model           # SKY130 PDK Verilog files
+├── include             # include files for SOC Modeling
+├── lib                 # SKY130 Standard cells and SRAM lib files
+├── module              # SOC Verilog files, beside rvmyth.v
+├── output              # Output files Produced during runtime, including rvmyth.v file
+├── scripts             # Scripts for: yosys
+├── Makefile            # Makefile for executing steps during design flow
+└── README.md
+
+```
+## Commands
+
+- `clean` Removes the output Directory
+- `tlv` Generates verilog files from tlv using sandpiper
+- `pre_synth_sim` RTL Simulation using iverilog
+- `synth` Synthesizes netlist using YOSYS
+- `post_synth_sim` GLS Simulation using iverilog
+
+### tlv
+The _rvmyth_ a 4 stage RV32I Risc-V core was originally designed in TLV langueage using Makerchip online IDE.  
+A convertion from TLV to verilog is needed.    
+Convertion of TLV to Verilog of **_rvmyth_** core : `sandpiper-saas -i module/rvmyth.tlv -o rvmyth.v --bestsv --noline -p verilog --outdir output/compiled_tlv`  
+    - `-i` - <tlv-[m4]in-file >: TLV input file>  
+    - `o` - < tlv-out-file >: SV ouput file  
+    - `--bestsv` - Optimize the readability/maintainability of the generated SV, unconstrained by correlation w/ TLV source.  
+    - `--noline` - Disable line directive in SV output  
     - `-p` - Project name, corresponding to project configuration directory (e.g. -p verilog). (default: default)   
-    - `verilog` 
+    - `verilog`  
     - `--outdir` - A root directory for all produced files as a relative or absolute path  
-  The _rvmyth_ a 4 stage RV32I Risc-V core was originally designed in TLV langueage using Makerchip online IDE.  
-  A convertion from TLV to verilog is needed.    
-- RTL simulation:  
-    - `iverilog testbench.v -I ../include/ vsdmemsoc.v controller.v rvmyth.v sram_32_256_sky130A.v clk_gate.v  -o pre_synth_sim.out -DPRE_SYNTH_SIM`
-    - `iverilog -o output/pre_synth_sim/pre_synth_sim.out -DPRE_SYNTH_SIM  module/testbench.v -I include -I module -I output/compiled_tlv;`    
-     `cd output/pre_synth_sim; ./pre_synth_sim.out;`
-- GLS simulation:  
-    - `yosys -s /VSDMemSoC/src/script/yosys.ys | tee ../output/synth/synth.log`  
 
-            Yosys Sript :  
-            ```
-            read_verilog -I./include ./module/vsdmemsoc.v
-            read_verilog -I./include ./module/controller.v
-            read_verilog -I./include ./module/clk_gate.v
-            read_verilog -I./include ./module/rvmyth.v
-            read_liberty -lib ./lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-            read_liberty -lib ./lib/sram_32_256_sky130A_TT_1p8V_25C.lib
-            synth -top vsdmemsoc
-            dfflibmap -liberty ./lib/sky130_fd_sc_hd__tt_025C_1v80.lib
-            opt
-            abc -liberty ./lib/sky130_fd_sc_hd__tt_025C_1v80.lib -script +strash;scorr;ifraig;retime;{D};strash;dch,-f;map,-M,1,{D}
-            flatten
-            setundef -zero
-            clean -purge
-            rename -enumerate
-            stat
-            write_verilog -noattr ../output/vsdmemsoc.synth.v
-            ```
-    - `iverilog ../sky130_gls_model/primitives.v ../sky130_gls_model/sky130_fd_sc_hd.v sram_32_256_sky130A.v testbench.v -I ../include/ vsdmemsoc.synth.v -o post_synth.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1`
-    - `iverilog -o output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 module/testbench.v -I include -I module -I sky130_gls_model/ -I output/synth`
-
-RTL and GLS simulations :  
 
 ![](Imgs/VSDMemSoC_sims.png)
     
 ```  
- === vsdmemsoc ===
+=== vsdmemsoc ===
 
    Number of wires:              10184
    Number of wire bits:          12453
@@ -109,5 +102,6 @@ RTL and GLS simulations :
      sky130_fd_sc_hd__xnor2_1       24
      sky130_fd_sc_hd__xor2_1        55
      sram_32_256_sky130A             1
+
 
 ```
