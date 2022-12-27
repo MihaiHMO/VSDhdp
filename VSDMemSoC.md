@@ -13,6 +13,8 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
 ├── lib                 # SKY130 Standard cells and SRAM lib files
 ├── module              # SOC Verilog files, beside rvmyth.v
 ├── output              # Output files Produced during runtime, including rvmyth.v file
+|   ├── sta
+|   ├── 
 ├── scripts             # Scripts for: yosys
 ├── Makefile            # Makefile for executing steps during design flow
 └── README.md
@@ -106,4 +108,24 @@ Convertion of TLV to Verilog of **_rvmyth_** core : `sandpiper-saas -i module/rv
 
 ```
 ## CTS Design Constrains 
+
+Inputs delays: min 0.5
+Input transition 
+
+|CLOCKS	|frequency	|duty_cycle	|min_rise_delay	|min_fall_delay	|max_rise_delay	|max_fall_delay	|min_rise_slew	|min_fall_slew	|max_rise_slew	|max_fall_slew	
+|-	|-	|-	|-	|-	|-	|-	|-	|-	|-	|-										
+|clk	|15	|50	|1	|1	|1	|1	|1	|1	|1	|1	
+											
+											
+|INPUTS	|early_rise_delay |early_fall_delay	|late_rise_delay |late_fall_delay |early_rise_slew |early_fall_slew	|late_rise_slew	|late_fall_slew	|clocks |bussed	|bus width 
+|- |-	|- |-	|- |-	|- |-	|- |-	|- |-  
+|reset |0.5	|0.5 |1	|1 |0.5	|0.5 |1	|1 |clk	|no |										
+|init_en |0.5 |0.5	|1	|1	|0.5 |0.5 |1 |1	|clk |no |  
+|init_addr |0.5 |0.5 |1	|1 |0.5	|0.5 |1	|1 |clk	|yes |8  
+|init_data |0.5	|0.5 |1	|1	|0.5 |0.5 |1 |1	|clk |yes |32  
+																					
+											
+|OUTPUTS	|early_rise_delay	|early_fall_delay	|late_rise_delay	|late_fall_delay	|clocks	|load	|bussed	|bus width			
+|-	|-	|-	|-	|-	|-	|-	|-	|-	 
+|OUT	|0.5	|0.5	|1	|1	|clk	|1	|yes	|10	 	
 
