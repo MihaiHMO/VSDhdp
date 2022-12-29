@@ -998,7 +998,7 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 
 # Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA  
 
-**Basics of NMOS **:  
+**Basics of NMOS**:  
 Operation regions, cutt-off, resistive region and saturation  
 
 ![](Imgs/d11-1.png)
@@ -1011,14 +1011,33 @@ un -mobility of electric field
 Cox= epsox/tox - Gate oxide capacitance  
 epsox - oxide permittivity  
 tox - oxide thickness  
+gamma - body effect coefficient
 
 For linear region Vds<<Vgs-Vt -> results that square(Vds) is very small , so can be neglected.  
-For saturation region channel voltage (Vgs-Vt) is constatnt . The curent will be slightly modulated by a (1+lambda*Vds).  
+For saturation region channel voltage (Vgs-Vt) is constant . The current will be slightly modulated by a (1+lambda*Vds).    
 
 **Introduction to Circuit Design and SPICE simulations**   
+Sintax:   
+```
+**** NETLIST Descript ***
+   D   G  S Substr   model name    CH Width  Ch Length  
+M1 vdd n1 0 0        nmos           W=1.8u   L=1.2u
+       net1  net2    Value (V)
+Vdd     vdd   0       2.5
+******* .inlcude xxx.mode library inlcusion *****
+.LIB "xxxx_xxxx_025um_model.mod" CMOS_MODELS
+**** simulation  commands *****
 
+
+Technology file:
+The _technology parameters_ like threshold voltage, oxide thickness, gate capacitance etc. are added into the _modeled name_ from model files `xxxx_025um_model.mod`.  
+ ```
+ .MODEL nmos NMOS (TOX =.. +VTH0=.. U0=.. GAMMA1=..  )
+ .MODEL pmos NMOS (TOX =.. +VTH0=.. U0=.. GAMMA1=..  )
+ .endl
+ ```
+ ```
  
-	
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
