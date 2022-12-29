@@ -997,19 +997,25 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 - All the timing arcs from the definition point will see the clock propagation by default.
 
 # Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA  
-Basics of NMOS :  
+
+**Basics of NMOS **:  
 Operation regions, cutt-off, resistive region and saturation  
-	
-![image](https://user-images.githubusercontent.com/49897923/209940568-630ec832-a012-48bd-a5b9-ea600e1fbab4.png)
-![image](https://user-images.githubusercontent.com/49897923/209940627-0e4414ad-b06b-46b5-80e6-4b76ab85c337.png)
-![image](https://user-images.githubusercontent.com/49897923/209940910-6ce4c5f2-d1e0-449e-b2e5-67927cc4f4f4.png)
 
-Piture source: https://anysilicon.com/introduction-to-nmos-and-pmos-transistors/ 
+![](Imgs/d11-1.png)
+![](Imgs/d11-2.png)
 
+V<sub>TH</sub> - is the threshold voltage , voltage at which the strong inversion occurs  
+Kn=Kn'*W/L - gain factor  
+Kn'=un*Cox  - process transconductance (process dependent)  
+un -mobility of electric field  
+Cox= epsox/tox - Gate oxide capacitance  
+epsox - oxide permittivity  
+tox - oxide thickness  
 
-Drain current (Id) vs Drain-to-source Voltage (Vds)  
-Introduction to Circuit Design and SPICE simulations
+For linear region Vds<<Vgs-Vt -> results that square(Vds) is very small , so can be neglected.  
+For saturation region channel voltage (Vgs-Vt) is constatnt . The curent will be slightly modulated by a (1+lambda*Vds).  
 
+**Introduction to Circuit Design and SPICE simulations**   
 
  
 	
