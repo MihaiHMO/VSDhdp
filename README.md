@@ -39,7 +39,10 @@
 	- Generated Clocks  
 	- Multi Clock Design  
 	- False Paths  
-
+  + [Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA](#day-10-11-introduction-to-sta-and-importance-of-mosfets-in-staeda)
+	- Basics of NMOS Drain current (Id) vs Drain-to-source Voltage (Vds)
+	- NMOS resistive region and saturation region of operation
+	- Introduction to Circuit Design and SPICE simulations
 # Tools install
 
 ### Yosys
@@ -993,7 +996,20 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 - The clocks (both CLK_A and CLK_B) will be propagated by the tools (DC, OpenSTA) downstream based on timing arcs . Even if in really we know hat they will have separate paths.
 - All the timing arcs from the definition point will see the clock propagation by default.
 
-False Paths
+# Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA  
+Basics of NMOS :  
+Operation regions, cutt-off, resistive region and saturation  
+	
+![image](https://user-images.githubusercontent.com/49897923/209940568-630ec832-a012-48bd-a5b9-ea600e1fbab4.png)
+![image](https://user-images.githubusercontent.com/49897923/209940627-0e4414ad-b06b-46b5-80e6-4b76ab85c337.png)
+![image](https://user-images.githubusercontent.com/49897923/209940910-6ce4c5f2-d1e0-449e-b2e5-67927cc4f4f4.png)
+
+Piture source: https://anysilicon.com/introduction-to-nmos-and-pmos-transistors/ 
+
+
+Drain current (Id) vs Drain-to-source Voltage (Vds)  
+Introduction to Circuit Design and SPICE simulations
+
 
  
 	
