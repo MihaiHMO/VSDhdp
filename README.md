@@ -1003,6 +1003,7 @@ Operation regions, cutt-off, resistive region and saturation
 
 ![](Imgs/d11-1.png)
 ![](Imgs/d11-2.png)
+![image](https://user-images.githubusercontent.com/49897923/210071774-c31b268b-a8cc-4c46-b7b8-a81f20074c6a.png)
 
 V<sub>TH</sub> - is the threshold voltage , voltage at which the strong inversion occurs  
 Kn=Kn'*W/L - gain factor  
@@ -1016,6 +1017,17 @@ gamma - body effect coefficient
 For linear region Vds<<Vgs-Vt -> results that square(Vds) is very small , so can be neglected.  
 For saturation region channel voltage (Vgs-Vt) is constant . The current will be slightly modulated by a (1+lambda*Vds).    
 
+For lower technology nodes there is a forth region of operation - _Velocity Saturation Effect_
+| Short channel (<250nm)     | Long channel (>250nm) | |
+|-----------|-------------------|- |
+| Cutt off | Cutt off           | Id=0 , for Vgt<0
+| Resistive/Linear | Resistive/Linear       |
+| Velocity Saturation | NA       |
+| Saturation | Saturation       |
+
+At lower (then critical E field) fields the velocity tends to be a linear , at higehr fileds will tend to be constant beacuse of Sacattering Effects.
+
+
 **Introduction to Circuit Design and SPICE simulations**   
 Sintax:   
 ```
@@ -1027,7 +1039,7 @@ Vdd     vdd   0       2.5
 ******* .inlcude xxx.mode library inlcusion *****
 .LIB "xxxx_xxxx_025um_model.mod" CMOS_MODELS
 **** simulation  commands *****
-
+```
 
 Technology file:
 The _technology parameters_ like threshold voltage, oxide thickness, gate capacitance etc. are added into the _modeled name_ from model files `xxxx_025um_model.mod`.  
@@ -1036,7 +1048,7 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  .MODEL pmos NMOS (TOX =.. +VTH0=.. U0=.. GAMMA1=..  )
  .endl
  ```
- ```
+ 
  
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
