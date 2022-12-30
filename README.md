@@ -1017,16 +1017,11 @@ gamma - body effect coefficient
 For linear region Vds<<Vgs-Vt -> results that square(Vds) is very small , so can be neglected.  
 For saturation region channel voltage (Vgs-Vt) is constant . The current will be slightly modulated by a (1+lambda*Vds).    
 
-For lower technology nodes there is a forth region of operation - _Velocity Saturation Effect_
-| Short channel (<250nm)     | Long channel (>250nm) | |
-|-----------|-------------------|- |
-| Cutt off | Cutt off           | Id=0 , for Vgt<0
-| Resistive/Linear | Resistive/Linear       |
-| Velocity Saturation | NA       |
-| Saturation | Saturation       |
+For lower technology nodes there is a forth region of operation - _Velocity Saturation Effect_  
+At lower (then critical E field) fields the velocity tends to be a linear , at higher field will tend to be constant because of Scattering Effects.  
+![](Imgs/d11-4.png)
 
-At lower (then critical E field) fields the velocity tends to be a linear , at higehr fileds will tend to be constant beacuse of Sacattering Effects.
-
+Vdsat - is Saturation voltage at which device velocity saturates and is independent of the Vgs and Vds - it is a Technology parameter.  
 
 **Introduction to Circuit Design and SPICE simulations**   
 Sintax:   
@@ -1048,8 +1043,9 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  .MODEL pmos NMOS (TOX =.. +VTH0=.. U0=.. GAMMA1=..  )
  .endl
  ```
- 
- 
+ ![](Imgs/l11-12.png)
+ ![](Imgs/l11-2.png)
+
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
