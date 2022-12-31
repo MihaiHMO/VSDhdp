@@ -58,7 +58,6 @@ synth:
 sta: 
 	if [ ! -f "$(STA_PATH)/sta.log" ]; then \
 		mkdir -p $(STA_PATH); \
-		../../OpenSTA/app/sta -exit -threads max ./scripts/sta.tcl; \
+		../../OpenSTA/app/sta -exit -threads max ./scripts/sta_init.tcl | tee ./output/sta/sta.log; \
 	fi
-
 
