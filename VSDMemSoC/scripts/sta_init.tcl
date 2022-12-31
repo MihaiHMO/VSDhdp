@@ -25,7 +25,7 @@ create_clock [get_ports -of_objects [get_nets CLK]] -name clk -period 14.5
 puts "----------reg2reg setup/hold---------------\n"
 
 #report_checks -path_delay max -from [all_registers] -to [all_registers] -fields {nets cap slew input_pins} 
-report_checks -path_delay min -group_count 1000 -fields {nets cap slew input_pins}
+report_checks -path_delay min -group_count 1000 -endpoint_count 1000 -unique_paths_to_endpoint -fields {nets cap slew input_pins}
 
 #puts "----------in2reg setup/hold ---------------\n"
 
