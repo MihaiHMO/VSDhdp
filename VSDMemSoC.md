@@ -13,8 +13,11 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
 ├── lib                 # SKY130 Standard cells and SRAM lib files
 ├── module              # SOC Verilog files, beside rvmyth.v
 ├── output              # Output files Produced during runtime, including rvmyth.v file
+|   ├── compiled_tlv
+|   ├── synth
+|   ├── pre_synth
+|   ├── post_synth
 |   ├── sta
-|   ├── 
 ├── scripts             # Scripts for: yosys
 ├── Makefile            # Makefile for executing steps during design flow
 └── README.md
