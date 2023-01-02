@@ -20,7 +20,7 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
 |   ├── sta
 ├── scripts             # Scripts for: yosys
 ├── Makefile            # Makefile for executing steps during design flow
-└── README.md
+└── 
 
 ```
 ## Commands
