@@ -41,6 +41,7 @@ Convertion of TLV to Verilog of **_rvmyth_** core : `sandpiper-saas -i module/rv
     - `verilog`  
     - `--outdir` - A root directory for all produced files as a relative or absolute path  
 
+## RTL and GLS synthesis
 
 ![](Imgs/VSDMemSoC_sims.png)
     
