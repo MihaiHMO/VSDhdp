@@ -79,7 +79,13 @@ Basic install, without extra options.
 
 ![](Imgs/opensta.png)
 
-### ngspice
+### ngspice 
+Packages Prerequisite :https://sourceforge.net/p/ngspice/bugs/263/#27fb
+automake, libtool,
+libxaw7-dev,
+flex, bison,
+libeditline-dev,
+libncurses5-dev,
 
 After downloading the tarball from https://sourceforge.net/projects/ngspice/files/ to a local directory, unpack it using:
 ```
