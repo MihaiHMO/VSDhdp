@@ -39,10 +39,18 @@
 	- Generated Clocks  
 	- Multi Clock Design  
 	- False Paths  
-  + [Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA](#day-10-11-introduction-to-sta-and-importance-of-mosfets-in-staeda)
+  + [Day 10-11 - Introduction to STA and importance of MOSFETs in STA/EDA](#day-10-11-introduction-to-sta-and-importance-of-mosfets-in-staeda)
 	- Basics of NMOS Drain current (Id) vs Drain-to-source Voltage (Vds)
 	- NMOS resistive region and saturation region of operation
-	- Introduction to Circuit Design and SPICE simulations
+	- Introduction to Circuit Design and SPICE simulations 
+  + [Day 12-15 - Basics of CMOS inverter](#day-12-15-basics-of-cmos-inverter)
+	- CMOS voltage transfer characteristics (VTC)
+	- Switching threshold and dynamic simulations
+	- Static behavior evaluation – Switching Threshold
+	- Static behavior evaluation – Noise margin
+	- Static behavior evaluation – Power supply variation
+	- Static behavior evaluation – Device variation
+
 # Tools install
 
 ### Yosys
@@ -1023,6 +1031,7 @@ gamma - body effect coefficient
 For linear region Vds<<Vgs-Vt -> results that square(Vds) is very small , so can be neglected.  
 For saturation region channel voltage (Vgs-Vt) is constant . The current will be slightly modulated by a (1+lambda*Vds).    
 
+**Velocity saturation**  
 For lower technology nodes there is a forth region of operation - _Velocity Saturation Effect_  
 At lower (then critical E field) fields the velocity tends to be a linear , at higher field will tend to be constant because of Scattering Effects.  
 ![](Imgs/d11-4.png)
@@ -1051,6 +1060,20 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  ```
  ![](Imgs/l11-12.png)
  ![](Imgs/l11-2.png)
+ 
+
+# Day 12-15 Basics of CMOS inverter  
+ **CMOS voltage transfer characteristics (VTC)**  
+ 
+ ![](Imgs/d12-1.png)
+ ![](Imgs/d12-2.png)
+  
+ Switching threshold and dynamic simulations  
+ Static behavior evaluation – Switching Threshold  
+ Static behavior evaluation – Noise margin  
+ Static behavior evaluation – Power supply variation  
+ Static behavior evaluation – Device variation  
+
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
