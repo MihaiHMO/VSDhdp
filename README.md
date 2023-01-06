@@ -1063,16 +1063,29 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  
 
 # Day 12-15 Basics of CMOS inverter  
- **CMOS voltage transfer characteristics (VTC)**  
- 
+ **CMOS voltage transfer characteristics (VTC), Switching threshold and dynamic simulations**  
+ Vm - threshold voltage is the point where Vin=Vout.  
+ For dynamic simulations we can see the rise edge and fall edge output delays with respect to input considered @Vm.   
  ![](Imgs/d12-1.png)
- ![](Imgs/d12-2.png)
+ 
+ **Static behavior evaluation – Switching Threshold**  
+  ![](Imgs/d12-2.png)  
+  Microelectronic Circuits , Sedra&Smith
   
- Switching threshold and dynamic simulations  
- Static behavior evaluation – Switching Threshold  
+  Expression of Vm as function of (W/L)p and (W/L)n. 
+  
+  ![](Imgs/d12-3.png)
+  
+  Lab example : Wn=0.36u , Lnp=0.15u  
+  ![](Imgs/l12-1.png)
+  
+  Calculation (W/L)p and (W/L)n as function of Vm.
+  ![](Imgs/d12-4.png)
+   
  Static behavior evaluation – Noise margin  
  Static behavior evaluation – Power supply variation  
- Static behavior evaluation – Device variation  
+ Static behavior evaluation – Device variation
+ 
 
 
 # Acknowledgements
