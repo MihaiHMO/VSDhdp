@@ -1075,15 +1075,28 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
   Expression of Vm as function of (W/L)p and (W/L)n. 
   
   ![](Imgs/d12-3.png)
-  
-  Lab example : Wn=0.36u , Lnp=0.15u  
-  ![](Imgs/l12-1.png)
-  
+   
   Calculation (W/L)p and (W/L)n as function of Vm.
   ![](Imgs/d12-4.png)
-   
- Static behavior evaluation – Noise margin  
- Static behavior evaluation – Power supply variation  
+  
+  Lab example : Wn=0.36u , Lnp=0.15u  
+  ![](Imgs/l12-1.png)  
+  
+  Some higlights:  
+   - Threshold voltage (Vm) is changing quite slow -> is robust against production variation of the size of the transistors  
+   - Symmetry (Rise delay=fall delay ) is an important characteristic for a clock buffer cell for clock path, to obtain a symmetric pulse width and reduce skew.
+   - The other W/L sizes/ratios can be used for data path to control the slack
+     
+  **Static behavior evaluation – Noise margin**
+     ![](Imgs/d12-5.png)  
+
+ If the PMOS width is increase:  
+  - the Noise Margin High will increase due to the capability of the wider PMOS to keep charges , the resistance is lower .
+  - the Noise Margin Low will decrease slightly (PMOS will become more stronger then NMOS) 
+  There are also certain limitations, we can't increase to much because the effect will be negligible - the Margin will become constant.
+ 
+** Static behavior evaluation – Power supply variation**  
+
  Static behavior evaluation – Device variation
  
 
