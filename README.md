@@ -1079,7 +1079,8 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
   Calculation (W/L)p and (W/L)n as function of Vm.
   ![](Imgs/d12-4.png)
   
-  Lab example : Wn=0.36u , Lnp=0.15u  
+  Lab example : Wn=0.36u , Lnp=0.15u 
+	    ![image](https://user-images.githubusercontent.com/49897923/211214191-c1047d32-dfb3-463a-a656-00d6c3b421f3.png)
   ![](Imgs/l12-1.png)  
   
   Some higlights:  
@@ -1088,7 +1089,7 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
    - The other W/L sizes/ratios can be used for data path to control the slack
      
   **Static behavior evaluation – Noise margin**
-     ![](Imgs/d12-5.png)  
+  ![](Imgs/d12-5.png)  
 
  If the PMOS width is increase:  
   - the Noise Margin High will increase due to the capability of the wider PMOS to keep charges , the resistance is lower .
