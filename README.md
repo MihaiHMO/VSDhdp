@@ -1095,11 +1095,25 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
   - the Noise Margin Low will decrease slightly (PMOS will become more stronger then NMOS) 
   There are also certain limitations, we can't increase to much because the effect will be negligible - the Margin will become constant.
  
-** Static behavior evaluation – Power supply variation**  
+**Static behavior evaluation – Power supply variation**  
 
- Static behavior evaluation – Device variation
+![image](https://user-images.githubusercontent.com/49897923/211199033-65fca35c-169f-496f-a9f7-8b5936d96f80.png)
+
+Comparison of the supply variation on some parameter:  
+1. Gain: output variation /input variation in  
+2. Energy consumption: Energy consumption is strong dependent on voltage 1/2*CV2  
+3. Drive strength: capability of driving the output loads  
+
+|Parameter|Low volatge | High voltage |
+|- |- |-|
+|Gain | Higher | Lower |
+|Energy | Lower | Higher |
+|Drive strength | Low | High | 
+
+ **Static behavior evaluation – Device variation**
  
-
+Etching process : is afecting the CMOS W/L parameters due to non ideal shapes of resulting elements in silicon during production. 
+Oxide Thiknes : this will afect the gate to substarte capcaitance (Cox)
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
