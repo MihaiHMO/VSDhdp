@@ -1,0 +1,48 @@
+*Model Description
+.param temp=27
+
+*Including sky130 library files
+.lib "sky130_fd_pr/models/sky130.lib.spice" tt
+
+
+*Netlist Description
+
+
+XM1 out in vdd vdd sky130_fd_pr__pfet_01v8 w=0.42 l=0.15
+XM2 out in 0 0 sky130_fd_pr__nfet_01v8 w=0.36 l=0.15
+
+
+Cload out 0 50fF
+
+Vdd vdd 0 1.8V
+Vin in 0 1.8V
+*Vin in 0 PULSE(0V 1.8V 0 0.1ns 0.1ns 2ns 4ns)
+
+*simulation commands
+
+.control
+   
+   let pmoswidth = 1.2
+   alter m.xm1.msky130_fd_pr__pfet_01v8 w = pmoswidth
+   let nmoswidth = 0.2
+   alter m.xm2.msky130_fd_pr__nfet_01v8 w = nmoswidth
+   let ix = 0
+   dowhile ix < 5
+       echo "pmos width: $&pmoswidth u"
+	   echo "nmos width: $&nmoswidth u"
+	   dc Vin 0 1.8 0.01  
+	   *tran 1n 10n
+	   let pmoswidth = pmoswidth + 0.2
+	   alter @m.xm1.msky130_fd_pr__pfet_01v8[W] = pmoswidth
+	   let nmoswidth = nmoswidth + 0.2
+	   alter @m.xm2.msky130_fd_pr__nfet_01v8[W] = nmoswidth
+	   let ix = ix + 1
+	end  
+  set altshow
+   
+	plot dc1.out vs in dc2.out vs in dc3.out vs in dc4.out vs in dc5.out vs in xlabel "input voltage [V]" ylabel "out voltage [V]"  title "Inverter VTC as a function of PMOS/NMOS width"
+	*plot tran1.out vs time tran2.out vs time tran3.out vs time tran4.out vs time tran5.out vs time in title "Inverter delay as a function of PMOS/NMOS width"
+.endc
+
+.end
+
