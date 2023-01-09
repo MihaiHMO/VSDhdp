@@ -1112,8 +1112,8 @@ Comparison of the supply variation on some parameter:
 |Drive strength | Low | High | 
 
  **Static behavior evaluation – Device variation**
- 
-Etching process : is afecting the CMOS W/L parameters due to non ideal shapes of resulting elements in silicon during production. 
+  ![](Imgs/d15-1.png)
+Etching process : is afecting the CMOS W/L parameters due to non ideal shapes of resulting elements in silicon during production.   
 Oxide Thiknes : this will afect the gate to substarte capcaitance (Cox)
 
 # Acknowledgements
