@@ -1098,7 +1098,8 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  
 **Static behavior evaluation – Power supply variation**  
 
-![image](https://user-images.githubusercontent.com/49897923/211199033-65fca35c-169f-496f-a9f7-8b5936d96f80.png)
+![image](https://user-images.githubusercontent.com/49897923/211199033-65fca35c-169f-496f-a9f7-8b5936d96f80.png)  
+Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_supplyvariation_Wp1_Wn036.spice
 
 Comparison of the supply variation on some parameter:  
 1. Gain: output variation /input variation in  
@@ -1112,10 +1113,13 @@ Comparison of the supply variation on some parameter:
 |Drive strength | Low | High | 
 
  **Static behavior evaluation – Device variation**
-  ![](Imgs/d15-1.png)
+ 
 Etching process : is afecting the CMOS W/L parameters due to non ideal shapes of resulting elements in silicon during production.   
 Oxide Thiknes : this will afect the gate to substarte capcaitance (Cox)
-
+ 
+![](Imgs/d15-1.png)
+Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_devicevariation_wp7_wn042.spice  
+ 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
