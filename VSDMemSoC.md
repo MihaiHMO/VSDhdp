@@ -49,7 +49,7 @@ Convertion of TLV to Verilog of **_rvmyth_** core : `sandpiper-saas -i module/rv
 ![](Imgs/VSDMemSoC_sims.png)
     
 
-## CTS Design Constrains 
+## CTS Design Constrains and STA Analisys
 
 Inputs delays: min 0.5
 Input transition 
@@ -70,4 +70,8 @@ Input transition
 |OUTPUTS	|early_rise_delay	|early_fall_delay	|late_rise_delay	|late_fall_delay	|clocks	|load	|bussed	|bus width			
 |-	|-	|-	|-	|-	|-	|-	|-	|-	 
 |OUT	|0.5	|0.5	|1	|1	|clk	|1	|yes	|10	 	
+
+
+**STA Analisys report**
+![image](https://user-images.githubusercontent.com/49897923/211792670-fbfaa655-f22a-4434-a33b-9ce5bf8fc950.png)
 
