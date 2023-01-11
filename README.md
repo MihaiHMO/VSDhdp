@@ -1124,7 +1124,7 @@ Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_deviceva
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
 - [VSD-IAT](https://vsdiat.com/)
-
+- Geetima Kachari - https://www.youtube.com/@geetimakachari2972/videos
   
   
   
