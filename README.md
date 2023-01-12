@@ -1,8 +1,8 @@
 # VSD Hardware Digital Program -Digital 
 
 # Table of contents
-  + [Tools install](#tools-install)  
-
+  + [Project implementaion: VSDMemSoC](https://github.com/MihaiHMO/VSDhdp/blob/main/VSDMemSoC.md) 
+  + [Tools installation](#tools-install)  
   + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
 	- Introduction to iverilog and gtkwave for simualtions + labs
 	- Introduction to Yosys and Logic synthesis + labs
