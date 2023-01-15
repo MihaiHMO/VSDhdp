@@ -34,7 +34,7 @@
 	- What is STA , setup , hold quick recap
 	- What are constraints
 	- Constraining the Reg2Reg , Reg2IO , IO2Reg Paths
-	- Input transition and OutputLoad and its effects on IO delays
+	- Input transition and OutputLoad and its effects on IO delays  
   + [Day 8 - Advanced SDC Constraints](#day-8---advanced-sdc-constraints)
 	- Clock Skew and Clock Jitter, its modelling in DC  
 	- Writing SDCs [Synopsys Design Constraints]  
@@ -55,7 +55,13 @@
 	- Static behavior evaluation – Switching Threshold
 	- Static behavior evaluation – Noise margin
 	- Static behavior evaluation – Power supply variation
-	- Static behavior evaluation – Device variation
+	- Static behavior evaluation – Device variation  
+  + [18-20 Physical design](#physical-design)  
+  	- Oen-source EDA, OpenLANE and Sky130 PDK
+	- Floorplan and introduction to library cells
+	- Design and characterize one library cell using Layout tool and spice simulator
+	- Pre-layout timing analysis and importance of good clock tree
+	- Final steps for RTL2GDS
 
 # Tools install
 
@@ -1170,6 +1176,15 @@ Oxide Thiknes : this will afect the gate to substarte capcaitance (Cox)
 ![](Imgs/d15-1.png)
 Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_devicevariation_wp7_wn042.spice  
  
+	
+# Physical design
+	
+- Oen-source EDA, OpenLANE and Sky130 PDK
+- Floorplan and introduction to library cells
+- Design and characterize one library cell using Layout tool and spice simulator
+- Pre-layout timing analysis and importance of good clock tree
+- Final steps for RTL2GDS
+
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
