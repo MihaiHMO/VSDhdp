@@ -9,6 +9,7 @@
 	- [iverilog/ GTKwave - Verilog HDL and waveform viewer ](#iverilog)
 	- [OpenLane](#openlane)
 	- [Magic - VLSI layout tool](#magic)
+  + [ASIC Design flow](#asic-design-flow)
   + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
 	- Introduction to iverilog and gtkwave for simualtions + labs
 	- Introduction to Yosys and Logic synthesis + labs
@@ -175,6 +176,41 @@ $   sudo make
 $   sudo make install
 ```
 Type magic terminal to check whether it installed succesfully or not. type exit to exit magic.  
+
+# ASIC Design flow
+![](Imgs/asic_flow.png)
+
+From conception to product, the ASIC design flow is an iterative process that is not static for every design. The details of the flow may change depending on ECO’s, IP requirements, DFT insertion, and SDC constraints, however the base concepts still remain. The flow can be broken down into 11 steps:
+
+
+1. Architectural Design – A system engineer will provide the VLSI engineer with specifications for the system that are determined through physical constraints. The VLSI engineer will be required to design a circuit that meets these constraints at a microarchitecture modeling level.
+
+2. RTL Design/Behavioral Modeling (iverilog) – RTL design and behavioral modeling are performed with a hardware description language (HDL). EDA tools will use the HDL to perform mapping of higher-level components to the transistor level needed for physical implementation. HDL modeling is normally performed using either Verilog or VHDL. One of two design methods may be employed while creating the HDL of a microarchitecture:
+	a. 	RTL Design – provides an abstraction of the digital   circuit using:Combinational logic, Registers, Modules (IP’s or Soft Macros)
+	b. 	Behavioral Modeling – Allows the microarchitecture modeling to be performed with behavior-based modeling in HDL. This method bridges the gap between C and HDL allowing HDL design to be performed 
+
+3. RTL Verification - Behavioral verification of design (GTKwave)
+
+4. DFT Insertion - Design-for-Test Circuit Insertion
+
+5. Synthesis: Logic synthesis uses the RTL netlist to perform HDL technology mapping. 
+    Generating gate-level netlist (yosys).  
+    Performing cell mapping (abc).  
+6. Post-Synthesis STA Analysis: Performs setup analysis on different path groups.(OpenSTA). 
+7. Floorplanning: Planing the silicon area and create a robust power distribution network (PDN) to power each of the individual components of the synthesized netlist.
+    Defining the core area for the macro as well as the cell sites and the tracks (init_fp).
+    Placing the macro input and output ports (ioplacer).  
+    Generating the power distribution network (pdn).  
+8. Placement
+    Performing global placement (TBD).
+    Perfroming detailed placement to legalize the globally placed components (TBD).
+9. Clock Tree Synthesis (CTS)
+     Synthesizing the clock tree (TBDS).
+10. Routing
+     Performing global routing to generate a guide file for the detailed router (TBD).
+     Performing detailed routing (TritonRoute)
+11. GDSII Generation
+     Streaming out the final GDSII layout file from the routed def (Magic).
 
 # Day 1 - Introduction to Verilog RTL design and Synthesis
 ### Iverilog simulator
