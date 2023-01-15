@@ -178,7 +178,10 @@ $   sudo make install
 Type magic terminal to check whether it installed succesfully or not. type exit to exit magic.  
 
 # ASIC Design flow
+
 ![](Imgs/asic_flow.png)
+
+**_!!! The Course will cover steps 3 to 9 !!!_**  
 
 From conception to product, the ASIC design flow is an iterative process that is not static for every design. The details of the flow may change depending on ECO’s, IP requirements, DFT insertion, and SDC constraints, however the base concepts still remain. The flow can be broken down into 11 steps:
 
@@ -209,6 +212,7 @@ Standard Cells – Standard cells are fixed height and a multiple of unit size w
 10. Routing – Implements the interconnect system between standard cells using the remaining available metal layers after CTS and PDN generation. The routing is performed on routing grids to ensure minimal DRC errors.
 
 11. GDSII Generation
+
 
 # Day 1 - Introduction to Verilog RTL design and Synthesis
 ### Iverilog simulator
@@ -1226,9 +1230,8 @@ Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_deviceva
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
-- [VSD-IAT](https://vsdiat.com/)
 - Geetima Kachari - https://www.youtube.com/@geetimakachari2972/videos
-  
+- Grant Brown - https://gitlab.com/gab13c/openlane-workshop#prerequisites
   
   
   
