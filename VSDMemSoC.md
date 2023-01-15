@@ -56,7 +56,7 @@ Input transition
 
 |CLOCKS	|frequency	|duty_cycle	|min_rise_delay	|min_fall_delay	|max_rise_delay	|max_fall_delay	|min_rise_slew	|min_fall_slew	|max_rise_slew	|max_fall_slew	
 |-	|-	|-	|-	|-	|-	|-	|-	|-	|-	|-										
-|clk	|15	|50	|1	|1	|1	|1	|1	|1	|1	|1	
+|clk	|10	|50	|1	|1	|1	|1	|1	|1	|1	|1	
 											
 											
 |INPUTS	|early_rise_delay |early_fall_delay	|late_rise_delay |late_fall_delay |early_rise_slew |early_fall_slew	|late_rise_slew	|late_fall_slew	|clocks |bussed	|bus width 
@@ -73,7 +73,12 @@ Input transition
 
 
 **STA Analisys report**
-![image](https://user-images.githubusercontent.com/49897923/211792670-fbfaa655-f22a-4434-a33b-9ce5bf8fc950.png)
+![image](https://user-images.githubusercontent.com/49897923/212553703-93392db5-f498-46b5-b260-e0983da0b6d1.png)
 
-![image](https://user-images.githubusercontent.com/49897923/212389831-483fb972-21fe-4c77-b6f0-e52ecb66f5f7.png)
+
+Timing variation vs PVT for the same start/endpoint pair:
+![image](https://user-images.githubusercontent.com/49897923/212549767-43a17763-48b4-4bac-9dd8-8ff48a7fe2cf.png)
+
+
+
 
