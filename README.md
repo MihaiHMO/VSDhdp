@@ -182,35 +182,33 @@ Type magic terminal to check whether it installed succesfully or not. type exit 
 
 From conception to product, the ASIC design flow is an iterative process that is not static for every design. The details of the flow may change depending on ECO’s, IP requirements, DFT insertion, and SDC constraints, however the base concepts still remain. The flow can be broken down into 11 steps:
 
-
 1. Architectural Design – A system engineer will provide the VLSI engineer with specifications for the system that are determined through physical constraints. The VLSI engineer will be required to design a circuit that meets these constraints at a microarchitecture modeling level.
 
-2. RTL Design/Behavioral Modeling (iverilog) – RTL design and behavioral modeling are performed with a hardware description language (HDL). EDA tools will use the HDL to perform mapping of higher-level components to the transistor level needed for physical implementation. HDL modeling is normally performed using either Verilog or VHDL. One of two design methods may be employed while creating the HDL of a microarchitecture:
-	a. 	RTL Design – provides an abstraction of the digital   circuit using:Combinational logic, Registers, Modules (IP’s or Soft Macros)
-	b. 	Behavioral Modeling – Allows the microarchitecture modeling to be performed with behavior-based modeling in HDL. This method bridges the gap between C and HDL allowing HDL design to be performed 
+2. RTL Design/Behavioral Modeling (iverilog) – RTL design and behavioral modeling are performed with a hardware description language (HDL). EDA tools will use the HDL to perform mapping of higher-level components to the transistor level needed for physical implementation. HDL modeling is normally performed using either Verilog or VHDL. One of two design methods may be employed while creating the HDL of a microarchitecture:  
+	a. 	RTL Design – provides an abstraction of the digital   circuit using:Combinational logic, Registers, Modules (IP’s or Soft Macros)  
+	b. 	Behavioral Modeling – Allows the microarchitecture modeling to be performed with behavior-based modeling in HDL. This method bridges the gap between C and HDL allowing HDL design to be performed  
 
 3. RTL Verification - Behavioral verification of design (GTKwave)
 
 4. DFT Insertion - Design-for-Test Circuit Insertion
 
-5. Synthesis: Logic synthesis uses the RTL netlist to perform HDL technology mapping. 
-    Generating gate-level netlist (yosys).  
-    Performing cell mapping (abc).  
-6. Post-Synthesis STA Analysis: Performs setup analysis on different path groups.(OpenSTA). 
-7. Floorplanning: Planing the silicon area and create a robust power distribution network (PDN) to power each of the individual components of the synthesized netlist.
-    Defining the core area for the macro as well as the cell sites and the tracks (init_fp).
-    Placing the macro input and output ports (ioplacer).  
-    Generating the power distribution network (pdn).  
-8. Placement
-    Performing global placement (TBD).
-    Perfroming detailed placement to legalize the globally placed components (TBD).
-9. Clock Tree Synthesis (CTS)
-     Synthesizing the clock tree (TBDS).
-10. Routing
-     Performing global routing to generate a guide file for the detailed router (TBD).
-     Performing detailed routing (TritonRoute)
+5. Logic Synthesis – Logic synthesis uses the RTL netlist to perform HDL technology mapping. The synthesis process is normally performed in two major steps:
+	 - GTECH Mapping – Consists of mapping the HDL netlist to generic gates what are used to perform logical optimization based on AIGERs and other topologies created from the generic mapped netlist.
+	- Technology Mapping – Consists of mapping the post-optimized GTECH netlist to standard cells described in the PDK
+  
+Standard Cells – Standard cells are fixed height and a multiple of unit size width. This width is an integer multiple of the SITE size or the PR boundary. Each standard cell comes with SPICE, HDL, liberty, layout (detailed and abstract) files used by different tools at different stages in the RTL2GDS flow.
+
+6. Post-Synthesis STA Analysis: Performs setup analysis on different path groups.
+
+7. Floorplanning – Goal is to plan the silicon area and create a robust power distribution network (PDN) to power each of the individual components of the synthesized netlist. In addition, macro placement and blockages must be defined before placement occurs to ensure a legalized GDS file. In power planning we create the ring which is connected to the pads which brings power around the edges of the chip. We also include power straps to bring power to the middle of the chip using higher metal layers which reduces IR drop and electro-migration problem.
+
+8. Placement – Place the standard cells on the floorplane rows, aligned with sites defined in the technology lef file. Placement is done in two steps: Global and Detailed. In Global placement tries to find optimal position for all cells but they may be overlapping and not aligned to rows, detailed placement takes the global placement and legalizes all of the placements trying to adhere to what the global placement wants.
+
+9. CTS – Clock tree synteshsis is used to create the clock distribution network that is used to deliver the clock to all sequential elements. The main goal is to create a network with minimal skew across the chip. H-trees are a common network topology that is used to achieve this goal.
+
+10. Routing – Implements the interconnect system between standard cells using the remaining available metal layers after CTS and PDN generation. The routing is performed on routing grids to ensure minimal DRC errors.
+
 11. GDSII Generation
-     Streaming out the final GDSII layout file from the routed def (Magic).
 
 # Day 1 - Introduction to Verilog RTL design and Synthesis
 ### Iverilog simulator
@@ -1214,12 +1212,16 @@ Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_deviceva
  
 	
 # Physical design
-	
-- Oen-source EDA, OpenLANE and Sky130 PDK
+**Open-source EDA, OpenLANE and Sky130 PDK**  
+
+![](Imgs/openlane_flow_v1.png)
+
 - Floorplan and introduction to library cells
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
 - Final steps for RTL2GDS
+
+
 
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
