@@ -3,6 +3,12 @@
 # Table of contents
   + [Project implementaion: VSDMemSoC](https://github.com/MihaiHMO/VSDhdp/blob/main/VSDMemSoC.md) 
   + [Tools installation](#tools-install)  
+  	- [Yosys-gate level synthesis](#yosys)
+	- [OpenSTA - static timing anlysis ](#opensta)
+	- [ngspice - electrical simulation](#ngspice)
+	- [iverilog/ GTKwave - Verilog HDL and waveform viewer ](#iverilog)
+	- [OpenLane](#openlane)
+	- [Magic - VLSI layout tool](#magic)
   + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
 	- Introduction to iverilog and gtkwave for simualtions + labs
 	- Introduction to Yosys and Logic synthesis + labs
@@ -70,7 +76,7 @@ $ sudo make install
 
 ### OpenSTA
 
-https://github.com/The-OpenROAD-Project/OpenSTA'
+https://github.com/The-OpenROAD-Project/OpenSTA
 
 |        | from  |Ubuntu  | On my machine
 |    ---|---|---|---
@@ -119,6 +125,50 @@ sudo make install
 
 sudo update
 sudo apt install gtkwave
+
+### OpenLane 
+OpenLane is an automated RTL to GDSII flow based on several components including OpenROAD, Yosys, Magic, Netgen, CVC, SPEF-Extractor, CU-GR, Klayout and a number of custom scripts for design exploration and optimization. The flow performs full ASIC implementation steps from RTL all the way down to GDSII.  
+More about Openlane at : https://github.com/The-OpenROAD-Project/OpenLane  
+
+`$   apt install -y build-essential python3 python3-venv python3-pip`  
+
+Docker installation process: https://docs.docker.com/engine/install/ubuntu/
+
+Goto home directory->  
+```
+$   git clone https://github.com/The-OpenROAD-Project/OpenLane.git
+$   cd OpenLane/
+$   sudo make
+```
+To test the open lane:
+`sudo make test`  
+It takes approximate time of 5min to complete. After 43 steps, if it ended with saying Basic test passed then open lane installed succesfully.  
+
+### Magic  
+
+More about magic at http://opencircuitdesign.com/magic/index.html  
+
+Run following commands one by one to fulfill the system requirement.  
+
+```
+$   sudo apt-get install m4
+$   sudo apt-get install tcsh
+$   sudo apt-get install csh
+$   sudo apt-get install libx11-dev
+$   sudo apt-get install tcl-dev tk-dev
+$   sudo apt-get install libcairo2-dev
+$   sudo apt-get install mesa-common-dev libglu1-mesa-dev
+$   sudo apt-get install libncurses-dev
+```  
+To install magic goto home directory   
+```
+$   git clone https://github.com/RTimothyEdwards/magic
+$   cd magic/
+$   ./configure
+$   sudo make
+$   sudo make install
+```
+Type magic terminal to check whether it installed succesfully or not. type exit to exit magic.  
 
 # Day 1 - Introduction to Verilog RTL design and Synthesis
 ### Iverilog simulator
