@@ -57,7 +57,7 @@
 	- Static behavior evaluation – Noise margin
 	- Static behavior evaluation – Power supply variation
 	- Static behavior evaluation – Device variation  
-  + [18-20 Physical design](#physical-design)  
+  + [Day 18-20 Physical design](#physical-design)  
   	- Oen-source EDA, OpenLANE and Sky130 PDK
 	- Floorplan and introduction to library cells
 	- Design and characterize one library cell using Layout tool and spice simulator
