@@ -181,7 +181,7 @@ Type magic terminal to check whether it installed succesfully or not. type exit 
 
 ![](Imgs/asic_flow.png)
 
-**_!!! The Course will cover steps 3 to 9 !!!_**  
+**_!!! The workshop will cover steps 3 to 9 !!!_**  
 
 From conception to product, the ASIC design flow is an iterative process that is not static for every design. The details of the flow may change depending on ECO’s, IP requirements, DFT insertion, and SDC constraints, however the base concepts still remain. The flow can be broken down into 11 steps:
 
@@ -1217,9 +1217,40 @@ Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_deviceva
 	
 # Physical design
 **Open-source EDA, OpenLANE and Sky130 PDK**  
+https://gitlab.com/gab13c/openlane-workshop#prerequisites  
+
 
 ![](Imgs/openlane_flow_v1.png)
+The inputs to the ASIC design flow are:
 
+	- Process Design Rules: DRC, LVS, PEX
+	- Device Models (SPICE)
+	- Digital Standard Cell Libraries
+	- I/O Libraries	
+
+Below are the stages and the respective tools that are called by openlane for the functionalities as described:
+
+  - Synthesis
+       - Generating gate-level netlist (yosys).
+       - Performing cell mapping (abc).
+       - Performing pre-layout STA (OpenSTA).
+  - Floorplanning
+       - Defining the core area for the macro as well as the cell sites and the tracks (init_fp).
+       - Placing the macro input and output ports (ioplacer).
+       - Generating the power distribution network (pdn).
+  - Placement
+       - Performing global placement (RePLace).
+       - Perfroming detailed placement to legalize the globally placed components (OpenDP).
+  - Clock Tree Synthesis (CTS)
+       - Synthesizing the clock tree (TritonCTS).
+  - Routing
+       - Performing global routing to generate a guide file for the detailed router (FastRoute).
+       - Performing detailed routing (TritonRoute)
+  - GDSII Generation
+       - Streaming out the final GDSII layout file from the routed def (Magic).
+
+	
+	
 - Floorplan and introduction to library cells
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
