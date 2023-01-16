@@ -1249,8 +1249,21 @@ Below are the stages and the respective tools that are called by openlane for th
   - GDSII Generation
        - Streaming out the final GDSII layout file from the routed def (Magic).
 
-	
-	
+https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
+
+Runing OpenLane : Go ro OpenaLane folder and run `make mount`
+In case the project is created first time : run `./flow.tcl -design <design_name> -init_design_config -add_to_designs`.
+
+![](Imgs/d18-1.png)
+
+Copy in the `<deisgn-name>/src' the sybthesized file
+
+To run the design :
+```
+make mount
+$openlane: ./flow.tcl -design <design_name> 
+```
+
 - Floorplan and introduction to library cells
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
