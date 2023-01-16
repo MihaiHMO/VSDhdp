@@ -1,8 +1,14 @@
+# Table of content  
+- [Overview](#functional-diagram)  
+- [Make commands](#make-commands)  
+- [RTL and GLS synthesis](#rtl-and-gls-synthesis)  
+- [CTS Design Constrains and STA Analisys](#cts-design-constrains-and-sta-analisys)  
+
 # Physical implementation of VSDMemSoC
 
 The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSoc](https://github.com/vsdip/VSDMemSoC) witch contains a [Risc-V CPU](https://github.com/RISCV-MYTH-WORKSHOP/riscv_myth_workshop_nov22-MihaiHMO/settings) connected to a [open source SRAM](https://github.com/vsdip/vsdsram_sky130)  
 
-## Functional diagram :  
+## Functional diagram   
 ![SoC Diagram](Imgs/SoC_struct.png)  
 
 ## Folder structure
@@ -23,7 +29,7 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
 └── 
 
 ```
-## Commands
+## Make Commands
 
 - `clean` Removes the output Directory
 - `tlv` Generates verilog files from tlv using sandpiper
