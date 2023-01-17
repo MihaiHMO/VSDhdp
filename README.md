@@ -1267,17 +1267,18 @@ It will ensure that your configuration is the absolute minimum.
 
 ![](Imgs/d18-1.png)
 
-Copy in the `<deisgn-name>/src' the synthesized file
+Copy in the `<deisgn-name>/src` the synthesized file
 
 To run the design :
 ```
 make mount
 $openlane: ./flow.tcl -design <design_name> [-interactive] 
 ```
-By default, config.tcl is used. If config.tcl is not found, config.json is looked for as a fallback.
-As Jan2023 Tcl config files are not recommended for newer designs, but is still maintained and supported at the moment.
-The configuration oredr is : OpenLane default config -> config.json -> specific design_config.tcl/json (hiegher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`
+By default, config.tcl is used. If `config.tcl` is not found, `config.json` is looked for as a fallback.  
+As Jan2023 Tcl config files are not recommended for newer designs, but is still maintained and supported at the moment.  
+- The configuration order is : OpenLane default config -> config.json -> specific design_config.tcl/json (hiegher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`  
 
+- Switches/Variables for commands : `openlane/configuration`
 
 Below are the stages and the respective tools that are called by openlane for the functionalities as described:
 - **Setup preparation**
@@ -1293,11 +1294,14 @@ First step after creation is the preparation or setup step:
        - Performing cell mapping (abc).  
        - Performing pre-layout STA (OpenSTA).    
        - Usefull info for design stage: Flip-flop ratio,  chip area, timing performance  
-- **Floorplanning**  
+- **Floorplanning**
+       - Command `run_floorplan`  
        - Defining the core area for the macro as well as the cell sites and the tracks (init_fp).  
        - Placing the macro input and output ports (ioplacer).  
        - Generating the power distribution network (pdn).  
+	- `/results/ *.def` , contains the design Core Area.  
 - **Placement**  
+       - `run_placement`
        - Performing global placement (RePLace).  
        - Perfroming detailed placement to legalize the globally placed components (OpenDP).  
 - **Clock Tree Synthesis** (CTS)  
@@ -1316,6 +1320,8 @@ For the physical design the first step is to define the **CORE** and **DIE** par
 - _Aspect ratio_ of the die/core is the ratio H/W -> _Aspect ratio_ = 1 defines a square shape   
 - _Utilization factor_ is the _Circuit area_/_Core Area_  
 
+![image](https://user-images.githubusercontent.com/49897923/212889169-873c1219-762d-4a42-9e8a-d092a7ef654d.png)
+	
 Second step is to place the "_Pre-placed cells_" that need a user-defined location:
  - Reusable pieces of Logic circuit 
  - Available IP's that will be imported in the _TOP Netlist_ : Memory , Clock-gating- cell, Comparator , Mux etc.  
@@ -1325,13 +1331,39 @@ Placement of Decoupling Capacitors to maintain a necessary voltage levels for th
 
 Power planning is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
 
-Pin placement 
+Pin/IO placement are the contacts used to connect the die to the package - usually the pins are the signals defined in the verilog file at the interface/PORTs of the deign. The placement depends on the functionality of the IC . 
+Clock I/O cells are usually bigger then generic I/O cells because they have multiple connections, and a lower impedance is needed.
+Around the pins a blocking area is needed so the automated tool will not place cells .
+![image](https://user-images.githubusercontent.com/49897923/212905875-6e04ac67-1fd0-4e4c-85f2-2b403291c1cf.png)
 
-![image](https://user-images.githubusercontent.com/49897923/212889169-873c1219-762d-4a42-9e8a-d092a7ef654d.png)
+**Placement**
+This stage is actually the placement of the rest of the cells, optimized from the connections point of view to have minimum wire length and load capacitance. 
+The wire length and capacitance can be estimated by measuring the distances, estimating physical size of wires.
+If the signal integrity will not be met buffers will be inserted to repeat the signal - for high frequency the cells must be placed as close as possible , also clos to pins.
+![image](https://user-images.githubusercontent.com/49897923/212923303-a74da0d0-4936-4018-9653-9590f8add0cc.png)
+Legalization definition for OpenLane is that the cells must fit in the defined row width of the design and no overlaps.	
+**Standard cells design flow**
+Inputs-->  Design  ---> Output  
+Inputs - PDKs: 
+- DRC & LVS rules: physical limitations for the production tools   
+-Spice models : electrical parameters and behavior of CMOS  
+-Library and user design specs :cell dimensions (row size, timing) , drive strength, effect of specific supply voltage, usage of fixed metal layers, pin location etc.  
 
+Design:  
+- Circuit design : dimensioning the electrical parameters
+- Layout design
+![image](https://user-images.githubusercontent.com/49897923/212944035-b3669865-f38f-40ce-bf54-1d133375ba11.png)
+- Characterization: timing , noise and power 
+
+Output: CDL (circuit description language, GDS II, LEF, extracted spice netlist (.cir)
+
+
+	
+	
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
 - Final steps for RTL2GDS
+
 	
 # Acknowledgements and references 
 - [Kunal Ghosh](https://github.com/kunalg123)
