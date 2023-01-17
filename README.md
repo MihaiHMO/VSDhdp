@@ -1249,7 +1249,7 @@ Below are the stages and the respective tools that are called by openlane for th
   - GDSII Generation
        - Streaming out the final GDSII layout file from the routed def (Magic).
 
-https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
+For latest documenation please check : https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
 
 Runing OpenLane : Go ro OpenaLane folder and run `make mount`
 In case the project is created first time : run `./flow.tcl -design <design_name> -init_design_config -add_to_designs`.
@@ -1264,13 +1264,42 @@ make mount
 $openlane: ./flow.tcl -design <design_name> 
 ```
 
+
+Open PDK Sky130A folder structure:
+```
+sky130A
+├── libs.tech            - library files related to technology applications
+│   ├── irsim
+│   ├── klayout
+│   ├── magic
+│   ├── netgen
+│   ├── ngspice
+│   ├── openlane
+│   ├── qflow
+│   ├── xcircuit
+│   └── xschem
+└── libs.ref            - library files related to foundry ("fd" - skywater foundry)
+    ├── sky130_fd_io    - IO and peripherals 
+    ├── sky130_fd_pr    - Primitive cells
+    ├── sky130_fd_sc_hd - "sc" Digital standard cells : "hd" -
+    │   ├── spice       - file types : https://skywater-pdk.readthedocs.io/en/main/contents/file_types.html
+    │   ├── lib
+    │   ├── cdl
+    │   ├── gds
+    │   ├── lef
+    │   ├── mag
+    │   ├── maglef
+    │   ├── techlef
+    │   └── verilog
+    ├── sky130_fd_sc_hvl
+    ├── sky130_ml_xx_hd  - Miscellaneous 
+    └── sky130_sram_macros
+```
 - Floorplan and introduction to library cells
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
 - Final steps for RTL2GDS
-
-
-
+	
 # Acknowledgements
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
