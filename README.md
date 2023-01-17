@@ -1216,54 +1216,14 @@ Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_deviceva
  
 	
 # Physical design
-**Open-source EDA, OpenLANE and Sky130 PDK**  
-https://gitlab.com/gab13c/openlane-workshop#prerequisites  
+### **Open-source EDA, OpenLANE and Sky130 PDK**  
 
-
-![](Imgs/openlane_flow_v1.png)
 The inputs to the ASIC design flow are:
 
 	- Process Design Rules: DRC, LVS, PEX
 	- Device Models (SPICE)
 	- Digital Standard Cell Libraries
 	- I/O Libraries	
-
-Below are the stages and the respective tools that are called by openlane for the functionalities as described:
-
-  - Synthesis
-       - Generating gate-level netlist (yosys).
-       - Performing cell mapping (abc).
-       - Performing pre-layout STA (OpenSTA).
-  - Floorplanning
-       - Defining the core area for the macro as well as the cell sites and the tracks (init_fp).
-       - Placing the macro input and output ports (ioplacer).
-       - Generating the power distribution network (pdn).
-  - Placement
-       - Performing global placement (RePLace).
-       - Perfroming detailed placement to legalize the globally placed components (OpenDP).
-  - Clock Tree Synthesis (CTS)
-       - Synthesizing the clock tree (TritonCTS).
-  - Routing
-       - Performing global routing to generate a guide file for the detailed router (FastRoute).
-       - Performing detailed routing (TritonRoute)
-  - GDSII Generation
-       - Streaming out the final GDSII layout file from the routed def (Magic).
-
-For latest documenation please check : https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
-
-Runing OpenLane : Go ro OpenaLane folder and run `make mount`
-In case the project is created first time : run `./flow.tcl -design <design_name> -init_design_config -add_to_designs`.
-
-![](Imgs/d18-1.png)
-
-Copy in the `<deisgn-name>/src' the sybthesized file
-
-To run the design :
-```
-make mount
-$openlane: ./flow.tcl -design <design_name> 
-```
-
 
 Open PDK Sky130A folder structure:
 ```
@@ -1286,26 +1246,99 @@ sky130A
     │   ├── lib
     │   ├── cdl
     │   ├── gds
-    │   ├── lef
+    │   ├── lef         - cell level LEF
     │   ├── mag
     │   ├── maglef
-    │   ├── techlef
+    │   ├── techlef     - technology LEF
     │   └── verilog
     ├── sky130_fd_sc_hvl
     ├── sky130_ml_xx_hd  - Miscellaneous 
     └── sky130_sram_macros
 ```
-- Floorplan and introduction to library cells
+![](Imgs/openlane_flow_v1.png)
+For latest documentation please check : https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
+
+**Running OpenLane**
+Go to OpenaLane folder and run `make mount`
+
+**Create/run design**
+For first time project creation: `./flow.tcl -design <design_name> -init_design_config -add_to_designs`.
+It will ensure that your configuration is the absolute minimum.
+
+![](Imgs/d18-1.png)
+
+Copy in the `<deisgn-name>/src' the synthesized file
+
+To run the design :
+```
+make mount
+$openlane: ./flow.tcl -design <design_name> [-interactive] 
+```
+By default, config.tcl is used. If config.tcl is not found, config.json is looked for as a fallback.
+As Jan2023 Tcl config files are not recommended for newer designs, but is still maintained and supported at the moment.
+The configuration oredr is : OpenLane default config -> config.json -> specific design_config.tcl/json (hiegher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`
+
+
+Below are the stages and the respective tools that are called by openlane for the functionalities as described:
+- **Setup preparation**
+First step after creation is the preparation or setup step:
+```
+./flow.tcl -interactive
+% package require openale
+% prep -design <design_name>
+```
+- **Synthesis**  
+       - Command `run_synthesis`  
+       - Generating gate-level netlist (yosys).
+       - Performing cell mapping (abc).  
+       - Performing pre-layout STA (OpenSTA).    
+       - Usefull info for design stage: Flip-flop ratio,  chip area, timing performance  
+- **Floorplanning**  
+       - Defining the core area for the macro as well as the cell sites and the tracks (init_fp).  
+       - Placing the macro input and output ports (ioplacer).  
+       - Generating the power distribution network (pdn).  
+- **Placement**  
+       - Performing global placement (RePLace).  
+       - Perfroming detailed placement to legalize the globally placed components (OpenDP).  
+- **Clock Tree Synthesis** (CTS)  
+       - Synthesizing the clock tree (TritonCTS).  
+- **Routing**  
+       - Performing global routing to generate a guide file for the detailed router (FastRoute).  
+       - Performing detailed routing (TritonRoute)
+- **GDSII Generation**  
+       - Streaming out the final GDSII layout file from the routed def (Magic).  
+
+
+### Floorplan and introduction to library cells
+For the physical design the first step is to define the **CORE** and **DIE** parameters :
+- _Core Area_ is the available area for circuit implementation, is estimated during synthesis where the tool is estimating and necessary area  
+- _Die Area_ is total silicon area needed on the wafer (including cut area)  
+- _Aspect ratio_ of the die/core is the ratio H/W -> _Aspect ratio_ = 1 defines a square shape   
+- _Utilization factor_ is the _Circuit area_/_Core Area_  
+
+Second step is to place the "_Pre-placed cells_" that need a user-defined location:
+ - Reusable pieces of Logic circuit 
+ - Available IP's that will be imported in the _TOP Netlist_ : Memory , Clock-gating- cell, Comparator , Mux etc.  
+ - The placement must consider optimized connections between the cells  
+
+Placement of Decoupling Capacitors to maintain a necessary voltage levels for the elements of the circuit (local decoupling). The capacitance must be calculated depending on the amount of Id current drawn by the circuit that is served by the decoupling capacitor.
+
+Power planning is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
+
+Pin placement 
+
+![image](https://user-images.githubusercontent.com/49897923/212889169-873c1219-762d-4a42-9e8a-d092a7ef654d.png)
+
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
 - Final steps for RTL2GDS
 	
-# Acknowledgements
+# Acknowledgements and references 
 - [Kunal Ghosh](https://github.com/kunalg123)
 - [VLSI System Design](https://www.vlsisystemdesign.com/)
 - Geetima Kachari - https://www.youtube.com/@geetimakachari2972/videos
 - Grant Brown - https://gitlab.com/gab13c/openlane-workshop#prerequisites
-  
+- https://gitlab.com/gab13c/openlane-workshop#prerequisites 
   
   
  
