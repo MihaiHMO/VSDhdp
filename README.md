@@ -1276,7 +1276,7 @@ $openlane: ./flow.tcl -design <design_name> [-interactive]
 ```
 By default, config.tcl is used. If `config.tcl` is not found, `config.json` is looked for as a fallback.  
 As Jan2023 Tcl config files are not recommended for newer designs, but is still maintained and supported at the moment.  
-- The configuration order is : OpenLane default config -> config.json -> specific design_config.tcl/json (hiegher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`  
+- The configuration order is : OpenLane default config -> config.json -> specific design_config.tcl/json (higher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`  
 
 - Switches/Variables for commands : `openlane/configuration`
 
@@ -1294,7 +1294,7 @@ First step after creation is the preparation or setup step:
        - Performing cell mapping (abc).  
        - Performing pre-layout STA (OpenSTA).    
        - Usefull info for design stage: Flip-flop ratio,  chip area, timing performance  
-- **Floorplanning**
+- **Floorplanning**  
        - Command `run_floorplan`  
        - Defining the core area for the macro as well as the cell sites and the tracks (init_fp).  
        - Placing the macro input and output ports (ioplacer).  
@@ -1312,9 +1312,60 @@ First step after creation is the preparation or setup step:
 - **GDSII Generation**  
        - Streaming out the final GDSII layout file from the routed def (Magic).  
 
+### Layout and CMOS fabrication process
+Substrate parameters:  
+	- Type P  
+	- resistivity (5-50 ohms-High)   
+	- doping level (10^15 cm^3) should be less than "well" doping  
+	- orientation (100)  
+Fabrication steps CMOS Process (16-maks):  
+1. Creating Isolation areas - "LOCOS" Local Oxidation of silicon. Si3N4 will be etched    
+2. Well Creation  
+	2.1. Ion implantation P-well: (Boron, @~200keV) and N-well (Phosphorus, ~400keV)  
+	2.2. Ion diffusion  
+3. Gate formation  
+	3.1. Ion implant to increase the doping region and to control the threshold voltage: P-well (Boron, @~60keV) and N-well (Arsenic, ~400keV)  
+	3.2. Reconstruction of the SiO2 damaged by step 3.1  
+	3.3. Creation of the polysilicon layer  
+	3.4. Expose and etch the gate area  
+4. Lightly doped drain (LDD) formation:  
+	Reason: Will control Hot electron effect and Short Channel effect  
+	4.1 Ion implantation P-well (Phosphorus) and N-well (Boron)
+	4.2 Si3N4 or SiO2 layer ~0.1um, 
+	4.3 Plasma anisotropic etching to create _Side-wall spacers_ that will limit the area for Drain and Source implantation 
+5. Source and drain formation   
+	5.1 Thin screen oxide layer formation to avoid channeling during implant  
+	5.2 Ion implantation P-well (Arsenic, ~75keV) and N-well (Boron, ~50 keV)  
+	5.3 High temp annealing to push the impurities dipper into the wells creatin the P/N + S/D areas  
+6. Contacts and local interconnect formation  
+	6.1 Etching thin oxide from 5.1  
+	6.2 Deposit titanium on wafer surface using sputtering   
+	6.3 High temp heating (650-700 C) in N2 ambient for a x second resulting:  
+		- low resistance (Titanium Silicon Dioxide) TiSi2 creation on the surface or the silicon (Gate and A/D areas).   
+		- Titanium Nitride (TiN) used for local interconnect (between neighboring transistors)   
+	6.4 Expose and etch (RCA cleaning) the TiN contact areas needed for connections on higher metal layers  
+7. Higher level interconnect formation:  
+	7.1 Connection on previous structure are not ideal because of uneven surface so flattening is needed:  
+		- Deposition of Si02 (~1um) doped with Phosphorous or Boron  
+	        - Planarizing wafer surface with a chemical mechanical polishing (CMP) technique  
+	7.2 "Drilling" the contact holes with exposure and etching Sio2 layer  
+	7.3 Deposition of TiN layer (~10nm) - good addition layer on SIO2 and is a good barrier layer between bottom and top interconnects  
+	7.4 Deposit a blanket tungsten (W)  
+	7.5 Planarizing wafer surface with a chemical mechanical polishing (CMP) technique  
+8. Higher level metal formation:  
+	8.1 Aluminum (Al) layer deposition - first metal layer  
+	8.2 The steps 7.1-7.4 will be repeated for each metal layer but with different mask (Mask 14-15)  
+	8.3 Last layer (Si3N4) is used to protect the chip with a stronger dielectric  
+	8.4 Last mask is used to "drill" the last layer and get the connection to the package  
+	
+Hot electron effect - Due to shrinking of the sizes the high energy carriers will break Si-Si bonds or will bread conduction band of SiO2.
+Short Channel effect - for short channels, drain field penetrates the channel
+Sputtering - Hitting a material (titanium ) with Argon gas and the titanium material will deposited on into the substrate.
 
+![image](https://user-images.githubusercontent.com/49897923/213123323-8976c58d-1d12-4afb-b2fc-27ef1ccaf8e5.png)
+	
 ### Floorplan and introduction to library cells
-For the physical design the first step is to define the **CORE** and **DIE** parameters :
+For the physical design the first step is to define the **CORE** and **DIE** parameters:
 - _Core Area_ is the available area for circuit implementation, is estimated during synthesis where the tool is estimating and necessary area  
 - _Die Area_ is total silicon area needed on the wafer (including cut area)  
 - _Aspect ratio_ of the die/core is the ratio H/W -> _Aspect ratio_ = 1 defines a square shape   
@@ -1336,29 +1387,30 @@ Clock I/O cells are usually bigger then generic I/O cells because they have mult
 Around the pins a blocking area is needed so the automated tool will not place cells .
 ![image](https://user-images.githubusercontent.com/49897923/212905875-6e04ac67-1fd0-4e4c-85f2-2b403291c1cf.png)
 
-**Placement**
+### **Placement**  
 This stage is actually the placement of the rest of the cells, optimized from the connections point of view to have minimum wire length and load capacitance. 
 The wire length and capacitance can be estimated by measuring the distances, estimating physical size of wires.
 If the signal integrity will not be met buffers will be inserted to repeat the signal - for high frequency the cells must be placed as close as possible , also clos to pins.
 ![image](https://user-images.githubusercontent.com/49897923/212923303-a74da0d0-4936-4018-9653-9590f8add0cc.png)
 Legalization definition for OpenLane is that the cells must fit in the defined row width of the design and no overlaps.	
-**Standard cells design flow**
-Inputs-->  Design  ---> Output  
-Inputs - PDKs: 
+
+### **Standard cells design flow**  
+Inputs --> Design  ---> Output  
+_Inputs_ - PDKs:  
 - DRC & LVS rules: physical limitations for the production tools   
--Spice models : electrical parameters and behavior of CMOS  
--Library and user design specs :cell dimensions (row size, timing) , drive strength, effect of specific supply voltage, usage of fixed metal layers, pin location etc.  
+- Spice models: electrical parameters and behavior of CMOS  
+- Library and user design specs: cell dimensions (row size, timing) , drive strength, effect of specific supply voltage, usage of fixed metal layers, pin location etc.  
 
-Design:  
-- Circuit design : dimensioning the electrical parameters
-- Layout design
+_Design:_  
+- Circuit design: dimensioning the electrical parameters  
+- Layout design  
 ![image](https://user-images.githubusercontent.com/49897923/212944035-b3669865-f38f-40ce-bf54-1d133375ba11.png)
-- Characterization: timing , noise and power 
+- Characterization (GUNA): From an extracted spice netlist from Layout - timing , noise and power .libs with specific stimulus and output load .
 
-Output: CDL (circuit description language, GDS II, LEF, extracted spice netlist (.cir)
+_Output:_ CDL (circuit description language, GDS II, LEF, extracted spice netlist (.cir) from the final layout
 
-
-	
+!!!! LAb5!!! 
+In order to edit the cell layout .mag  and .tech file is needed
 	
 - Design and characterize one library cell using Layout tool and spice simulator
 - Pre-layout timing analysis and importance of good clock tree
