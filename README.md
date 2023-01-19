@@ -1252,6 +1252,13 @@ sky130A
     ├── sky130_ml_xx_hd  - Miscellaneous 
     └── sky130_sram_macros
 ```
+Skywater 130 process node: https://github.com/google/skywater-pdk#sky130-process-node   
+Skywater130 process rules: https://antmicro-skywater-pdk-docs.readthedocs.io/en/latest/rules.html
+
+https://skywater-pdk.readthedocs.io/en/main/ - documentation  
+https://github.com/google/skywater-pdk - libraries  
+https://join.skywater.tools (Slack) - community  
+
 ![](Imgs/openlane_flow_v1.png)
 For latest documentation please check : https://openlane.readthedocs.io/en/latest/getting_started/quickstart.html
 
@@ -1395,6 +1402,8 @@ Legalization definition for OpenLane is that the cells must fit in the defined r
 Inputs --> Design  ---> Output  
 _Inputs_ - PDKs:  
 - DRC & LVS rules: physical limitations for the production tools   
+	- Skywater130 process rules: https://antmicro-skywater-pdk-docs.readthedocs.io/en/latest/rules.html
+	- Magic technoly files DRC info : http://opencircuitdesign.com/magic/techref/maint2.html#drc
 - Spice models: electrical parameters and behavior of CMOS  
 - Library and user design specs: cell dimensions (row size, timing) , drive strength, effect of specific supply voltage, usage of fixed metal layers, pin location etc.  
 
@@ -1402,15 +1411,20 @@ _Design:_
 - Circuit design: dimensioning the electrical parameters  
 - Layout design  
 ![image](https://user-images.githubusercontent.com/49897923/212944035-b3669865-f38f-40ce-bf54-1d133375ba11.png)
+- Layout Design and Verification infos: https://github.com/MihaiHMO/Physical-Verification-using-SKY130/blob/main/README.md
 - Characterization (GUNA): From an extracted spice netlist from Layout - timing , noise and power .libs with specific stimulus and output load .
 
 _Output:_ CDL (circuit description language, GDS II, LEF, extracted spice netlist (.cir) from the final layout
 
-In order to edit the cell layout .mag  and .tech file is needed
-https://github.com/nickson-jose/vsdstdcelldesign
-	
-- Design and characterize one library cell using Layout tool and spice simulator
-- Pre-layout timing analysis and importance of good clock tree
+**Design steps usig magic and spice**   
+```
+Cell creation in schematic/layout -> Layout design -> Spice format extracted from layout -> Cell behavior Spice caractaerization  -> Design Verification ->
+                                          ^                                                                                       |                       |
+					  └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+Example : https://github.com/nickson-jose/vsdstdcelldesign
+
+**Pre-layout timing analysis and importance of good clock tree**
 - Final steps for RTL2GDS
 
 	
