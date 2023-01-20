@@ -1400,7 +1400,10 @@ Legalization definition for OpenLane is that the cells must fit in the defined r
 
 ### **Pre-layout timing analysis and importance of good clock tree**  
 An example of timing propagation on the layout :  
-![](IMgs/d20-2.png)  
+![](Imgs/d20-2.png)
+Balancing the cells at the same level with the same capacitance will improve the clock skew between flops.
+![](Imgs/d20-1.png) 
+
 The cell delay is a function of input slew and load capacitance (fanout x cap load)  so this must be checked to improve the slack.  
 Openlane Switches:  
 `SYNTH_DRIVING_CELL` -  
@@ -1413,7 +1416,7 @@ Commands:
 During timing anlisys the netlist can change so this has to be saved.  
 
 ### **Clock tree synthesis**  
-
+A good practice is to use cells that have insibited clocks if they are not used. 
 After CTS run the netlist generated during previous steps will be altered with added clock buffers so additional netlist file will be created.  
 SDC file uses the variable definition again because sta will run outside OpenLane.  
 
@@ -1446,9 +1449,9 @@ Cell creation in schematic/layout -> Layout design -> Spice format extracted fro
 					  └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 Example : https://github.com/nickson-jose/vsdstdcelldesign
-Guidelines for std cell:
-	+ usage of `<pdk_dir>/sky130A/libs.tech/openlane/track.info` -> parameters for routing grids for each routing layer 
-	+ input and output ports must be at the intersection of the vertical and horizontal tracks 
+Guidelines for std cell:  
+	+ usage of `<pdk_dir>/sky130A/libs.tech/openlane/track.info` -> parameters for routing grids for each routing layer   
+	+ input and output ports must be at the intersection of the vertical and horizontal tracks  
 	+ width and heigh should in multiple of the track horizontal and vertical pitch  
 
 
@@ -1460,6 +1463,7 @@ Guidelines for std cell:
 - Grant Brown - https://gitlab.com/gab13c/openlane-workshop#prerequisites
 - https://gitlab.com/gab13c/openlane-workshop#prerequisites
 - Nickson Jose - https://github.com/nickson-jose/vsdstdcelldesign
+- https://github.com/DantuNandiniDevi/iiitb_freqdiv
   
   
  
