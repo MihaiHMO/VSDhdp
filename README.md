@@ -1398,6 +1398,24 @@ If the signal integrity will not be met buffers will be inserted to repeat the s
 ![image](https://user-images.githubusercontent.com/49897923/212923303-a74da0d0-4936-4018-9653-9590f8add0cc.png)
 Legalization definition for OpenLane is that the cells must fit in the defined row width of the design and no overlaps.	
 
+### **Pre-layout timing analysis and importance of good clock tree**  
+An example of timing propagation on the layout :  
+![](IMgs/d20-2.png)  
+The cel delay is a function of input slew and load capacitance (fanout x cap load)  so this must be checked to improve the slack.
+Optimization:
+Openlane Swithes: 
+`SYNTH_DRIVING_CELL` -
+`SYNTH_SIZE`
+`SYNTH_PRIORITY` - area versus performance 
+Commnands:
+`report_net -connections _33531_`   - check the fanout cells
+`replace_cell <instace> <name_new_cell>` -replace a specific cell ex buffers
+
+### **Clock tree syntesis**
+After CTS run the netlist generated during previous steps will be altered with added clock buffers so additional netlist file will be created.
+SDC file uses the variable definition again because sta will run outside OpenLane. 
+
+
 ### **Standard cells design flow**  
 Inputs --> Design  ---> Output  
 _Inputs_ - PDKs:  
@@ -1428,7 +1446,8 @@ Guidelines for std cell:
 	+ input and output ports must be at the intersection of the vertical and horizontal tracks 
 	+ width and heigh should in multiple of the track horizontal and vertical pitch  
 
-**Pre-layout timing analysis and importance of good clock tree**
+
+
 - Final steps for RTL2GDS
 
 	
