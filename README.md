@@ -1423,6 +1423,10 @@ Cell creation in schematic/layout -> Layout design -> Spice format extracted fro
 					  └────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 Example : https://github.com/nickson-jose/vsdstdcelldesign
+Guidelines for std cell:
+	+ usage of `<pdk_dir>/sky130A/libs.tech/openlane/track.info` -> parameters for routing grids for each routing layer 
+	+ input and output ports must be at the intersection of the vertical and horizontal tracks 
+	+ width and heigh should in multiple of the track horizontal and vertical pitch  
 
 **Pre-layout timing analysis and importance of good clock tree**
 - Final steps for RTL2GDS
