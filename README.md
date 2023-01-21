@@ -1482,7 +1482,12 @@ To replace the values from the list use TCL command :
 	- 'linsert <vector> <element_index> <value>`  
 	
 ### Routing and post routing STA
+The OpenLane/TritonRoute is using Maze Routing with algos like Lees' Algorithm - the goal is to find :
+	- the shortest path from a _source_ connection to a _target_ connection. 
+	- lest number of routing bends
 
+Routing DRC:
+	
 
 ### Final steps for RTL2GDS
 
