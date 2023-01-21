@@ -80,11 +80,55 @@ Input transition
 
 **STA Analisys report**
 ![image](https://user-images.githubusercontent.com/49897923/212553703-93392db5-f498-46b5-b260-e0983da0b6d1.png)
-
+`report_net -connections _33531_`   - check the fanout cells  
+`replace_cell <instance> <name_new_cell>` -replace a specific instance cell buffers with bigger variants
 
 Timing variation vs PVT for the same start/endpoint pair:
 ![image](https://user-images.githubusercontent.com/49897923/212549767-43a17763-48b4-4bac-9dd8-8ff48a7fe2cf.png)
 
 ### Physical Design 
 
-OpenLane version : open_pdks 327e268bdb7191fe07a28bd40eeac055bba9dffd
+OpenLane version : 
+Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd
+Setup design :
+`prep -design vsdmemsoc `
+
+Config file:
+```
+{
+    "DESIGN_NAME": "vsdmemsoc"
+    "VERILOG_FILES": "dir::src/vsdmemsoc.v",
+    "CLOCK_PORT": "clk",
+    "CLOCK_NET": "clk",
+    "GLB_RESIZER_TIMING_OPTIMIZATIONS": true,
+    "CLOCK_PERIOD": 10,
+    "EXTRA_LEF":"dir::src/*.lef",
+    "pdk::sky130*": {
+        "SYNTH_MAX_FANOUT": 6,
+        "FP_CORE_UTIL": 35,
+        "scl::sky130_fd_sc_ms": {
+            "FP_CORE_UTIL": 30
+        }
+    },
+    
+    "LIB_SYNTH": "dir::src/sky130_fd_sc_hd__typical.lib", 
+    "LIB_FASTEST": "dir::src/sky130_fd_sc_hd__fast.lib",
+    "LIB_SLOWEST": "dir::src/sky130_fd_sc_hd__slow.lib",
+    "LIB_TYPICAL": "dir::src/sky130_fd_sc_hd__typical.lib"  
+}
+```
+Define SDC: 
+Cap load extracted from ".lib" file
+
+Insert custom cells 
+```
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+
+```
+run_synthesis 
+Check die area, flop ration, slack, tns , wns
+
+run_florplan
+
+run_placement
