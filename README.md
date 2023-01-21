@@ -58,11 +58,17 @@
 	- Static behavior evaluation – Power supply variation
 	- Static behavior evaluation – Device variation  
   + [Day 18-20 Physical design](#physical-design)  
-  	- Oen-source EDA, OpenLANE and Sky130 PDK
-	- Floorplan and introduction to library cells
-	- Design and characterize one library cell using Layout tool and spice simulator
-	- Pre-layout timing analysis and importance of good clock tree
-	- Final steps for RTL2GDS
+  	- [Oen-source EDA, OpenLANE and Sky130 PDK](#open-source-eda-openlane-and-sky130-pdk)
+	- [Layout and CMOS fabrication process](#layout-and-cmos-fabrication-process)
+	- [Floorplan ](#floorplan-and-introduction-to-library-cells)
+	- [Placement ](#placement)
+	- [Clock tree synthesis](#clock-tree-synthesis)
+	- [STA on real clocks](#sta-analysis-on-real-clocks)
+	- [Routing and post-routing STA](#routing-and-post-routing-sta)
+	- [Power distribution] 
+	- [GDS II final steps]
+	- [Standard library cell design](#standard-cells-design-flow)
+	
 
 # Tools install
 
