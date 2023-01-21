@@ -1404,11 +1404,12 @@ Legalization definition for OpenLane is that the cells must fit in the defined r
 ### **Pre-layout timing analysis and importance of good clock tree**  
 An example of timing propagation on the layout :  
 ![](Imgs/d20-2.png)
-Balancing the cells at the same level with the same capacitance will improve the clock skew between flops.
-![](Imgs/d20-1.png) 
 
 The cell delay is a function of input slew and load capacitance (fanout x cap load)  so this must be checked to improve the slack.  
-Openlane Switches:  
+Balancing the cells at the same level with the same capacitance will improve the clock skew between flops.
+![](Imgs/d20-1.png)
+	
+Openlane Variables/Switches/ Commands:  
 `SYNTH_DRIVING_CELL` -  
 `SYNTH_SIZE`  
 `SYNTH_STRATEGY` - area versus performance   
@@ -1416,10 +1417,11 @@ Openlane Switches:
 Commands:  
 `report_net -connections _33531_`   - check the fanout cells  
 `replace_cell <instance> <name_new_cell>` -replace a specific instance cell buffers with bigger variants 
+
 During timing anlisys the netlist can change so this has to be saved.  
 
 ### **Clock tree synthesis**  
-The goal of this step is to make sure that clock skew is reduced.  
+The goal of this step is to make sure that clock skew is reduced (usualy 10% of T<sub>CLK</sub>).  
 A good practice is to use cells that have inhibited clocks if they are not used. 
 Clock tree in the IC is usually equilibrated using a H topology - splitting the clock routing at a point were the distance is equal to all flops.  
 To meet signal integrity clk buffers/repeaters will be used. The clk buffers have the same rise and fall time.  
@@ -1428,19 +1430,54 @@ To meet signal integrity clk buffers/repeaters will be used. The clk buffers hav
 Because the clocks are high energy signals and also high long  dene routed - the clock must be shielded .  
 The crosstalk effects can create glitches (will create false triggers on data line) and delta delays (by delay the clock) .  
 
-OpenLane CTS Variables examples:  
-+ TS_TARGET_SKEW - The target clock skew in picoseconds.(Default: 200ps)  
-+ CLOCK_TREE_SYNTH - Enable clock tree synthesis.(Default: 1)  
-+ CTS_TOLERANCE - An integer value that represents a tradeoff of QoR (Quality of Reason - quality of performance related to clk parameters ) and runtime. Higher values will produce smaller runtime but worse QoR (Default: 100)  
-+ CTS_DISTANCE_BETWEEN_BUFFERS - in microns
-+ CTS_CLK_MAX_WIRE_LENGTH - in microns  
+Openlane Variables/Switches/ Commands:  
++ `TS_TARGET_SKEW` - The target clock skew in picoseconds.(Default: 200ps)  
++ `CLOCK_TREE_SYNTH` - Enable clock tree synthesis.(Default: 1)  
++ `CTS_TOLERANCE` - An integer value that represents a tradeoff of QoR (Quality of Reason - quality of performance related to clk parameters ) and runtime. Higher values will produce smaller runtime but worse QoR (Default: 100)    
++ `CTS_DISTANCE_BETWEEN_BUFFERS` - in microns  
++ `CTS_CLK_MAX_WIRE_LENGTH` - in microns   
 	
 After CTS run the netlist generated during previous steps will be altered with added clock buffers so additional netlist file will be created.  
 SDC file uses the variable definition again because sta will run outside OpenLane.  
 
 ### STA analysis on real clocks
-Here is an example of timming analysis for a single clock
+Here is an example of timing analysis for a single clock.    
+![](Imgs/d20-4.png) 
+
+Openlane Variables/Switches/ Commands:  
+
+Next example is running sta from OpenROAD (which is included in OpenLane and contain OpenSta). Running application like OpenSta from OpenLane is used usually when we need to use variables/ switches that were previously customized for our design.  
+!!! When running CTS with Triton is not possible tio run multi corner optimization so we need to run multiple times separately for each comer.  
+!!! For CTS `CURRENT_DEF` variable should be the one from placement stage . (`designs/<design_name>/runs/RUN_xxx/results/placement/<design_name>.placement.def`)  
+!!! Update .db file everytime you use the placement .def.  
+```
+% openroad  
+OpenROAD 4f1108b6f558718ed142cbb6c1f5ba20958195ca  
+This program is licensed under the BSD-3 license. See the LICENSE file for details.  
+...	
+# creation of .db file from .lef and .def files (def is related to the design and will change during design loops) 
+read_lef /designs/<design_name>/runs/RUN_xxx/tmp/merged.lef  
+read.def /designs/<design_name>/runs/RUN_xxx/results/cts/<design_name>.def  
+write_db <file_name>.db  #created in openlane/ 
+read_db
 	
+read_verilog 
+read_liberty -min, -max
+link <design>
+read_sdc 
+set_propagated_clock [all_clocks]  # will enable to calculate the actual cell delay in the clock path
+report_check
+report_clock_skew -hold
+```
+`CTS_CLK_BUFFER_LIST` - list of buffers used during CTS. Triton tryes to meet the skew using sequential the buffers from the list.  
+To replace the values from the list use TCL command :  
+	- `lreplace <vector> <element_index> <value>` - but this will keep the change.   
+	example:  `set ::env(CTS_CLK_BUFFER_LIS) [lreplace $::env(CTS_CLK_BUFFER_LIS`) 0 0] ` will delete first element  
+	- 'linsert <vector> <element_index> <value>`  
+	
+### Routing and post routing STA
+
+
 ### Final steps for RTL2GDS
 
 
