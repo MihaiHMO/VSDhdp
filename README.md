@@ -1264,7 +1264,9 @@ For latest documentation please check : https://openlane.readthedocs.io/en/lates
 
 **Running OpenLane**
 Go to OpenaLane folder and run `make mount`
-
+Openlane is usign in the flow several SW tools. The scripts and apps used during atomic commands are located in `<OpenLane_dir>/scripts`. 
+Also the OpenRoad related scripts are colected in `<OpenLane_dir>/scripts/openroad` like in the flow diagra .
+	
 **Create/run design**
 For first time project creation: `./flow.tcl -design <design_name> -init_design_config -add_to_designs`.
 It will ensure that your configuration is the absolute minimum.
@@ -1280,10 +1282,11 @@ $openlane: ./flow.tcl -design <design_name> [-interactive]
 ```
 By default, config.tcl is used. If `config.tcl` is not found, `config.json` is looked for as a fallback.  
 As Jan2023 Tcl config files are not recommended for newer designs, but is still maintained and supported at the moment.  
+
 - The configuration order is : OpenLane default config -> config.json -> specific design_config.tcl/json (higher priority) ---> The effect can be checked in `designs/<design_name>/run/RUN_xxx/config.tcl`  
-
 - Switches/Variables for commands : `openlane/configuration`
-
+- https://openlane.readthedocs.io/en/latest/reference/configuration.html?highlight=variables  
+	
 Below are the stages and the respective tools that are called by openlane for the functionalities as described:
 - **Setup preparation**
 First step after creation is the preparation or setup step:
@@ -1412,14 +1415,31 @@ Openlane Switches:
 `SYNTH_MAX_FANOUT` - limit the fanout conections from cells 
 Commands:  
 `report_net -connections _33531_`   - check the fanout cells  
-`replace_cell <instance> <name_new_cell>` -replace a specific cell ex buffers  
+`replace_cell <instance> <name_new_cell>` -replace a specific instance cell buffers with bigger variants 
 During timing anlisys the netlist can change so this has to be saved.  
 
 ### **Clock tree synthesis**  
-A good practice is to use cells that have insibited clocks if they are not used. 
+The goal of this step is to make sure that clock skew is reduced.  
+A good practice is to use cells that have inhibited clocks if they are not used. 
+Clock tree in the IC is usually equilibrated using a H topology - splitting the clock routing at a point were the distance is equal to all flops.  
+To meet signal integrity clk buffers/repeaters will be used. The clk buffers have the same rise and fall time.  
+![](Imgs/d20-3.png) 
+	
+Because the clocks are high energy signals and also high long  dene routed - the clock must be shielded .  
+The crosstalk effects can create glitches (will create false triggers on data line) and delta delays (by delay the clock) .  
+
+OpenLane CTS Variables examples:  
++ TS_TARGET_SKEW - The target clock skew in picoseconds.(Default: 200ps)  
++ CLOCK_TREE_SYNTH - Enable clock tree synthesis.(Default: 1)  
++ CTS_TOLERANCE - An integer value that represents a tradeoff of QoR (Quality of Reason - quality of performance related to clk parameters ) and runtime. Higher values will produce smaller runtime but worse QoR (Default: 100)  
++ CTS_DISTANCE_BETWEEN_BUFFERS - in microns
++ CTS_CLK_MAX_WIRE_LENGTH - in microns  
+	
 After CTS run the netlist generated during previous steps will be altered with added clock buffers so additional netlist file will be created.  
 SDC file uses the variable definition again because sta will run outside OpenLane.  
 
+### STA analysis on real clocks
+Here is an example of timming analysis for a single clock
 	
 ### Final steps for RTL2GDS
 
