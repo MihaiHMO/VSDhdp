@@ -1486,7 +1486,7 @@ The OpenLane/TritonRoute is using Maze Routing with algos like Lees' Algorithm -
 	- the shortest path from a _source_ connection to a _target_ connection. 
 	- lest number of routing bends
 
-Routing DRC:
+At this stage is Routing DRC and parasistic extraction.
 	
 
 ### Final steps for RTL2GDS
