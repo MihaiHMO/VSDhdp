@@ -1,7 +1,7 @@
 # VSD Hardware Digital Program -Digital 
 
 # Table of contents
-  + [Project implementaion: VSDMemSoC](https://github.com/MihaiHMO/VSDhdp/blob/main/VSDMemSoC.md) 
+  + [Project implementation: VSDMemSoC](https://github.com/MihaiHMO/VSDhdp/blob/main/VSDMemSoC.md) 
   + [Tools installation](#tools-install)  
   	- [Yosys-gate level synthesis](#yosys)
 	- [OpenSTA - static timing anlysis ](#opensta)
@@ -61,11 +61,12 @@
   	- [Oen-source EDA, OpenLANE and Sky130 PDK](#open-source-eda-openlane-and-sky130-pdk)
 	- [Layout and CMOS fabrication process](#layout-and-cmos-fabrication-process)
 	- [Floorplan ](#floorplan-and-introduction-to-library-cells)
+	- [Power distribution] 
 	- [Placement ](#placement)
 	- [Clock tree synthesis](#clock-tree-synthesis)
 	- [STA on real clocks](#sta-analysis-on-real-clocks)
 	- [Routing and post-routing STA](#routing-and-post-routing-sta)
-	- [Power distribution] 
+
 	- [GDS II final steps]
 	- [Standard library cell design](#standard-cells-design-flow)
 	
@@ -1394,11 +1395,16 @@ Second step is to place the "_Pre-placed cells_" that need a user-defined locati
 Placement of Decoupling Capacitors to maintain a necessary voltage levels for the elements of the circuit (local decoupling). The capacitance must be calculated depending on the amount of Id current drawn by the circuit that is served by the decoupling capacitor.
 
 Power planning is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
+![image](https://user-images.githubusercontent.com/49897923/213926399-b58ade8d-0d0b-4725-a850-059eac44e270.png)
 
 Pin/IO placement are the contacts used to connect the die to the package - usually the pins are the signals defined in the verilog file at the interface/PORTs of the deign. The placement depends on the functionality of the IC . 
 Clock I/O cells are usually bigger then generic I/O cells because they have multiple connections, and a lower impedance is needed.
 Around the pins a blocking area is needed so the automated tool will not place cells .
 ![image](https://user-images.githubusercontent.com/49897923/212905875-6e04ac67-1fd0-4e4c-85f2-2b403291c1cf.png)
+	
+OpenLANE Info:
+PDN is based o several grids on diferent roiting levels/layers.
+![image](https://user-images.githubusercontent.com/49897923/213926326-964cf6eb-c71e-44fc-a659-c2134c537916.png)
 
 ### **Placement**  
 This stage is actually the placement of the rest of the cells, optimized from the connections point of view to have minimum wire length and load capacitance. 
@@ -1437,7 +1443,7 @@ Because the clocks are high energy signals and also high long  dene routed - the
 The crosstalk effects can create glitches (will create false triggers on data line) and delta delays (by delay the clock) .  
 
 Openlane Variables/Switches/ Commands:  
-+ `TS_TARGET_SKEW` - The target clock skew in picoseconds.(Default: 200ps)  
++ `CTS_TARGET_SKEW` - The target clock skew in picoseconds.(Default: 200ps)  
 + `CLOCK_TREE_SYNTH` - Enable clock tree synthesis.(Default: 1)  
 + `CTS_TOLERANCE` - An integer value that represents a tradeoff of QoR (Quality of Reason - quality of performance related to clk parameters ) and runtime. Higher values will produce smaller runtime but worse QoR (Default: 100)    
 + `CTS_DISTANCE_BETWEEN_BUFFERS` - in microns  
@@ -1485,8 +1491,8 @@ To replace the values from the list use TCL command :
 The OpenLane/TritonRoute is using Maze Routing with algos like Lees' Algorithm - the goal is to find :
 	- the shortest path from a _source_ connection to a _target_ connection. 
 	- lest number of routing bends
-
-At this stage is Routing DRC and parasistic extraction.
+The routing is done in 2 steps: Global routing wich is like a guideline and Detailed Routing which will generate the wiring.
+At this stage is Routing DRC and parasitic extraction. 
 	
 
 ### Final steps for RTL2GDS
