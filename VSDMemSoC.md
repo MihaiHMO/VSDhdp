@@ -87,12 +87,17 @@ Timing variation vs PVT for the same start/endpoint pair:
 ![image](https://user-images.githubusercontent.com/49897923/212549767-43a17763-48b4-4bac-9dd8-8ff48a7fe2cf.png)
 
 ### Physical Design 
+**SRAM Cell**
+file:///home/mihaih/Pictures/Screenshots/Screenshot%20from%202023-01-25%2017-02-20.png![image](https://user-images.githubusercontent.com/49897923/214598184-0e8d4357-2f36-486c-8ae8-154f16363ed0.png)
+Area: 205521.531 um^2 -> 0.2055mm^2
 
 OpenLane version : 
 Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd
 Setup design :
-`prep -design vsdmemsoc `
+```
 
+prep -design vsdmemsoc 
+```
 Config file:
 ```
 {
