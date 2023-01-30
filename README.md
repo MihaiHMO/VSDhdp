@@ -1484,19 +1484,52 @@ report_clock_skew -hold
 `CTS_CLK_BUFFER_LIST` - list of buffers used during CTS. Triton tryes to meet the skew using sequential the buffers from the list.  
 To replace the values from the list use TCL command :  
 	- `lreplace <vector> <element_index> <value>` - but this will keep the change.   
-	example:  `set ::env(CTS_CLK_BUFFER_LIS) [lreplace $::env(CTS_CLK_BUFFER_LIS`) 0 0] ` will delete first element  
+	example:  `set ::env(CTS_CLK_BUFFER_LIS) [lreplace $::env(CTS_CLK_BUFFER_LIS`) 0 0] ` will delete first element    
 	- 'linsert <vector> <element_index> <value>`  
 	
 ### Routing and post routing STA
-The OpenLane/TritonRoute is using Maze Routing with algos like Lees' Algorithm - the goal is to find :
+The OpenLane/OpenRoad TritonRoute is using Maze Routing with algos like Lee's Algorithm - the goal is to find :
 	- the shortest path from a _source_ connection to a _target_ connection. 
 	- lest number of routing bends
-The routing is done in 2 steps: Global routing wich is like a guideline and Detailed Routing which will generate the wiring.
-At this stage is Routing DRC and parasitic extraction. 
+
+The routing is done in 2 steps:  
++ Global routing wich is like a guideline (FastRoute)
++ Detailed Routing which will generate the wiring (TritonRoute)
+	- honor the preprocessed route guide (from fast-route)
+	- assume route guide satisfy inter-guide connectivity
+	- Mixed Integer Linear Program(MILP)-based panel-routing scheme: intra-layer parallel and inter-layer sequential
+At this stage Routing DRC and parasitic extraction will be done. 
+
++ Detailed Route Problem Statement:
+	- Input: LEF, DEF, Preprocessed route guide
+	- Output: Detailed routing solution with optimized wire-length and via-count
+	- Constraint: Route guide honoring, connectivity constraint and design rules
+	- Handling Optimized Connectivity: minimized routing resource usage in routing guide
+	- Access Point (AP) : An on-grid point on the metal layer of the route guide, target lower/upper layer segments, pins or I/O ports
+	- Access Point Cluster (APC) : An union of all APs from same sources  
 	
+	![image](https://user-images.githubusercontent.com/49897923/215585570-0519db2f-30a2-475e-a15e-11080f739831.png)
 
-### Final steps for RTL2GDS
+Openlane Variables/Switches/ Commands:  
+- routing guides from preprocessed route can be found: `.../routing/fastroute.guide` -> eoi[<number>] -> net , and numbers are rectangular coordinates
+- Routing strategy and number of allowed violations must be considered - less violations will take longer time to route.
+- The remaining routings must be connected manually : `../reports/routing/tritonRoute.drc`
 
+**Post-routing parasitic extraction** 
+Done by a separate tool outside Openlane.
+```
+ $ cd .../SPEF_EXTRACTOR/
+ $ python3 main.py .../merged.lef .../<design>.def
+ # generated <design>.spef in <design>.def directory
+    
+ # before routing netlist
+ # <design>/runs/.../results/synthesis/<design>.synthesis_cts.v -> after cts
+ # 				      /<design>.synthesis_diode.v -> inserted antenna diode
+ #                                    /<design>.synthesis_preroute.v -> before route netlist
+```
+After routing:
+- a new `.db` file must be generated, using prerouting verilog file
+- STA analysis will be done using also the `.SPEF` file
 
 ### **Standard cells design flow**  
 Inputs --> Design  ---> Output  
