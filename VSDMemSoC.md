@@ -90,7 +90,7 @@ Timing variation vs PVT for the same start/endpoint pair:
 **SRAM Cell**
 ![image](https://user-images.githubusercontent.com/49897923/214598184-0e8d4357-2f36-486c-8ae8-154f16363ed0.png)
 Area: 205521.531 um^2 -> 0.2055mm^2
-GDS File has no DRC.
+GDS File has no DRC.  
 
 OpenLane version : 06b26813465d8745c2cdfe6605ac3233cef89dec
 Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd
@@ -158,18 +158,17 @@ add_lefs -src $lefs
  # check synth-stat report:                    /reports/synthesis/1-synthesis.AREA_0.stat.rpt
  # check timing report:                        /logs/synthesis/2-sta.log
 ```
-Stats:
-	- Die area: 323744 u^2
-	- Flop ration: 
-	- TNS: - 0.04 ns
-	- WNS: - 0,04 ns
+Stats:  
+	- Die area: 323744 u^2  
+	- Flop ration:   
+	- TNS: - 0.04 ns  
+	- WNS: - 0,04 ns  
 
 + run_floorplan
-
-+ run_cts 
 
 + run_placement
 ```
  % run placement
   # result in <design>/runs/<date>_<time>/results/placement/
 ```
++ run_cts 
