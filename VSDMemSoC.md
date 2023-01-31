@@ -88,14 +88,15 @@ Timing variation vs PVT for the same start/endpoint pair:
 
 ### Physical Design 
 **SRAM Cell**
-file:///home/mihaih/Pictures/Screenshots/Screenshot%20from%202023-01-25%2017-02-20.png![image](https://user-images.githubusercontent.com/49897923/214598184-0e8d4357-2f36-486c-8ae8-154f16363ed0.png)
+![image](https://user-images.githubusercontent.com/49897923/214598184-0e8d4357-2f36-486c-8ae8-154f16363ed0.png)
 Area: 205521.531 um^2 -> 0.2055mm^2
+GDS File has no DRC.
 
 OpenLane version : 06b26813465d8745c2cdfe6605ac3233cef89dec
 Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd
 OpenROAD: 4f1108b6f558718ed142cbb6c1f5ba20958195ca
 
-Design setup :
++ Design setup :
 ```
 # go to OpenLane dir
 $ sudo make mount
@@ -134,34 +135,40 @@ Config file:
     "DESIGN_IS_CORE": true
 }
 ```
-Define SDC: 
-Cap load extracted from ".lib" file
++ Define SDC: 
+Cap load extracted from ".lib" file  
 
-At the beginnig a synthesis strategy eploration can be done by open lane with : `$ ./flow.tcl -design vsdmemsoc -synt_explore`
-The output is an Area estimation and syhtesised verilog file for diferent strategies:
+At the beginning a synthesis strategy exploration can be done by open lane with : `$ ./flow.tcl -design vsdmemsoc -synt_explore`  
+The output is an Area estimation and synthesized verilog file for diferent strategies:  
 
 ![image](https://user-images.githubusercontent.com/49897923/215674519-2e49741e-5a5c-4650-a8fa-d7406cf56e23.png)
 
++ Open design: `prep -design vsdmemsoc - tag RUNxxx [-overwrite]`  
 
-Open design: `prep -design vsdmemsoc - tag RUNxxx [-overwrite]` 
-
-Insert custom SRAM cells: 
++ Insert custom SRAM cells: 
 ```
 set lefs [glob $::env(DESIGN_DIR)/src/lef/*.lef]
 add_lefs -src $lefs
 
 ```
-run_synthesis 
-Check die area, flop ration, slack, tns , wns
++ run_synthesis 
 ```
  $ run synthesis
  # check result netlist: runs/RUN_<date>_<time>/synthesis/<deisgn>.v
  # check synth-stat report:                    /reports/synthesis/1-synthesis.AREA_0.stat.rpt
  # check timing report:                        /logs/synthesis/2-sta.log
 ```
-run_floorplan
+Stats:
+	- Die area: 323744 u^2
+	- Flop ration: 
+	- TNS: - 0.04 ns
+	- WNS: - 0,04 ns
 
-run_placement
++ run_floorplan
+
++ run_cts 
+
++ run_placement
 ```
  % run placement
   # result in <design>/runs/<date>_<time>/results/placement/
