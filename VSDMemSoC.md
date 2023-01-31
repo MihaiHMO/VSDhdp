@@ -91,10 +91,17 @@ Timing variation vs PVT for the same start/endpoint pair:
 ![image](https://user-images.githubusercontent.com/49897923/214598184-0e8d4357-2f36-486c-8ae8-154f16363ed0.png)
 Area: 205521.531 um^2 -> 0.2055mm^2
 GDS File has no DRC.  
+```
+ # pdks/sky130A/libs.tech/openlane/sky130_fd_sc_hd/tracks.info  - used to check the grids used for each metal layer  
+    met3 TBD
+    met4 TBD
+  # adjust magic grid display to check if the SRAM routed power lines and cell pins are on the grid   
+    % grid 0.46um 0.34um 0.23um 0.17um
+```
 
-OpenLane version : 06b26813465d8745c2cdfe6605ac3233cef89dec
-Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd
-OpenROAD: 4f1108b6f558718ed142cbb6c1f5ba20958195ca
+OpenLane version : 06b26813465d8745c2cdfe6605ac3233cef89dec  
+Open_pdks: 327e268bdb7191fe07a28bd40eeac055bba9dffd  
+OpenROAD: 4f1108b6f558718ed142cbb6c1f5ba20958195ca  
 
 + Design setup :
 ```
@@ -151,7 +158,7 @@ set lefs [glob $::env(DESIGN_DIR)/src/lef/*.lef]
 add_lefs -src $lefs
 
 ```
-+ run_synthesis 
++ run_synthesis  
 ```
  $ run synthesis
  # check result netlist: runs/RUN_<date>_<time>/synthesis/<deisgn>.v
@@ -163,12 +170,67 @@ Stats:
 	- Flop ration:   
 	- TNS: - 0.04 ns  
 	- WNS: - 0,04 ns  
-
-+ run_floorplan
-
-+ run_placement
+	
+Post synth STA can be done to optimize the timings by changing buffer type, fanout number etc. 
+This can be done also outside openlane with a separate script.  
 ```
- % run placement
-  # result in <design>/runs/<date>_<time>/results/placement/
+ $ sta pre_sta.conf
+  # optimize synthesis to reduce setup violation
+  % set ::env(SYNTH_STRATEGY) 1
+  % set ::env(SYNTH_BUFFERING) 1
+  % set ::env(SYNTH_SIZING) 1
+  % set ::env(SYNTH_MAX_FANOUT) 4
+  % set ::env(SYNTH_DRIVING_CELL) sky130_fd_sc_hd__inv_8
+  % run synthesis
+  % report_net -connections <net-name> => Driver-Pins/Load-Pins
+  % replace <inst-name> <lib-cell-name>
+  % report_checks -fields {net cap slew input_pins} -digits 4
+  % write_verilog <design>_eco.v
 ```
+
++ run_floorplan  
+This will do : floorplaning , IO placement , Power distribution  
+```
+# openlane/configurations/floorplan.tcl
+  % run floorplan
+  # FP_IO_MODE (same distribution length or nearnest)
+  # FP_IO_VMETAL N (use metal N+1)
+  # FP_IO_HMETAL M (use metal M+1)
+  # FP_IO_MODE 2
+  # results in <design>/runs/RUN_<date>_<time>/logs/floorplan/*.log
+  # DIE/CORE AREA in:                      /reports/floorplan/initial_fp_core_area.rpt, initial_fp_die_area.rpt                                    
+  # Layout:                                /result/floorplan/<design>.def
+
+  # Magic open DEF file
+  $ magic -d XR -T sky130A.tech lef read .../tmp/merged.nom.lef def read .../results/floorplan/<design>.def
+```
++ run_placement  
+```
+# openlane/configurations/placement.tcl
+% run placement
+  # result in <design>/runs/RUN_<date>_<time>/results/placement/
+  # Magic open DEF file
+  $ magic -d XR -T sky130A.tech lef read .../tmp/merged.lef def read ..../results/placement/<design>.def
+```
+
 + run_cts 
+```
+  # generate <design>_synthesis_cts.v
+  # ::env(CTS_ROOT_BUFFER) => sky130_fd_sc_hd__clkbuf_16 , clk buffer type
+  # ::env(CTS_MAX_CAP) => CTS_ROOT_BUFFER output port load-cap 
+```
+
+STA after CTS:  
+```
+  % openroad - this will use same env variable in openlane
+    % read_lef .../merged.lef
+    % read_def .../<design>.cts.lef
+    % write_db <design>_cts.db     - this is used for timing anlisys after CTS
+    % read_liberty -max $::env(LIB_MAX)
+    % read_liberty -min $::env(LIB_MIN)
+    % link_design <design-top>
+    % read_sdc .../my_Base.sdc
+    % set_propagated_clock [all_clocks]
+    $ report_checks -path_delay min-max -format full_clock_expanded -digits 4
+  # upper command produce false analysis from ff/ss analysis by tt synthesis
+  ```
