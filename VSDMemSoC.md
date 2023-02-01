@@ -93,10 +93,12 @@ Area: 205521.531 um^2 -> 0.2055mm^2
 GDS File has no DRC.  
 ```
  # pdks/sky130A/libs.tech/openlane/sky130_fd_sc_hd/tracks.info  - used to check the grids used for each metal layer  
-    met3 TBD
-    met4 TBD
+	met3 X 0.34 0.68
+	met3 Y 0.34 0.68
+	met4 X 0.46 0.92
+	met4 Y 0.46 0.92
   # adjust magic grid display to check if the SRAM routed power lines and cell pins are on the grid   
-    % grid 0.46um 0.34um 0.23um 0.17um
+    % grid 0.46um 0.34um 0.34um 0.46um
 ```
 
 OpenLane version : 06b26813465d8745c2cdfe6605ac3233cef89dec  
@@ -161,16 +163,35 @@ add_lefs -src $lefs
 + run_synthesis  
 ```
  $ run synthesis
+ [STEP 1] Syntheis
+ [STEP 2] Sta
  # check result netlist: runs/RUN_<date>_<time>/synthesis/<deisgn>.v
- # check synth-stat report:                    /reports/synthesis/1-synthesis.AREA_0.stat.rpt
- # check timing report:                        /logs/synthesis/2-sta.log
+ # check synth-stat report:                    /reports/synthesis/synthesis.AREA_0.stat.rpt
+ # check timing report:                        /logs/synthesis/synthesis.log; sta.log
 ```
+
 Stats:  
-	- Die area: 323744 u^2  
-	- Flop ration:   
-	- TNS: - 0.04 ns  
-	- WNS: - 0,04 ns  
-	
+	- Design area: 327295 u^2 100% utilization
+	- Flop ration: 0.178
+	- TNS: 0 ns  
+	- WNS: 0 ns  
+	- CLK Skew 0 ns
+	- Violantions : max slew , max fanout
+```
+===========================================================================
+ report_power
+============================================================================
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             1.03e-02   5.86e-04   1.76e-08   1.09e-02  62.0%
+Combinational          4.74e-03   1.95e-03   1.72e-05   6.70e-03  38.0%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  1.51e-02   2.53e-03   1.73e-05   1.76e-02 100.0%
+                          85.5%      14.4%       0.1%
+```
 Post synth STA can be done to optimize the timings by changing buffer type, fanout number etc. 
 This can be done also outside openlane with a separate script.  
 ```
@@ -191,18 +212,47 @@ This can be done also outside openlane with a separate script.
 + run_floorplan  
 This will do : floorplaning , IO placement , Power distribution  
 ```
+[STEP 3] Floorplanning   -> /RUN_<date>_<time>/logs/floorplan/initial_fp.log
+			    /RUN_<date>_<time>/reports/floorplan/initial_fp_core/die_area.rpt
+[STEP 4] IO PLacement    -> /RUN_<date>_<time>/logs/floorplan/io.log
+[STEP 5] Global Placement-> /RUN_<date>_<time>/logs/placement/global.log
+[STEP 6] Macro Placement -> /RUN_<date>_<time>/logs/placement/basic_mp.log
+[STEP 7] Tap/Decap cells -> /RUN_<date>_<time>/logs/floorplan/tap.log
+[STEP 8] PDN             -> /RUN_<date>_<time>/logs/floorplan/PDN.log
 # openlane/configurations/floorplan.tcl
-  % run floorplan
   # FP_IO_MODE (same distribution length or nearnest)
   # FP_IO_VMETAL N (use metal N+1)
   # FP_IO_HMETAL M (use metal M+1)
   # FP_IO_MODE 2
-  # results in <design>/runs/RUN_<date>_<time>/logs/floorplan/*.log
-  # DIE/CORE AREA in:                      /reports/floorplan/initial_fp_core_area.rpt, initial_fp_die_area.rpt                                    
+                                 
   # Layout:                                /result/floorplan/<design>.def
 
   # Magic open DEF file
   $ magic -d XR -T sky130A.tech lef read .../tmp/merged.nom.lef def read .../results/floorplan/<design>.def
+```
+Stats:
+	- Die area: 820.105 x 830.825 ->
+	- Design area: 327295 u^2 50% utilization
+	- Flop ration: 0.178
+	- TNS: -7.54 ns  
+	- WNS: 0.39 ns  
+	- CLK Skew 0 ns
+	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs
+
+```
+===========================================================================
+ report_power
+============================================================================
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             1.03e-02   1.06e-03   1.76e-08   1.14e-02  57.4%
+Combinational          4.79e-03   3.67e-03   1.72e-05   8.47e-03  42.6%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  1.51e-02   4.73e-03   1.73e-05   1.99e-02 100.0%
+                          76.1%      23.8%       0.1%
 ```
 + run_placement  
 ```
@@ -219,6 +269,10 @@ This will do : floorplaning , IO placement , Power distribution
   # ::env(CTS_ROOT_BUFFER) => sky130_fd_sc_hd__clkbuf_16 , clk buffer type
   # ::env(CTS_MAX_CAP) => CTS_ROOT_BUFFER output port load-cap 
 ```
+A view after floorplan, placemnt and CTS
+![image](https://user-images.githubusercontent.com/49897923/215967449-37515edc-760b-4fa5-b401-b87544dfa514.png)
+
+AREA : 674127.188 um^2
 
 STA after CTS:  
 ```
