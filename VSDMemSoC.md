@@ -171,12 +171,12 @@ add_lefs -src $lefs
 ```
 
 Stats:  
-	- Design area: 327295 u^2 100% utilization
-	- Flop ration: 0.178
-	- TNS: 0 ns  
+	- Design area: 327295 u^2 100% utilization  
+	- Flop ration: 0.178  
+	- TNS: 0 ns   
 	- WNS: 0 ns  
-	- CLK Skew 0 ns
-	- Violantions : max slew , max fanout
+	- CLK Skew 0 ns  
+	- Violantions : max slew , max fanout  
 ```
 ===========================================================================
  report_power
@@ -231,29 +231,15 @@ This will do : floorplaning , IO placement , Power distribution
   $ magic -d XR -T sky130A.tech lef read .../tmp/merged.nom.lef def read .../results/floorplan/<design>.def
 ```
 Stats:
-	- Die area: 820.105 x 830.825 ->
-	- Design area: 327295 u^2 50% utilization
-	- Flop ration: 0.178
-	- TNS: -7.54 ns  
+	- Die area: 820.105 x 830.825 ->  
+	- Design area: 327295 u^2 50% utilization 
+	- Power : 1.99e-02 W
+	- Flop ration: 0.178 
+	- TNS: -7.54 ns   
 	- WNS: 0.39 ns  
-	- CLK Skew 0 ns
-	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs
+	- CLK Skew 0 ns  
+	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs  
 
-```
-===========================================================================
- report_power
-============================================================================
-Group                  Internal  Switching    Leakage      Total
-                          Power      Power      Power      Power (Watts)
-----------------------------------------------------------------
-Sequential             1.03e-02   1.06e-03   1.76e-08   1.14e-02  57.4%
-Combinational          4.79e-03   3.67e-03   1.72e-05   8.47e-03  42.6%
-Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
-Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
-----------------------------------------------------------------
-Total                  1.51e-02   4.73e-03   1.73e-05   1.99e-02 100.0%
-                          76.1%      23.8%       0.1%
-```
 ![image](https://user-images.githubusercontent.com/49897923/215983088-cf9fc5bc-ddd7-45b9-8195-ab450f7eadc3.png)
 + run_placement  
 ```
@@ -267,13 +253,32 @@ Total                  1.51e-02   4.73e-03   1.73e-05   1.99e-02 100.0%
   $ magic -d XR -T sky130A.tech lef read .../tmp/merged.lef def read ..../results/placement/<design>.def
 ```
 Stats:
-	- Die area: 820.105 x 830.825 ->
-	- Design area: 335017 u^2 51% utilization
-	- Flop ration: 0.178
-	- TNS: -1.66 ns  
-	- WNS: -0.29 ns  
-	- CLK Skew 0 ns
-	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs
+	- Die area: 820.105 x 830.825 ->  
+	- Design area: 335017 u^2 51% utilization  
+	- Power : 1.95e-02 W
+	- Flop ration: 0.178  
+	- TNS: -1.66 ns   
+	- WNS: -0.29 ns   
+	- CLK Skew 0 ns  
+	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs  
+
+
++ run_cts 
+```
+[STEP 12] Clock tree Synthesis  -> /RUN_<date>_<time>/logs/cts/12-cts.log
+  # generate <design>_synthesis_cts.v
+  # ::env(CTS_ROOT_BUFFER) => sky130_fd_sc_hd__clkbuf_16 , clk buffer type
+  # ::env(CTS_MAX_CAP) => CTS_ROOT_BUFFER output port load-cap 
+```
+Stats:
+	- Die area: 820.105 x 830.825 ->  
+	- Design area: 335860 u^2 51% utilization  
+	- Power : 2.51e-02 W
+	- Flop ration: 0.178  
+	- TNS: 0 ns   
+	- WNS: -0.41 ns   
+	- CLK Skew 0.29 ns  
+	- Violantions : max slew for mem inputs 
 ```
 ===========================================================================
  report_power
@@ -281,22 +286,13 @@ Stats:
 Group                  Internal  Switching    Leakage      Total
                           Power      Power      Power      Power (Watts)
 ----------------------------------------------------------------
-Sequential             1.04e-02   1.15e-03   1.76e-08   1.15e-02  58.9%
-Combinational          4.77e-03   3.25e-03   1.72e-05   8.03e-03  41.1%
+Sequential             9.94e-03   1.17e-03   1.76e-08   1.11e-02  44.2%
+Combinational          8.04e-03   5.98e-03   1.73e-05   1.40e-02  55.8%
 Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
 Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
 ----------------------------------------------------------------
-Total                  1.51e-02   4.39e-03   1.73e-05   1.95e-02 100.0%
-                          77.4%      22.5%       0.1%
-```
-
-![image](https://user-images.githubusercontent.com/49897923/215985836-ebd75d50-cbb9-49ef-bb2e-1f532b3dc5c3.png)
-
-+ run_cts 
-```
-  # generate <design>_synthesis_cts.v
-  # ::env(CTS_ROOT_BUFFER) => sky130_fd_sc_hd__clkbuf_16 , clk buffer type
-  # ::env(CTS_MAX_CAP) => CTS_ROOT_BUFFER output port load-cap 
+Total                  1.80e-02   7.14e-03   1.73e-05   2.51e-02 100.0%
+                          71.5%      28.4%       0.1%
 ```
 A view after floorplan, placemnt and CTS
 
