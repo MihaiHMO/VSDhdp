@@ -192,6 +192,7 @@ Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
 Total                  1.51e-02   2.53e-03   1.73e-05   1.76e-02 100.0%
                           85.5%      14.4%       0.1%
 ```
+
 Post synth STA can be done to optimize the timings by changing buffer type, fanout number etc. 
 This can be done also outside openlane with a separate script.  
 ```
@@ -223,7 +224,6 @@ This will do : floorplaning , IO placement , Power distribution
   # FP_IO_MODE (same distribution length or nearnest)
   # FP_IO_VMETAL N (use metal N+1)
   # FP_IO_HMETAL M (use metal M+1)
-  # FP_IO_MODE 2
                                  
   # Layout:                                /result/floorplan/<design>.def
 
@@ -254,14 +254,43 @@ Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
 Total                  1.51e-02   4.73e-03   1.73e-05   1.99e-02 100.0%
                           76.1%      23.8%       0.1%
 ```
+![image](https://user-images.githubusercontent.com/49897923/215983088-cf9fc5bc-ddd7-45b9-8195-ab450f7eadc3.png)
 + run_placement  
 ```
+[STEP 9] Global Placement                -> /RUN_<date>_<time>/logs/placement/global.log
+[STEP 10] Placement Resizer/Optimization -> /RUN_<date>_<time>/logs/placement/resizerlog```
+[STEP 11] detailed Placement             -> /RUN_<date>_<time>/logs/placement/detailed.log
+
 # openlane/configurations/placement.tcl
-% run placement
-  # result in <design>/runs/RUN_<date>_<time>/results/placement/
+  # Results in <design>/runs/RUN_<date>_<time>/results/placement/<>.def ; <>.nl.v; <>.pnl.v (power netlist)
   # Magic open DEF file
   $ magic -d XR -T sky130A.tech lef read .../tmp/merged.lef def read ..../results/placement/<design>.def
 ```
+Stats:
+	- Die area: 820.105 x 830.825 ->
+	- Design area: 335017 u^2 51% utilization
+	- Flop ration: 0.178
+	- TNS: -1.66 ns  
+	- WNS: -0.29 ns  
+	- CLK Skew 0 ns
+	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs
+```
+===========================================================================
+ report_power
+============================================================================
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power (Watts)
+----------------------------------------------------------------
+Sequential             1.04e-02   1.15e-03   1.76e-08   1.15e-02  58.9%
+Combinational          4.77e-03   3.25e-03   1.72e-05   8.03e-03  41.1%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  1.51e-02   4.39e-03   1.73e-05   1.95e-02 100.0%
+                          77.4%      22.5%       0.1%
+```
+
+![image](https://user-images.githubusercontent.com/49897923/215985836-ebd75d50-cbb9-49ef-bb2e-1f532b3dc5c3.png)
 
 + run_cts 
 ```
@@ -270,9 +299,7 @@ Total                  1.51e-02   4.73e-03   1.73e-05   1.99e-02 100.0%
   # ::env(CTS_MAX_CAP) => CTS_ROOT_BUFFER output port load-cap 
 ```
 A view after floorplan, placemnt and CTS
-![image](https://user-images.githubusercontent.com/49897923/215967449-37515edc-760b-4fa5-b401-b87544dfa514.png)
 
-AREA : 674127.188 um^2
 
 STA after CTS:  
 ```
