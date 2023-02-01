@@ -297,6 +297,7 @@ Total                  1.80e-02   7.14e-03   1.73e-05   2.51e-02 100.0%
                           71.5%      28.4%       0.1%
 ```
 A view after floorplan, placemnt and CTS
+![image](https://user-images.githubusercontent.com/49897923/216033421-dfd9ad29-e823-47eb-872d-bd0e7751c8dd.png)
 
 
 STA after CTS:  
