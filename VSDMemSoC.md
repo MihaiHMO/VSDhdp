@@ -1,8 +1,10 @@
 # Table of content  
-- [Overview](#functional-diagram)  
-- [Make commands](#make-commands)  
-- [RTL and GLS synthesis](#rtl-and-gls-synthesis)  
-- [CTS Design Constrains and STA Analisys](#cts-design-constrains-and-sta-analisys)  
++ [Overview](#functional-diagram)  
++ [Make commands](#make-commands)  
++ [RTL and GLS synthesis](#rtl-and-gls-synthesis)   
++ [CTS Design Constrains and STA Analisys](#cts-design-constrains-and-sta-analisys)
++ [Physical design](#physical-design)
+
 
 # Physical implementation of VSDMemSoC
 
