@@ -314,3 +314,5 @@ STA after CTS:
     $ report_checks -path_delay min-max -format full_clock_expanded -digits 4
   # upper command produce false analysis from ff/ss analysis by tt synthesis
   ```
++ run_routing  
+![image](https://user-images.githubusercontent.com/49897923/216305345-e725bfdb-f361-43ba-a726-0d134f4af0f7.png)
