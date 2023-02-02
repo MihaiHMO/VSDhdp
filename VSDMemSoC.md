@@ -242,7 +242,7 @@ Stats:
 	- CLK Skew 0 ns  
 	- Violantions : max slew , max fanout, max capacitacne for mem inputs and outputs  
 
-![image](https://user-images.githubusercontent.com/49897923/215983088-cf9fc5bc-ddd7-45b9-8195-ab450f7eadc3.png)
+
 + run_placement  
 ```
 [STEP 9] Global Placement                -> /RUN_<date>_<time>/logs/placement/global.log
@@ -297,7 +297,8 @@ Total                  1.80e-02   7.14e-03   1.73e-05   2.51e-02 100.0%
                           71.5%      28.4%       0.1%
 ```
 A view after floorplan, placemnt and CTS
-![image](https://user-images.githubusercontent.com/49897923/216033421-dfd9ad29-e823-47eb-872d-bd0e7751c8dd.png)
+![image](https://user-images.githubusercontent.com/49897923/216393979-22244677-a4bc-4031-aff3-46333edd3c16.png)
+
 
 
 STA after CTS:  
