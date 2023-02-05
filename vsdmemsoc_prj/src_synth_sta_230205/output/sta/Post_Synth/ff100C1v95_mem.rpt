@@ -1,0 +1,104 @@
+Startpoint: _21998_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: mem (falling edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: min
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                    0.0000    0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock network delay (ideal)
+                    0.0000    0.0000    0.0000 ^ _21998_/CLK (sky130_fd_sc_hd__dfxtp_1)
+                    0.0216    0.1849    0.1849 v _21998_/Q (sky130_fd_sc_hd__dfxtp_1)
+     1    0.0024                                 cntlr.core.CPU_inc_pc_a3[2] (net)
+                    0.0216    0.0000    0.1849 v _11006_/A1 (sky130_fd_sc_hd__a21oi_1)
+                    0.0571    0.0655    0.2504 ^ _11006_/Y (sky130_fd_sc_hd__a21oi_1)
+     1    0.0025                                 _4964_ (net)
+                    0.0571    0.0000    0.2504 ^ _11009_/A1 (sky130_fd_sc_hd__a21oi_1)
+                    0.0344    0.0538    0.3041 v _11009_/Y (sky130_fd_sc_hd__a21oi_1)
+     2    0.0049                                 cntlr.core.CPU_pc_a0[2] (net)
+                    0.0344    0.0000    0.3041 v _9914_/A (sky130_fd_sc_hd__clkinv_1)
+                    0.0182    0.0221    0.3263 ^ _9914_/Y (sky130_fd_sc_hd__clkinv_1)
+     1    0.0019                                 _0_ (net)
+                    0.0182    0.0000    0.3263 ^ _9916_/A2 (sky130_fd_sc_hd__o21ai_0)
+                    0.0685    0.0745    0.4007 v _9916_/Y (sky130_fd_sc_hd__o21ai_0)
+     1    0.0069                                 cntlr.mem_addr[0] (net)
+                    0.0913    0.0000    0.4007 v mem/addr0[0] (sram_32_256_sky130A)
+                                        0.4007   data arrival time
+
+                    0.0000    0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock network delay (ideal)
+                              0.0000    0.0000   clock reconvergence pessimism
+                                        0.0000 ^ mem/clk0 (sram_32_256_sky130A)
+                             -0.0560   -0.0560   library hold time
+                                       -0.0560   data required time
+-------------------------------------------------------------------------------------
+                                       -0.0560   data required time
+                                       -0.4007   data arrival time
+-------------------------------------------------------------------------------------
+                                        0.4567   slack (MET)
+
+
+Startpoint: _21698_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: mem (falling edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+Fanout       Cap      Slew     Delay      Time   Description
+-------------------------------------------------------------------------------------
+                    0.0000    0.0000    0.0000   clock clk (rise edge)
+                              0.0000    0.0000   clock network delay (ideal)
+                    0.0000    0.0000    0.0000 ^ _21698_/CLK (sky130_fd_sc_hd__dfxtp_1)
+                    0.0300    0.1936    0.1936 v _21698_/Q (sky130_fd_sc_hd__dfxtp_1)
+     2    0.0047                                 cntlr.core.CPU_valid_load_a5 (net)
+                    0.0300    0.0000    0.1936 v _10013_/A (sky130_fd_sc_hd__nor2_1)
+                    0.0499    0.0552    0.2488 ^ _10013_/Y (sky130_fd_sc_hd__nor2_1)
+     1    0.0026                                 _4040_ (net)
+                    0.0499    0.0000    0.2488 ^ _10015_/B (sky130_fd_sc_hd__nand3_1)
+                    0.5854    0.4462    0.6949 v _10015_/Y (sky130_fd_sc_hd__nand3_1)
+    29    0.0777                                 _4042_ (net)
+                    0.5854    0.0000    0.6949 v _10016_/A (sky130_fd_sc_hd__clkinv_1)
+                    0.4892    0.4723    1.1673 ^ _10016_/Y (sky130_fd_sc_hd__clkinv_1)
+    49    0.1081                                 cntlr.core.CPU_valid_a3 (net)
+                    0.4892    0.0000    1.1673 ^ _10017_/A (sky130_fd_sc_hd__nand2_1)
+                    0.1334    0.0876    1.2549 v _10017_/Y (sky130_fd_sc_hd__nand2_1)
+     3    0.0077                                 _4043_ (net)
+                    0.1334    0.0000    1.2549 v _11002_/B (sky130_fd_sc_hd__nor2_1)
+                    1.4415    1.0414    2.2962 ^ _11002_/Y (sky130_fd_sc_hd__nor2_1)
+    51    0.1298                                 _4960_ (net)
+                    1.4415    0.0000    2.2962 ^ _11010_/A (sky130_fd_sc_hd__clkinv_1)
+                    0.4495    0.4532    2.7494 v _11010_/Y (sky130_fd_sc_hd__clkinv_1)
+    14    0.0302                                 _4967_ (net)
+                    0.4495    0.0000    2.7494 v _11032_/B (sky130_fd_sc_hd__nand2_1)
+                    0.0911    0.1110    2.8604 ^ _11032_/Y (sky130_fd_sc_hd__nand2_1)
+     1    0.0024                                 _4986_ (net)
+                    0.0911    0.0000    2.8604 ^ _11034_/A (sky130_fd_sc_hd__nand3_1)
+                    0.0700    0.0484    2.9088 v _11034_/Y (sky130_fd_sc_hd__nand3_1)
+     1    0.0024                                 _4988_ (net)
+                    0.0700    0.0000    2.9088 v _11035_/C1 (sky130_fd_sc_hd__o211ai_1)
+                    0.1515    0.0572    2.9660 ^ _11035_/Y (sky130_fd_sc_hd__o211ai_1)
+     1    0.0025                                 _4989_ (net)
+                    0.1515    0.0000    2.9660 ^ _11038_/A2 (sky130_fd_sc_hd__a21oi_1)
+                    0.0647    0.0682    3.0342 v _11038_/Y (sky130_fd_sc_hd__a21oi_1)
+     2    0.0049                                 cntlr.core.CPU_pc_a0[6] (net)
+                    0.0647    0.0000    3.0342 v _9926_/A (sky130_fd_sc_hd__clkinv_1)
+                    0.0251    0.0261    3.0603 ^ _9926_/Y (sky130_fd_sc_hd__clkinv_1)
+     1    0.0019                                 _8_ (net)
+                    0.0251    0.0000    3.0603 ^ _9928_/A2 (sky130_fd_sc_hd__o21ai_0)
+                    0.1954    0.0761    3.1364 v _9928_/Y (sky130_fd_sc_hd__o21ai_0)
+     1    0.0069                                 cntlr.mem_addr[4] (net)
+                    0.2605    0.0000    3.1364 v mem/addr0[4] (sram_32_256_sky130A)
+                                        3.1364   data arrival time
+
+                    0.0000   10.0000   10.0000   clock clk (rise edge)
+                              0.0000   10.0000   clock network delay (ideal)
+                              0.0000   10.0000   clock reconvergence pessimism
+                                       10.0000 ^ mem/clk0 (sram_32_256_sky130A)
+                             -0.1030    9.8970   library setup time
+                                        9.8970   data required time
+-------------------------------------------------------------------------------------
+                                        9.8970   data required time
+                                       -3.1364   data arrival time
+-------------------------------------------------------------------------------------
+                                        6.7606   slack (MET)
+
+
