@@ -1,0 +1,24 @@
+{
+    "DESIGN_NAME": "vsdmemsoc",
+    "VERILOG_FILES": "dir::src/vsdmemsoc.v controller.v rvmyth_gen.v rvmyth.v",
+    "VERILOG_FILES_BLACKBOX":"dir::src/controller.v",
+    "EXTRA_LIBS": "dir::src/sram_32_256_sky130A_TT_1p8V_25C.lib",
+    "EXTRA_GDS_FILES":"dir::src/*.gds",
+    "EXTRA_LEF":"dir::src/*.lef",
+    "CLOCK_PORT": "CLK",
+    "CLOCK_NET": "CLK",
+    "GLB_RESIZER_TIMING_OPTIMIZATIONS": true,
+    "CLOCK_PERIOD": 10,
+    "VDD_NETS": "vccd1",
+    "GND_NETS": "vssd1",
+    "FP_PDN_MACRO_HOOKS" : "submodule.mem vccd1 vssd1 vccd1 vssd1",
+    "MACRO_PLACEMENT_CFG": "dir:macro_plcmt.cfg",
+    "pdk::sky130*": {
+        "SYNTH_MAX_FANOUT": 6,
+        "FP_CORE_UTIL": 35,
+        "scl::sky130_fd_sc_hd": {
+            "FP_CORE_UTIL": 30
+        }
+    }
+    
+}
