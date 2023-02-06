@@ -247,7 +247,12 @@ Standard Cells – Standard cells are fixed height and a multiple of unit size w
  
  ![image](https://user-images.githubusercontent.com/49897923/204217252-cb8e9ff1-e91b-4b6c-a8c0-069fffd927bf.png)
  
- The test benh will contain a Stimulus generator - the design (instantieted) - Stimulus observer. The test bench does not have primary inputs and outputs.
+ The test bench will contain:  
+ - a Stimulus generator   
+ - the design (instantiated)   
+ - Stimulus observer   
+  
+ -The test bench does not have primary inputs and outputs.  
   ```
   `timescale 1ns / 1ps
 module tb_good_mux;
@@ -282,24 +287,23 @@ endmodule
   ```
  The output of the iverilog is a `.vcd` file and gtkwave will be used to generate the waveforms and to have it in visual format.
   
- Folder structure of the git clone:
-    - lib - will contain sky130 standard cell library 
-    - my_lib/verilog_models - will contain standard cell verilog model
-    - verilog_files  -containes the lab experiments source files
+ Folder structure of the git clone:  
+    - `lib` - will contain sky130 standard cell library   
+    - `my_lib/verilog_models` - will contain standard cell verilog model  
+    - `verilog_files`  -containes the lab experiments source files  
   
   Running iverilog  (11.0-1.11) and gtkwave (3.3.104-1build1): 
   
   ![](Imgs/l1-1.png)  
   
 ### Yosys and Logic synthesis
-  A synthesizer is used to convert behavioral design RTL to a netlist(gate level=gates and connections), using a specific technology library. 
+  A synthesizer is used to convert behavioral design RTL to a netlist (gate level = gates and connections), using a specific technology library. 
   
   ![](Imgs/d1-1.png)  
   
-  To verify the generated netlist we run again verilog with the netlist content instead of the RTL file -> the waveforms should be the same - the same test bench can be used.
+  The generated netlist (verilog file) must be verified comparing the behavior with the RTL behavior -> the waveforms should be the same - the same test bench can be used.  
   Front end library contains a collection of gate components like nand, nor etc. with different configurations, working speed or other physical parameters. 
-  
-  This aspects will solve issues related to SETUP and HOLD time or performance .  
+  The parameters described in the libraries will model the design behavior and SETUP, HOLD time or performance can be estimated more preise.  
   The propagation delay is influence also by the charging and discharging the capacitance/loads , this will need a optimization of the cell size and cell number. 
   
   Faster cells - less delay,wider transistor,  more area and power, possible hold violations
