@@ -108,3 +108,25 @@ RUN folder
 │       └── trimmed.lib.exclude.list  
 └── warnings.log  
 
+
+*************** OpenRAM ****************
+
+ git clone https://github.com/VLSIDA/OpenRAM.git
+ git checkout dev
+ cd OpenLane
+ pip install -r requirements.txt
+ make library 
+ cd OpenLane/docker/
+ make build
+ export OPENRAM_HOME="$HOME/OpenRAM/compiler"
+ export OPENRAM_TECH="$HOME/OpenRAM/technology"
+ export PYTHONPATH=$OPENRAM_HOME
+ make pdk
+ make install
+ export $PDK_ROOT=$OPENRAM_HOME
+ 
+ 
+
+ 
+
+ 
