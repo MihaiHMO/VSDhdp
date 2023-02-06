@@ -9,6 +9,7 @@
 	- [iverilog/ GTKwave - Verilog HDL and waveform viewer ](#iverilog)
 	- [OpenLane](#openlane)
 	- [Magic - VLSI layout tool](#magic)
+	- [OpenRAM - SRAM memory compiler](#openram)  
   + [ASIC Design flow](#asic-design-flow)
   + [Day 1- Introduction to Verilog RTL design and Synthesis](#day-1---introduction-to-verilog-rtl-design-and-synthesis)
 	- Introduction to iverilog and gtkwave for simualtions + labs
@@ -183,6 +184,25 @@ $   sudo make
 $   sudo make install
 ```
 Type magic terminal to check whether it installed succesfully or not. type exit to exit magic.  
+
+### OpenRAM  
+https://github.com/VLSIDA/OpenRAM   
+```
+git clone https://github.com/VLSIDA/OpenRAM.git
+git checkout dev
+cd OpenLane
+pip install -r requirements.txt
+make library 
+cd OpenLane/docker/
+make build
+export OPENRAM_HOME="$HOME/OpenRAM/compiler"
+export OPENRAM_TECH="$HOME/OpenRAM/technology"
+export PYTHONPATH=$OPENRAM_HOME
+make pdk
+make install
+export $PDK_ROOT=$OPENRAM_HOME
+```
+Basic usage with some `.py` script : `python3 sram_compiler.py macros/test1.py `
 
 # ASIC Design flow
 
