@@ -26,7 +26,7 @@
   + [Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch](#day-4---gls-blocking-vs-non-blocking-and-synthesis-simulation-mismatch)
 	- GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
 	- Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
-  + [Day 5 - Optimization in synthesis](#day-5---optimization-in-synthesis)
+  + [Day 5 - Coding optimization](#day-5---Coding-optimization)
 	- If Case constructs
 	- for loop and for generate
   + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)
@@ -558,7 +558,7 @@ results are:
 
 ![](Imgs/l4-3.png)
 
-# Day 5 - Optimization in synthesis
+# Day 5 - Coding optimization
 ### If, Case constructs
 ```
 if <cond >
@@ -602,7 +602,7 @@ Examples - wrong usage of `if`: First example implements a combo circuit connect
 ![](Imgs/l5-1.png)
 
 ### Case statement :
-if, case are used inside always block , whatever variable you want to assign in  shpuld be a register variable
+if, case are used inside always block , whatever variable you want to assign in should be a register variable
 ```
 reg y
 alwasy @(*)                                 |\
@@ -755,7 +755,7 @@ endmodule
 ```
 ![](Imgs/l5-6.png)
 
-Demux case vs for
+Demux `case` vs `for`
 
 ```
 module demux_case (output o0 , output o1, output o2 , output o3, output o4, output o5, output o6 , output o7 , input [2:0] sel  , input i);
