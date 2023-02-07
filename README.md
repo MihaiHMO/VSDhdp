@@ -27,14 +27,13 @@
 	- GLS, Synthesis-Simulation mismatch and Blocking/Non-blocking statements
 	- Labs on GLS and Synthesis-Simulation Mismatch, synth-sim mismatch for blocking statement
   + [Day 5 - Coding optimization](#day-5---Coding-optimization)
-	- If Case constructs
+	- If, Case constructs
 	- for loop and for generate
-  + [Day 7 - Basic SDC constraints](#day-7---basic-sdc-constraints)
-	- Basics of STA
+  + [Day 7 - Timings and constraints fundamentals](#day-7---timings-and-constraints-fundamentals)
+	- Library cell content
 	- Delays and Timing Arcs
 	- Constraining the Design
-	- What is STA , setup , hold quick recap
-	- What are constraints
+	- What is STA, what are constraints
 	- Constraining the Reg2Reg , Reg2IO , IO2Reg Paths
 	- Input transition and OutputLoad and its effects on IO delays  
   + [Day 8 - Advanced SDC Constraints](#day-8---advanced-sdc-constraints)
@@ -577,7 +576,7 @@ else
 ```
 `If` creates a priority logic , so the HW will be cascade of MUXes.   
 The issues that can appear using the `if` construct is called "Inferred Latches" -  non-intended generated latches because of the coding style.  
-In the "conbinational" circuits we do not need to have latches , "sequential" ciruits will have latches .  
+In the "conbinational" circuits we do not need to have latches , "sequential" circuits will have latches .  
 Usually when we use "Incomplete IF".   
 
 ![](Imgs/d5-1.png)
@@ -620,8 +619,7 @@ begin                                       | \
  ```
 The HW generated is a mux with `Cx`- cases assigned to `y`. 
  
-Caveats with case:
-Incomplete cases:
+Incomplete cases can generate unwanted behavior/RTL implementation
 ```
 reg [1:0] sel
 alwasy @(*)
@@ -637,20 +635,20 @@ begin
   endcase
  end
  ```
- In case we have incomplete cases (ex just c1 and c2) we generate inferred latches . For this the remained cases must be coded with default states.
+Incomplete cases (ex just `c1` and `c2`) can generate inferred latches - solution: remained cases must be coded with default states.
  
 ![](Imgs/d5-3.png)
 
-Lab example: we see that on `sel=00` `y` takes the values for `10` and `11` it latches. 
-We see the mux and the latch generated after synthesis .
+Lab example: For `sel=00` `y` takes the values for `10` and for `11` it latches. 
+We see the mux and the latch generated after synthesis .  
 
 ![](Imgs/l5-2.png)
 
-A correct example: we can see no latches inferred and the cases `10` and `11` follow the `i2` input. 
+A correct example: no latches inferred and the cases `10` and `11` follow the `i2` input. 
 
 ![](Imgs/l5-3.png)
 
-Partial assigments in case
+Partial assigments in `case`:  
 ```
 reg[1:0] sel;
 reg x, y;
@@ -670,28 +668,29 @@ begin
 		        end
 	endcase
 ```
-In this case '`y` was not assygnet for `2'b00`. -> assign all the outputs in all the segmnets.
+In this case `y` was not assigned for `2'b00`. -> assign all the outputs in all the segmnets.
 
 ![image](https://user-images.githubusercontent.com/49897923/206229413-2a3881e5-39d7-442a-ab02-049eb08111c4.png)
 
-Lab example: `y` is defined correctly but `x` has no assignment for `sel=b'01` . Enable condition for the latch is `sel[1]'.sel[0]'+sel[1]=sel[1]+sel[0]'` - redundancy theorem.  
+Lab example: `y` is defined correctly but `x` has no assignment for `sel=b'01` . 
+Enable condition for the latch is `sel[1]'.sel[0]'+sel[1]=sel[1]+sel[0]'` - redundancy theorem.  
 
 ![](Imgs/l5-4.png)
 
 Boolean expression of the synthesized circuit: !!!!
 
-Additional we should not have overlaping case statements (ex: `2'b10` and `2b'1?` `?` means indifferent). This will confuse the tools.
+Additional we should not have overlapping case statements (ex: `2'b10` and `2b'1?` `?` means indifferent). This will confuse the tools.
 
 ![](Imgs/l5-5.png)
 
-In the first waveform (the RTL version) we see for `sel=b'11` `y` gets a random value.
-In the second waveform (the synthesized netlist) the for `sel=b'11` `y=i3`.  
+In the first waveform (the RTL version)for `sel=b'11` `y` gets a random value.
+In the second waveform (the synthesized netlist) for `sel=b'11` `y = i3`.  
 
-### for loop and for generate
+### 'for loop' and for generate
 
 There are 2 looping contructs:
- - for loop - used in allways - used for evaluating expresions (not for generating/instantiate HW) 
- - generate for loop - outside allways - used to instantiate HW , for example multiple times (and gate x times)
+ - `for` loop - used in allways - used for evaluating expresions (not for generating/instantiate HW) 
+ - `generate for` loop - outside allways - used to instantiate HW , for example multiple times (`and` gate `x` times)
 
 For very wide mux/demux will simplify some circuit code.
 32:1 MUX
@@ -721,7 +720,7 @@ begin
 	end
 end
 ```
-For several instancies and gate 
+For several instancies and gate :  
 
 ```
 and u_and1 (.a();.b();.y());     | genvar i;
@@ -736,7 +735,7 @@ Use case Ripple Carry ADDER(RCA) - it will use replicated HW blocks.
 
 ![image](https://user-images.githubusercontent.com/49897923/206550469-85e6bace-fc39-4475-8bcb-90bc856e2275.png)
 
-Labs: elegant way to write 
+Labs: elegant way to write :
 
 ```
 module mux_generate (input i0 , input i1, input i2 ,            | \
@@ -799,9 +798,10 @@ endmodule
 ```
 ![](Imgs/l5-8.png)
 
-`For generate` for multiple replicated HW - RCA:
-General rule for adders: N bit number + N bit number = N+1 Bit number , N+M =Max(N,M) + 1.
-Another detail is that the variable `i` is not initialized like an `integer` -> is is declared `genvar i`
+For `generate for` multiple replicated HW - RCA:  
+- General rule for adders: N bit number + N bit number = N+1 Bit number , N+M =Max(N,M) + 1  
+- The variable `i` is not initialized like an `integer` -> is is declared `genvar i`
+
 In this example the `fa` module is coded in a different file so during the simulation of `rca` circuit we need to insert also the definition file of `fa` module.
 
 `iverilog fa.v rca.v tb_rca.v `
@@ -810,27 +810,121 @@ In this example the `fa` module is coded in a different file so during the simul
 
 Top waveform if from RTL simulation , bottom is from GLS file.
 
-# Day 7 - Basic SDC constraints  
+# Day 7 - Timings and constraints fundamentals   
+
+### Timing fundamentals
++ **Max Delay/Setup Timing** :   
+T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
+If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit.  
+
++ **Min Delay/ Hold Timing**
+T<sub>HOLD_B</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub>  
+This defines the constraints given by the HOLD window and this occurs usually when we delay the clock (with delay circuits in red) so we can meet a fixed COMBI delay with a slower clock (e.g T<sub>COMBI</sub> = 8ns , T<sub>clk</sub>=5ns)  
+T<sub>HOLD_B</sub>+ T<sub>PUSH</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub> ; T<sub>PUSH</sub> is the time inserted by the delay circuits.
+
+![](Imgs/d7-1.png)
+
++ The **Module Delay** is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
++ The **Arcs** contains the delay information from every input pin to every output pin which it can control  
+
+```
+                                              D->Q (DLATCH)
+                 | \                          _____________
+            i0---|   \                        |           |                         
+                 |   |                    --->| D        Q|--->                  
+            i1---|   | -- y            setup/ |           |  clk->Q            
+	         |   |                  hold  |     DFF   |
+                 |  /                         |  (DLATCH) |
+                 | /|                         |    CLK    |
+                    |                         ------A------  
+                   sel                              | 
+```
+For a mux case (combinational logic)  `y` can change because of `i0`, `i1` or `sel` so we will see 3 arcs : `i0->y`, `i1->y`, `sel->y`.  
+For a sequential cell  (DFF, DLATCH) arcs will be formed by:  
+ - Delay from CLk to Q for DFF  
+ - Delay from Clk to Q. Delay from D to Q for DLATCH  
+ - Setup and Hold time  
+
+|Device        | CLK to Q          |  D to Q          |   Setup          |    Hold          |
+|--------------|-------------------|------------------|------------------|------------------|
+|PosEdge DFF   | from PosEdge Clk  | NA               | to PosEdge Clk   | from PosEdge Clk |
+|NegEdge DFF   | from NegEdge Clk  | NA               | to NegEdge ClK   | from NegEdge Clk |
+|PosLevel DLAT | from PosEdge Clk  | When Clk is high | to NegEdge Clk   | from NegEdge Clk |
+|NegLevel DLAT | from NegEdge Clk  | When Clk is low  | to PosEdge Clk   | from PosEdge Clk |
+
+Setup and hold time of a DFF is around the sampling point.  
+For _Pos/Neg level_ latch sampling point is with respect to _"next edge"_, negative or positive dependent on the type.    
+
+```
+PosLvl DLATCH                  |                     |
+   sampling point    __________V  OPAQUE   __________V
+               _____|<-------->|__________|          |__________
+                    Transparent 
+                               |
+                      <-SETUP->|<-HOLD->
+                               |
+NegLvl DLATCH                  |                     |
+   empling point ___           V__________  Transp   V__________
+                    |_________|<--------->|__________|          |__
+                                   OPAQUE 
+
+```
++ **Timing Paths**
+Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
+ - Clk to D - are called _Reg2Reg Timing Paths_ -> Constrained by _Clock Period_   
+ - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
+							 - _Clock Period_, _Input Ext Delay, Input Transition   
+							 - _Clock Period_, _Output Ext Delay, Output Load       
+							 - _Max delay (Setup) and Min delay (Hold)_  
+ - IN to OUT - are _not desired IO Timing paths_ 
+
+For the circuit in example we have signal 2 paths A-> C and B-> C. The slowest path will be called "_Critical Path_" .  
+If we calculate T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>, T<sub>CQ_A</sub>=0.5ns T<sub>SETUP</sub>=0.5ns :  
+	T<sub>clk_AC</sub> > 0.5 + 1.2 + 0.5 = 2.2 ns (_Critical Path_)  
+	T<sub>clk_BC</sub> > 0.5 + 0.7 + 0.5 = 1.7 ns   
+The critical path will dictate the working frequency ->  f<sub>clk</sub>(2.2ns) = 456.5 Mhz   
+
+![](Imgs/d7-2.png)  
+
+In a common design usually the working frequency (T<sub>clk</sub>) will be fixed to achieve a certain performance so the components (T<sub>COMBI</sub>) will need to be optimized. The clk period will limit the delays in Reg2Reg Paths - so the synth tools will need to select proper technology cells from the library (.lib file contain T<sub>CQ</sub>, T<sub>SETUP/HOLD</sub>, T<sub>COMBI_cell</sub>). to meet the clock period.  
+
+![](Imgs/d7-3.png)
+
++ **Input/output External Delay**  : Because for the external circuit elements we do not have control and we get also other influences like routing - we need to define a timing margin that will decrease our available timing for the "input/output circuit" .
+The Input/output External Delay is defined usually by standards (e.g. SPI, I2C etc.) or IO budgeting and this is given by the designer of the external circuitry organized usually in a module or IP.  
+
++ **Input transition**
+Input transition/Output load are the information of the real behavior of the input/output logic signal due to parasitic elements:  
+```
+                                         ________         _______
+Ideal wave form                     ____|        |_______|
+                                         ________         ________
+Wave form with parasitics          _____/        \_______/
+
+```
+This parameters are modeled inside the library based on the tehcnology behavior.  
+
+### Library cell timing related content  
 
 The circuit is structured in hierahical way : top module -> ports -> nets ->pins -> cells (physical or logical)  
 _!!! In Digital Design a net can be connected to only one Driving element. _ 
 
 ![](Imgs/d7.png)   
 
-**Undestanding .LIB file**  
++ **Undestanding .LIB file**  
 There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file.  
 
 Content higlights :  
 - the technology e.g. CMOS  
 - units used by the parameters   
-- `default_operating_conditions : "tt_025C_1v80";` - thease proces-voltage-temp (PVT) conditions    
+- `default_operating_conditions : "tt_025C_1v80";` - proces-voltage-temp (PVT) conditions    
 - `default_max_transition : 1.500` - it is the max capacitance in defined unit (usually pF) allowed for the load of a gate  
- 	- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<sub>in</sub>+C<sub>net</sub>+SUM(C<sub>inp.cap</sub>)   
-	- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate  
+- Each connection will have some parasitic capacitance from some elements: from net, gate . pins -> C<sub>load</sub> = C<sub>in</sub>+C<sub>net</sub>+SUM(C<sub>inp.cap</sub>)   
+- the result is that the tool will introduce repeaters/buffers between the gates so it will reach the max capacitance load for the affected gate.  
 	![](Imgs/d7-4.png)
-- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar will e also other parameters.  
+- `delay_model : "table_lookup";` - it is a table format for 2 parameters and during the simulation the tool will use it to get interpolated values for our use case. Similar are also other parameters.  
 	![](Imgs/d7-5.png) 
-- cell content :
++ Cell content :
 	- different flavors of the gates:
 		- e.g. `cell ("sky130_fd_sc_hd__and2_**X**")' `X=1,2,3...` - will we have different parameters like: area, power  
 		-  `sky130_fd_sc_hd__and2**Xb**_1` - "b" stands for bar , the gate has one input inverted , "bb" - 2 inputs inverted	
@@ -880,109 +974,7 @@ Content higlights :
         sim_opt : "runlvl=5 accurate=1";  
         timing_type : "setup_rising";  
         violation_delay_degrade_pct : 10.000000000;  
-	```  
-**Synopsys DC comands**  
- - get_lib_attribute -will perfom on the lib cell, cell or on the cell component lib_pin , port etc.
- - list attributes - to check all attributes 
- - get_lib_cell - 
- - get_ojbect_name
- - pinr attribute  `_clock_` vs `_clocks_` :
- 	- `clock` - will specify which pin is ment to be a clock
-	- `clocks` - will specifiy which clock will be connected to a pin
-
-**Max Delay/Setup Timing** :   
-T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
-If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit.  
-
-**Min Delay/ Hold Timing**
-T<sub>HOLD_B</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub>  
-This defines the constraints given by the HOLD window and this occurs usually when we delay the clock (with delay circuits in red) so we can meet a fixed COMBI delay with a slower clock (e.g T<sub>COMBI</sub> = 8ns , T<sub>clk</sub>=5ns)  
-T<sub>HOLD_B</sub>+ T<sub>PUSH</sub> < T<sub>CQ_A</sub>+T<sub>COMBI</sub> ; T<sub>PUSH</sub> is the time inserted by the delay circuits.
-
-![](Imgs/d7-1.png)
-
-The **Module Delay** is a function of Input Transition (influenced by input current) and output Load (capacitance) .  
-The **Arcs** contains the delay information from every input pin to every output pin which it can control  
-
-```
-                                              D->Q (DLATCH)
-                 | \                          _____________
-            i0---|   \                        |           |                         
-                 |   |                    --->| D        Q|--->                  
-            i1---|   | -- y            setup/ |           |  clk->Q            
-	         |   |                  hold  |     DFF   |
-                 |  /                         |  (DLATCH) |
-                 | /|                         |    CLK    |
-                    |                         ------A------  
-                   sel                              | 
-```
-For a mux case (combinational logic)  `y` can change because of `i0`, `i1` or `sel` so we will see 3 arcs : `i0->y`, `i1->y`, `sel->y`.  
-For a sequential cell  (DFF, DLATCH) arcs will be formed by:  
- - Delay from CLk to Q for DFF  
- - Delay from Clk to Q. Delay from D to Q for DLATCH  
- - Setup and Hold time  
-
-|Device        | CLK to Q          |  D to Q          |   Setup          |    Hold          |
-|--------------|-------------------|------------------|------------------|------------------|
-|PosEdge DFF   | from PosEdge Clk  | NA               | to PosEdge Clk   | from PosEdge Clk |
-|NegEdge DFF   | from NegEdge Clk  | NA               | to NegEdge ClK   | from NegEdge Clk |
-|PosLevel DLAT | from PosEdge Clk  | When Clk is high | to NegEdge Clk   | from NegEdge Clk |
-|NegLevel DLAT | from NegEdge Clk  | When Clk is low  | to PosEdge Clk   | from PosEdge Clk |
-
-Setup and hold time of a DFF is around the sampling point.  
-For _Pos/Neg level_ latch sampling point is with respect to _"next edge"_, negative or positive dependent on the type.    
-
-```
-PosLvl DLATCH                  |                     |
-   sampling point    __________V  OPAQUE   __________V
-               _____|<-------->|__________|          |__________
-                    Transparent 
-                               |
-                      <-SETUP->|<-HOLD->
-                               |
-NegLvl DLATCH                  |                     |
-   empling point ___           V__________  Transp   V__________
-                    |_________|<--------->|__________|          |__
-                                   OPAQUE 
-
-```
-### Design compiler constraints 
-
-**Timing Paths**
-Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
- - Clk to D - are called _Reg2Reg Timing Paths_ -> Constrained by _Clock Period_   
- - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
-							 - _Clock Period_, _Input Ext Delay, Input Transition   
-							 - _Clock Period_, _Output Ext Delay, Output Load       
-							 - _Max delay (Setup) and Min delay (Hold)_  
- - IN to OUT - are _not desired IO Timing paths_ 
-
-For the circuit in example we have signal 2 paths A-> C and B-> C. The slowest path will be called "_Critical Path_" .  
-If we calculate T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>, T<sub>CQ_A</sub>=0.5ns T<sub>SETUP</sub>=0.5ns :  
-	T<sub>clk_AC</sub> > 0.5 + 1.2 + 0.5 = 2.2 ns (_Critical Path_)  
-	T<sub>clk_BC</sub> > 0.5 + 0.7 + 0.5 = 1.7 ns   
-The critical path will dictate the working frequency ->  f<sub>clk</sub>(2.2ns) = 456.5 Mhz   
-
-![](Imgs/d7-2.png)  
-
-In a common design usually the working frequency (T<sub>clk</sub>) will be fixed to achieve a certain performance so the components (T<sub>COMBI</sub>) will need to be optimized. The clk period will limit the delays in Reg2Reg Paths - so the synth tools will need to select proper technology cells from the library (.lib file contain T<sub>CQ</sub>, T<sub>SETUP/HOLD</sub>, T<sub>COMBI_cell</sub>). to meet the clock period.  
-
-![](Imgs/d7-3.png)
-
-**Input/output External Delay**  : Because for the external circuit elements we do not have control and we get also other influences like routing - we need to define a timing margin that will decrease our available timing for the "input/output circuit" .
-The Input/output External Delay is defined usually by standards (e.g. SPI, I2C etc.) or IO budgeting and this is given by the designer of the external circuitry organized usually in a module or IP.  
-
-**Input transition**
-Input transition/Output load are the information of the real behavior of the input/output logic signal due to parasitic elements:  
-```
-                                         ________         _______
-Ideal wave form                     ____|        |_______|
-                                         ________         ________
-Wave form with parasitics          _____/        \_______/
-
-```
-This parameters are modeled inside the library based on the tehcnology behavior.  
-
+	``` 
 
 
 # Day 8 - Advanced SDC Constraints
@@ -1015,10 +1007,17 @@ Clock Modelling should consider:
 | Poest CTS | Only Jitter       |
 ![](Imgs/d7-7.png)
 
-**Writing SDCs [Synopsys Design Constraints]**  
-**Querying Cells**
-`get_*` - querying commands    
-
+**Writing SDCs [Synopsys Design Constraints]**   
+ 
+**Querying Cells**  
+`get_*` - querying commands     
+`get_lib_attribute` - will perfom on the lib cell, cell or on the cell component lib_pin , port etc.  
+`list attributes` - to check all attributes  
+`get_lib_cell`  
+`get_ojbect_name`  
+- pinr attribute  `_clock_` vs `_clocks_` :  
+ 	- `clock` - will specify which pin is ment to be a clock  
+	- `clocks` - will specifiy which clock will be connected to a pin  
 Getting the ports:  
 `get_ports clk;`  
 `get_ports *clk*;`  - return a collection of ports whose name contains clk e,g clk1  
