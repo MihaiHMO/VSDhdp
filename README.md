@@ -482,49 +482,48 @@ Use cases with different `set/reset` combination:
 ![](Imgs/l3-9.png)
 ![](Imgs/l3-10.png)
 
-###    Sequential optimizations for unused outputs
+### Sequential optimizations for unused outputs
 
 The logic that will not affect the output will be optimized , eliminated.
-The following example show:
-For the first code q is affected just by count[0] so the circuit will be simple.
 
-In case the counter is using all 3 bits to the output will contain all flops that affect the 3 bits.
+- In the first code, `q` is affected just by `count[0]` so the circuit will be simplfified.  
+- In the second code  - the counter is using all 3 bits, so the output will contain all flops that affect the 3 bits.   
 ![](Imgs/l3-11.png)
 
 # Day 4 - GLS, blocking vs non-blocking and Synthesis-Simulation mismatch
 Gate level syntesis is needed because :  
 - we need to verify the correctness of the design after synthesis  
-- RTL does not contain the notion of timing so now with the specific gate implemenation the design timing must be met  
+- RTL does not contain the notion of timing
+- with specific gate level implemenation the design timing can be modeled more accurate   
 - GLS needs to run with delay annotation ( for this the gate level models must be timing aware)  
 
 ![](Imgs/d4-1.png)
 
-Syntesis Mismatch 
-- Missing sensitivity list: Simulators work based on "activity " ( a change in input will triger a change in output ). There are cases when for "always" sblocks are specified less signals that will trigger the changes in the design. So in simulation will not behave as expected.
-
-- Blocking vs Non-Blocking Assignment: inside always block 
-	 - `=` Blocking :Execute the statements in order it is written - first statement is evaluated before second statement
-	 - `<=`Non Blocking : Parallel evaluation - executes all "right hand" statements and assigns to "left hand" statement (e.g: `a<=b&c`) 
-	 - It si recommended non blocking for sequential circuits, avoid as much as possible and double check your design on paper 
+### Syntesis Mismatch
++ Missing sensitivity list: 
+- Simulators work based on "activity " ( a change in input will triger a change in output ). 
+- When for "always" blocks are specified less signals needed to trigger the changes in the design - simulation will not behave as expected.
 
 ![](Imgs/d4-2.png)
 
++ Blocking vs Non-Blocking Assignment: inside `always` block 
+ - `=` Blocking: Execute the statements in order it is written - first statement is evaluated before second statement  
+ - `<=`Non Blocking: Parallel evaluation - executes all "right hand" statements and assigns to "left hand" statement (e.g: `a<=b&c`)  
+ - It si recommended non blocking for sequential circuits, avoid as much as possible and double check your design on paper  
 ![](Imgs/d4-3.png)
 
-- Non Standard verilog coding 
++ Non Standard verilog coding 
 
-Lab, running iverilog on GLS :
-
-`iverilog verilog_model_std_cell(2 files in our case)  net_list test_bench `
-
-`iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v `
-
-Ternary example: 
 ```
 module ternary_operator_mux (input i0 , input i1 , input sel , output y);
 	assign y = sel?i1:i0;
 	endmodule
 ```
+
++ Labs, running iverilog on GLS :
+
+`iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_net.v tb_ternary_operator_mux.v `
+
 ![](Imgs/l4-1.png)
 
 For synthesis mismatch behavior : 
@@ -576,8 +575,10 @@ else
       ....
       end
 ```
-If creates a priority logic , so the HW will be cascade of MUXes 
-The issues that can appear using the if construct is called "Inferred Latches" , I do not intend to generate a lath but coding style will generate one. Usually when we use "Incomplete IF" 
+`If` creates a priority logic , so the HW will be cascade of MUXes.   
+The issues that can appear using the `if` construct is called "Inferred Latches" -  non-intended generated latches because of the coding style.  
+In the "conbinational" circuits we do not need to have latches , "sequential" ciruits will have latches .  
+Usually when we use "Incomplete IF".   
 
 ![](Imgs/d5-1.png)
 
@@ -594,11 +595,9 @@ begin
 ```
 ![](Imgs/d5-2.png)
 
-In this case if there is no enable the circuit should latch on the previous value.
-In the "conbinational" circuits we do not need to have latches , "sequential" ciruits will have latches .
+If there is no enable the circuit should latch on the previous value.  
 
-In the following examples we can see the wrong usage of if.
-First example implements a combo circuit connected to a latch and second one a simple latch .
+Examples - wrong usage of `if`: First example implements a combo circuit connected to a latch and second one a simple latch .  
 
 ![](Imgs/l5-1.png)
 
