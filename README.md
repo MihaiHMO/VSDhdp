@@ -30,27 +30,24 @@
 	- If, Case constructs
 	- for loop and for generate
   + [Day 7 - Timings and constraints fundamentals](#day-7---timings-and-constraints-fundamentals)
-	- Library cell content
-	- Delays and Timing Arcs
+	- Setup, Hold, Delays and Timing Arcs
 	- Constraining the Design
 	- What is STA, what are constraints
 	- Constraining the Reg2Reg , Reg2IO , IO2Reg Paths
 	- Input transition and OutputLoad and its effects on IO delays  
-  + [Day 8 - Advanced SDC Constraints](#day-8---advanced-sdc-constraints)
+	- Library cell content
+  + [Day 8 - Constraints definition and advanced timings topics](#day-8---constraints-definition-and-advanced-timings-topics)
 	- Clock Skew and Clock Jitter, its modelling in DC  
 	- Writing SDCs [Synopsys Design Constraints]  
-	- Creating Clocks  
-	- Querying Cells  
-	- Specifying IO Delays  
-	- Specifying Clock Waveforms  
+	- Querying information, Creating Clocks  
+	- Specifying IO Delays, clock Waveforms  
 	- Generated Clocks  
 	- Multi Clock Design  
 	- False Paths  
-  + [Day 10-11 - Introduction to STA and importance of MOSFETs in STA/EDA](#day-10-11-introduction-to-sta-and-importance-of-mosfets-in-staeda)
-	- Basics of NMOS Drain current (Id) vs Drain-to-source Voltage (Vds)
-	- NMOS resistive region and saturation region of operation
-	- Introduction to Circuit Design and SPICE simulations 
-  + [Day 12-15 - Basics of CMOS inverter](#day-12-15-basics-of-cmos-inverter)
+  + [Day 10-12 CMOS Tehnology and STA/EDA  ](#day-10-12-cmos-tehnology-and-staeda)
+	- NMOS operation regions
+	- NMOS Drain current (Id) vs Drain-to-source Voltage (Vds)
+	- Introduction to SPICE simulations 
 	- CMOS voltage transfer characteristics (VTC)
 	- Switching threshold and dynamic simulations
 	- Static behavior evaluation – Switching Threshold
@@ -66,7 +63,6 @@
 	- [Clock tree synthesis](#clock-tree-synthesis)
 	- [STA on real clocks](#sta-analysis-on-real-clocks)
 	- [Routing and post-routing STA](#routing-and-post-routing-sta)
-
 	- [GDS II final steps]
 	- [Standard library cell design](#standard-cells-design-flow)
 	
@@ -869,7 +865,7 @@ NegLvl DLATCH                  |                     |
                                    OPAQUE 
 
 ```
-+ **Timing Paths**
++ **Timing Paths**  
 Timing path have start points (Input ports, Clk pin of Registers) and end points (Output Ports , D pin of DFF/ DLAT):  
  - Clk to D - are called _Reg2Reg Timing Paths_ -> Constrained by _Clock Period_   
  - Clk to OUT (_REG2OUT_),  IN to D (_IN2REG_) - are called _IO Timing Paths_ -> Constrained by:  
@@ -877,18 +873,11 @@ Timing path have start points (Input ports, Clk pin of Registers) and end points
 							 - _Clock Period_, _Output Ext Delay, Output Load       
 							 - _Max delay (Setup) and Min delay (Hold)_  
  - IN to OUT - are _not desired IO Timing paths_ 
-
-For the circuit in example we have signal 2 paths A-> C and B-> C. The slowest path will be called "_Critical Path_" .  
-If we calculate T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>, T<sub>CQ_A</sub>=0.5ns T<sub>SETUP</sub>=0.5ns :  
-	T<sub>clk_AC</sub> > 0.5 + 1.2 + 0.5 = 2.2 ns (_Critical Path_)  
-	T<sub>clk_BC</sub> > 0.5 + 0.7 + 0.5 = 1.7 ns   
-The critical path will dictate the working frequency ->  f<sub>clk</sub>(2.2ns) = 456.5 Mhz   
-
-![](Imgs/d7-2.png)  
-
-In a common design usually the working frequency (T<sub>clk</sub>) will be fixed to achieve a certain performance so the components (T<sub>COMBI</sub>) will need to be optimized. The clk period will limit the delays in Reg2Reg Paths - so the synth tools will need to select proper technology cells from the library (.lib file contain T<sub>CQ</sub>, T<sub>SETUP/HOLD</sub>, T<sub>COMBI_cell</sub>). to meet the clock period.  
+- The _critical path_ will dictate the working frequency ->  f<sub>clk</sub>   
 
 ![](Imgs/d7-3.png)
+
+In a common design usually the working frequency (T<sub>clk</sub>) will be fixed to achieve a certain performance so the components (T<sub>COMBI</sub>) will need to be optimized. The clock period will limit the delays in Reg2Reg Paths - so the synth tools will need to select proper technology cells from the library (.lib file contain T<sub>CQ</sub>, T<sub>SETUP/HOLD</sub>, T<sub>COMBI_cell</sub>). to meet the clock period.    
 
 + **Input/output External Delay**  : Because for the external circuit elements we do not have control and we get also other influences like routing - we need to define a timing margin that will decrease our available timing for the "input/output circuit" .
 The Input/output External Delay is defined usually by standards (e.g. SPI, I2C etc.) or IO budgeting and this is given by the designer of the external circuitry organized usually in a module or IP.  
@@ -977,20 +966,19 @@ Content higlights :
 	``` 
 
 
-# Day 8 - Advanced SDC Constraints
-**Clock Skew and Clock Jitter, its modelling in DC**  
-
+# Day 8 - Constraints definition and advanced timings topics
+**Clock Uncertainty**  
 Clock _Jitter_ and clock _Skew_ are called _Clock Uncertainty_.   
-Clock sources in a chip are Oscillators, PLL, Ext Clock sources - all have inherent variations in the clock period due to stochastic effects :_Jitter_ . 
+- _Jitter_: inherent variations fo the clock sources (Oscillators, PLL, Ext) in the clock period due to stochastic effects
 	T<sub>clk</sub>-T<sub>jitter</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>  
-Due to non ideal nature of the clock that will insert delays , different flops will not see the clock in the same time- this difference is called _Skew_. 
+- _Skew_ : The time difference seen by different flops, due to non ideal nature of the clock that will insert delays .  
 	T<sub>clk</sub>-T<sub>skew</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub> 
 	
 ![](Imgs/d7-6.png)
 	
 During Synthesis phase the logic is optimized assuming an ideal clock.   
-Clock is ideal till the CTS stage - were is actually build -when all the routings and loads will affect the clock path to each flop.  
-In order to have a close behavior to the real clock we need to model it before synthesis. 
+Clock is ideal till the CTS stage - were is actually build - when all the routings and loads will affect the clock path to each flop.  
+In order to have a close behavior to the real clock we need to model it before CTS synthesis. 
 	
 Clock Modelling should consider:  
 	- Period  
@@ -1007,7 +995,7 @@ Clock Modelling should consider:
 | Poest CTS | Only Jitter       |
 ![](Imgs/d7-7.png)
 
-**Writing SDCs [Synopsys Design Constraints]**   
+### Writing SDCs [Synopsys Design Constraints]**   
  
 **Querying Cells**  
 `get_*` - querying commands     
@@ -1025,9 +1013,9 @@ Getting the ports:
 `get_ports * -filter "direction==in";` - filtering based on condition , all ports with direction = in , all in ports  
 
 Getting the clock:   
-`get_clocks *;` - all clocks in the design  
-`get_clocks *clk*;` - all clocks with name clk in it  
-`get_clocks  *` -filter "period>10"  
+`get_clocks *;`- all clocks in the design  
+`get_clocks *clk*;`- all clocks with name clk in it  
+`get_clocks  *`- filter "period>10"  
 
 `get_attribute [get_clock my_clk] is_generated`  
 `report_clocks my_clk` - will list the parameters of clock  
@@ -1048,7 +1036,7 @@ e.g. `create_clock -name MY_CLK -per 5 [get_port clk]`
 	- POST CTS need to be modified to contain only jitter e.g `set_clock_nn... 0.2`  
  
 **Specifying Clock Waveforms**  
-Default setup is : Clock starting pahse is high and duty cicle 50%  
+Default setup is : Clock starting pahse is high and duty cicle 50%   
  `create_clock -name <clk_name> -per <perid> [clock definition port]`  
 
 Changing starting phase, duty cycle is don't just with `-wave ` option :  
@@ -1062,7 +1050,7 @@ ARRIVAL Time < REQUIRED Time  -> Required time - Arrival time = Slack
 ![](Imgs/d8-6.png)
 
 **Specifying IO Delays**  
-Constrain the IO path in a time window relative to a clock. So it may come in min 0.5n-max 3ns . Also input transition is modeled.  
+Constrain the IO path in a time window relative to a clock. So it may come in min 0.5n-max 3ns . Also input transition is modeled.    
 ```
 set_input_delay -max 3 -clock [get_clocks MY_ClK] [get_ports IN_*]`  # * will affect all port starting with `IN_`
 set_input_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports IN_*]
@@ -1079,7 +1067,7 @@ For Min delay:
 - _pos delay_ data comes after  clk edge, will _relax_ the hold timing path  
 
 ```
-set_output_delay -max 3 -clock [get_clocks MY_ClK] [get_ports OUT_y]`  
+set_output_delay -max 3 -clock [get_clocks MY_ClK] [get_ports OUT_y]  
 set_output_delay -min 0.5 -clock [get_clocks MY_ClK] [get_ports OUT_y]
 set_ouput_load -in 20 [get_ports OUT_y];
 set_ouput_load -max 80 [get_ports OUT_y];
@@ -1132,9 +1120,9 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 - The clocks (both CLK_A and CLK_B) will be propagated by the tools (DC, OpenSTA) downstream based on timing arcs . Even if in really we know hat they will have separate paths.
 - All the timing arcs from the definition point will see the clock propagation by default.
 
-# Day 10-11 Introduction to STA and importance of MOSFETs in STA/EDA  
+# Day 10-12 CMOS Tehnology and STA/EDA  
 
-**Basics of NMOS**:  
+**NMOS Basics**:  
 Operation regions, cutt-off, resistive region and saturation  
 
 ![](Imgs/d11-1.png)
@@ -1182,42 +1170,40 @@ The _technology parameters_ like threshold voltage, oxide thickness, gate capaci
  ```
  ![](Imgs/l11-12.png)
  ![](Imgs/l11-2.png)
- 
+	
+**CMOS voltage transfer characteristics (VTC), Switching threshold and dynamic simulations**  
+Vm - threshold voltage is the point where Vin=Vout.  
+For dynamic simulations we can see the rise edge and fall edge output delays with respect to input considered @Vm.   
+![](Imgs/d12-1.png)
 
-# Day 12-15 Basics of CMOS inverter  
- **CMOS voltage transfer characteristics (VTC), Switching threshold and dynamic simulations**  
- Vm - threshold voltage is the point where Vin=Vout.  
- For dynamic simulations we can see the rise edge and fall edge output delays with respect to input considered @Vm.   
- ![](Imgs/d12-1.png)
- 
- **Static behavior evaluation – Switching Threshold**  
-  ![](Imgs/d12-2.png)  
-  Microelectronic Circuits , Sedra&Smith
-  
-  Expression of Vm as function of (W/L)p and (W/L)n. 
-  
-  ![](Imgs/d12-3.png)
-   
-  Calculation (W/L)p and (W/L)n as function of Vm.
-  ![](Imgs/d12-4.png)
-  
-  Lab example : Wn=0.36u , Lnp=0.15u 
-	    ![image](https://user-images.githubusercontent.com/49897923/211214191-c1047d32-dfb3-463a-a656-00d6c3b421f3.png)
-  ![](Imgs/l12-1.png)  
-  
-  Some higlights:  
-   - Threshold voltage (Vm) is changing quite slow -> is robust against production variation of the size of the transistors  
-   - Symmetry (Rise delay=fall delay ) is an important characteristic for a clock buffer cell for clock path, to obtain a symmetric pulse width and reduce skew.
-   - The other W/L sizes/ratios can be used for data path to control the slack
-     
-  **Static behavior evaluation – Noise margin**
-  ![](Imgs/d12-5.png)  
+**Static behavior evaluation – Switching Threshold**  
+![](Imgs/d12-2.png)  
+Microelectronic Circuits , Sedra&Smith
 
- If the PMOS width is increase:  
-  - the Noise Margin High will increase due to the capability of the wider PMOS to keep charges , the resistance is lower .
-  - the Noise Margin Low will decrease slightly (PMOS will become more stronger then NMOS) 
-  There are also certain limitations, we can't increase to much because the effect will be negligible - the Margin will become constant.
- 
+Expression of Vm as function of (W/L)p and (W/L)n. 
+
+![](Imgs/d12-3.png)
+
+Calculation (W/L)p and (W/L)n as function of Vm.
+![](Imgs/d12-4.png)
+
+Lab example : Wn=0.36u , Lnp=0.15u 
+    ![image](https://user-images.githubusercontent.com/49897923/211214191-c1047d32-dfb3-463a-a656-00d6c3b421f3.png)
+![](Imgs/l12-1.png)  
+
+Some higlights:  
+- Threshold voltage (Vm) is changing quite slow -> is robust against production variation of the size of the transistors  
+- Symmetry (Rise delay=fall delay ) is an important characteristic for a clock buffer cell for clock path, to obtain a symmetric pulse width and reduce skew.
+- The other W/L sizes/ratios can be used for data path to control the slack
+
+**Static behavior evaluation – Noise margin**
+![](Imgs/d12-5.png)  
+
+If the PMOS width is increase:  
+- the Noise Margin High will increase due to the capability of the wider PMOS to keep charges , the resistance is lower .
+- the Noise Margin Low will decrease slightly (PMOS will become more stronger then NMOS) 
+There are also certain limitations, we can't increase to much because the effect will be negligible - the Margin will become constant.
+
 **Static behavior evaluation – Power supply variation**  
 
 ![image](https://user-images.githubusercontent.com/49897923/211199033-65fca35c-169f-496f-a9f7-8b5936d96f80.png)  
@@ -1241,7 +1227,7 @@ Oxide Thiknes : this will afect the gate to substarte capcaitance (Cox)
  
 ![](Imgs/d15-1.png)
 Spice code: https://github.com/MihaiHMO/VSDhdp/blob/main/Spice/day5_inv_devicevariation_wp7_wn042.spice  
- 
+
 	
 # Physical design
 ### **Open-source EDA, OpenLANE and Sky130 PDK**  
