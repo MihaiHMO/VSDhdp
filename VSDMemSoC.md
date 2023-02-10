@@ -12,6 +12,9 @@
 
 The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSoc](https://github.com/vsdip/VSDMemSoC) witch contains a [Risc-V CPU](https://github.com/RISCV-MYTH-WORKSHOP/riscv_myth_workshop_nov22-MihaiHMO/settings) connected to a [open source SRAM](https://github.com/vsdip/vsdsram_sky130)  
 
+Result:
+![](Imgs/OL_first_good_result.png)
+
 ## Functional diagram   
 ![SoC Diagram](Imgs/SoC_struct.png)  
 
