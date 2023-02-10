@@ -1,0 +1,35 @@
+{
+    "DESIGN_NAME": "vsdmemsoc",
+    "VERILOG_INCLUDE_DIRS": "dir::src/include",
+    "VERILOG_FILES": "dir::src/module/*.v",
+    "EXTRA_LEFS":     "dir::src/macros/sky130_sram_1kbyte_1rw1r_32x256_8.lef",
+    "EXTRA_GDS_FILES": "dir::src/macros/sky130_sram_1kbyte_1rw1r_32x256_8.gds",
+    "EXTRA_LIBS":      "dir::src/macros/sky130_sram_1kbyte_1rw1r_32x256_8_TT_1p8V_25C.lib",
+        
+    "CLOCK_PORT": "CLK",
+    "CLOCK_NET": "CLK",
+    "CLOCK_PERIOD": 10,
+        
+    "VDD_NETS": "vccd1",
+    "GND_NETS": "vssd1",
+     
+    "FP_SIZING": "absolute",
+    "PL_TARGET_DENSITY": 0.45,
+    "RT_MAX_LAYER": "met4",
+
+    "FP_PDN_MACRO_HOOKS": "mem vccd1 vssd1 vccd1 vssd1, cntrl vccd1 vssd1 vccd1 vssd1",
+    "DIE_AREA": "0 0 1100 700",
+    "MACRO_PLACEMENT_CFG": "dir::/src/macros/macro_placement.cfg",
+    "FP_PIN_ORDER_CFG": "dir::/src/macros/pin_order.cfg",
+    "BASE_SDC_FILE": "dir::src/sdc/vsdmemsoc_synth.sdc",
+    "SYNTH_SIZING": 1,
+    "SYNTH_FLAT_TOP": 1,
+    "SYNTH_STRATEGY": "AREA 0",
+
+    
+    "MAGIC_DRC_USE_GDS": false,
+    "QUIT_ON_MAGIC_DRC": false,
+    "RUN_KLAYOUT_XOR": false,
+    "RUN_MAGIC_DRC" :false,
+    "DESIGN_IS_CORE": true
+}
