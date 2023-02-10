@@ -1,10 +1,10 @@
 # Table of content  
 + [Overview](#functional-diagram)
-+ [Project status 230130](https://github.com/MihaiHMO/VSDhdp/blob/main/vsdmemsoc_prj/src_synth_sta_230130/Status_230130.md)
++ [Project status 230130](https://github.com/MihaiHMO/VSDhdp/blob/main/vsdmemsoc_prj/Status_230130.md)
 	+ First RTL and GLS synthesis  
 	+ CTS Design Constrains and STA Analisys
 	+ Physical design
-+ [Project status 2300205](https://github.com/MihaiHMO/VSDhdp/new/main/vsdmemsoc_prj/src_synth_sta_230205)
++ [Project status 2300210]
 	+ Physical design 
 
 
