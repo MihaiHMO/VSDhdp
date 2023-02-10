@@ -16,7 +16,10 @@ The project scope is to implement using Skywater sky130 PDK the RTL of [VSDMemSo
 ![SoC Diagram](Imgs/SoC_struct.png)  
 
 ## Final Implementation
+Test bench
+![image](https://user-images.githubusercontent.com/49897923/218180730-03f6088b-ffaf-4fea-b334-0150b2763613.png)
 
+Layout
 ![](Imgs/OL_first_good_result.png)
 
 Stats:
