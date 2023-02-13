@@ -46,5 +46,8 @@ Total                  2.03e+07   9.44e-03   1.91e-05   2.03e+07 100.0%
 ```
 ### Caravel chip
 
-https://github.com/efabless/caravel_user_project/blob/main/docs/source/index.rst#section-quickstart
+https://github.com/efabless/caravel_user_project/blob/main/docs/source/index.rst#section-quickstart   
+https://caravel-mgmt-soc-litex.readthedocs.io/en/latest/#overview  
+The VSDmemsoc will be integrated in the user propject area :
+![image](https://user-images.githubusercontent.com/49897923/218303638-93c833f6-3ec3-4e8a-b31a-677704bf9cee.png)
 
