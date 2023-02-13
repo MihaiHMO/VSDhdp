@@ -33,16 +33,16 @@ module vsdmemsoc_tb;
 	// Other Signals
 	integer i;
 	wire [31:0] ROM = 
-			   {7'b0000000, 5'd0, 5'd0,  3'b000, 		 5'd10, 7'b0110011},  // ADD, r10, r0, r0 - Initialize x10 (a0) to 0.  (rd, rs1, rs2)            
-	   {7'b0000000, 5'd0, 5'd10, 3'b000, 		 5'd14, 7'b0110011},  // ADD, r14, r10, r0 - Initialize sum register a4(x14) with 0x0  
-	   {        12'b1010, 5'd10, 3'b000, 		 5'd12, 7'b0010011},  // ADDI, r12, r10, 1010 - Store count of 10 in register a2(x12). (rd, rs1, imm)
-	  {7'b0000000,  5'd0, 5'd10, 3'b000, 		 5'd13, 7'b0110011},  // ADD, r13, r10, r0 - Initialize intermediate sum register a3(x13) with 0
-	  {7'b0000000, 5'd14, 5'd13, 3'b000, 		 5'd14, 7'b0110011},  // ADD, r14, r13, r14 - Incremental addition 
-				  {12'b1, 5'd13, 3'b000,         5'd13, 7'b0010011},  // ADDI, r13, r13, 1 - Increment intermediate register by 1 (rd, rs1, imm)
- {1'b1, 6'b111111, 5'd12, 5'd13, 3'b100, 4'b1100, 1'b1, 7'b1100011},  // BLT, r13, r12, 1111111111000 - If a3(x13) is less than a2(x12), branch to label named <loop> (rs1, rs2, imm-dec8184) 
-	   {7'b0000000, 5'd0, 5'd14, 3'b000, 		 5'd10, 7'b0110011},  // ADD, r10, r14, r0 - Store final result to register a0(x10)so that it can be read by main program
- {		7'b0000000, 5'd10, 5'd0, 3'b010, 	  5'b00100, 7'b0100011},  // SW, r0, r10, 100 - store (word)the (x10) final result value to byte address 16 (imm+x0)) (rs1, rs2, imm - dec4)
-				 {12'b100, 5'd0, 3'b010, 		 5'd17, 7'b0000011}   // LW, r17, r0, 100 - then load it into x17(a7). (rs1, rs2, imm -dec 4) ):
+		i == 32'h0 ? {7'b0000000, 5'd0, 5'd0,  3'b000, 5'd10, 7'b0110011} :  		// ADD, r10, r0, r0 - Initialize x10 (a0) to 0.  (rd, rs1, rs2)            
+		i == 32'h1 ? {7'b0000000, 5'd0, 5'd10, 3'b000, 5'd14, 7'b0110011} :   	     	// ADD, r14, r10, r0 - Initialize sum register a4(x14) with 0x0  
+		i == 32'h2 ? {12'b1010, 5'd10, 3'b000, 5'd12, 7'b0010011} :  			// ADDI, r12, r10, 1010 - Store count of 10 in register a2(x12). (rd, rs1, imm)
+		i == 32'h3 ? {7'b0000000,  5'd0, 5'd10, 3'b000, 5'd13, 7'b0110011} :  		// ADD, r13, r10, r0 - Initialize intermediate sum register a3(x13) with 0
+		i == 32'h4 ? {7'b0000000, 5'd14, 5'd13, 3'b000, 5'd14, 7'b0110011} :  		// ADD, r14, r13, r14 - Incremental addition 
+		i == 32'h5 ? {12'b1, 5'd13, 3'b000, 5'd13, 7'b0010011} :  			// ADDI, r13, r13, 1 - Increment intermediate register by 1 (rd, rs1, imm)
+		i == 32'h6 ? {1'b1, 6'b111111, 5'd12, 5'd13, 3'b100, 4'b1100, 1'b1, 7'b1100011} :  // BLT, r13, r12, 1111111111000 - If a3(x13) is less than a2(x12), branch to label named <loop> (rs1, rs2, imm-dec8184) 
+		i == 32'h7 ? {7'b0000000, 5'd0, 5'd14, 3'b000,5'd10, 7'b0110011} :     		// ADD, r10, r14, r0 - Store final result to register a0(x10)so that it can be read by main program
+		i == 32'h8 ? {7'b0000000, 5'd10, 5'd0, 3'b010,5'b00100, 7'b0100011} :  		// SW, r0, r10, 100 - store (word)the (x10) final result value to byte address 16 (imm+x0)) (rs1, rs2, imm - dec4)
+		i == 32'h9 ? {12'b100, 5'd0, 3'b010,5'd17, 7'b0000011} :               		// LW, r17, r0, 100 - then load it into x17(a7). (rs1, rs2, imm -dec 4) ):
 	                 32'd0 ;
 
     // Instantiate the Unit Under Test (UUT)
