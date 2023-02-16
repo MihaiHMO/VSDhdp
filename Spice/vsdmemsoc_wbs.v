@@ -21,12 +21,11 @@ module vsdmemsoc (
     output reg[31:0] wbs_dat_o	
 );
     wire       in_rst;
-    wire        sel_source;  // signal active when wisbone controlls the sram 
     wire        mem_wr;      //   write_enable signal for sram  
     wire [7:0]  mem_addr;    //   address bus for sram
     wire [31:0] imem_data;   //   sram dout data connection to cpu (instruction mem)
     wire [7:0]  imem_addr;   //   sram address connection from cpu (instruction mem)
-    wire mem_clk;            //   sram clk (from system or wisbon)
+    wire        mem_clk;            //   sram clk (from system or wishbon)
     reg [31:0] mem_din ;
     assign in_rst = ext_rst ? 1'b1 : !wb_rst_i ;
     assign mem_clk = wb_rst_i ? ext_clk : wb_clk_i  ;
@@ -35,15 +34,15 @@ module vsdmemsoc (
 
 
    always @(posedge wb_clk_i or posedge wb_rst_i) begin
-        if (wb_rst_i) begin
-            
+        if (wb_rst_i) begin 
+        	
             wbs_dat_o   <=0;
             wbs_ack_o   <=0;
 
-        end else if (wbs_cyc_i && wbs_stb_i && !wbs_ack_o && wbs_we_i )
+        end else if (wbs_cyc_i && wbs_stb_i && !wbs_ack_o && wbs_we_i && wbs_sel_i[0] )
 		begin // write
               // write to sram
-            mem_din[31:0]  <= wbs_sel_i[0] ? wbs_dat_i[31:0] : mem_din[31:0];
+            mem_din[31:0]  <= wbs_dat_i[31:0];
             //mem_din[15:8] <= wbs_sel_i[1] ? wbs_dat_i[15:8] : mem_din[15:8];
             //mem_din[23:16] <= wbs_sel_i[2] ? wbs_dat_i[23:16] : mem_din[23:16];
             //mem_din[31:24] <= wbs_sel_i[3] ? wbs_dat_i[31:24] : mem_din[31:24];
@@ -78,7 +77,7 @@ module vsdmemsoc (
         .web0(mem_wr),
         .wmask0(4'b1111),
         .addr0(mem_addr),
-        .din0(mem_din),
+        .din0(wbs_dat_i),
         .dout0(imem_data),
         
         // Port 1: R
