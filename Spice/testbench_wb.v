@@ -64,8 +64,8 @@ module vsdmemsoc_tb;
     	       .wbs_dat_o(wbs_dat_o)
 	); 
 
-	always @(posedge ext_clk) begin
-		if (i < 32'd16) begin
+	always @(posedge wb_clk_i) begin
+		if (i < 32'd16) begin   // upload instructions in memory
 			i <= i + 32'd1;
 
 			reset <= 1'b1;
@@ -78,7 +78,7 @@ module vsdmemsoc_tb;
 			wbs_adr_i <= i;
 			wbs_dat_i <= ROM;
 		end
-		else if (i < 32'd20) begin
+		else if (i < 32'd20) begin // intermediate state 
 			i <= i + 32'd1;
   	  		wb_rst_i<= 1'b1;
     			wbs_stb_i<= 1'b0;
@@ -87,12 +87,31 @@ module vsdmemsoc_tb;
     			wbs_sel_i<= 4'b0000;
 
 		end
-		else begin
-			reset <= 1'b0;
-                        wb_rst_i<= 1'b1;
+		else if (i < 32'd40) begin // wb read from memory
+			i <= i + 32'd1;
+  	  		wb_rst_i<= 1'b0;
     			wbs_stb_i<= 1'b1;
     			wbs_cyc_i<= 1'b1;
-    			wbs_we_i<= 1'b1;
+    			wbs_we_i<= 1'b0;
+    			wbs_sel_i<= 4'b0000;
+    			wbs_adr_i <= i-32'd20;
+
+		end
+		else if (i < 32'd50) begin // intermediate state 
+			i <= i + 32'd1;
+			reset <= 1'b1;
+  	  		wb_rst_i<= 1'b1;
+    			wbs_stb_i<= 1'b0;
+    			wbs_cyc_i<= 1'b0;
+    			wbs_we_i<= 1'b0;
+    			wbs_sel_i<= 4'b0000;
+    		end
+		else begin                 // run program (core not reset , wb in reset)
+			reset <= 1'b0;
+                        wb_rst_i<= 1'b1;
+    			wbs_stb_i<= 1'b0;
+    			wbs_cyc_i<= 1'b0;
+    			wbs_we_i<= 1'b0;
     			wbs_sel_i<= 4'b0000;
 		end
 	end
