@@ -4,8 +4,8 @@
 	+ First RTL and GLS synthesis  
 	+ CTS Design Constrains and STA Analisys
 	+ Physical design
-+ [Project status 2300210]
-	+ Physical design 
++ [Project status 2300210](https://github.com/MihaiHMO/VSDhdp/blob/main/vsdmemsoc_prj/Status_230210.md)
+	+ Integration to Caravel chip 
 
 
 # Physical implementation of VSDMemSoC
