@@ -329,7 +329,9 @@ endmodule
 	- `tt` - typical process from (slow, fast , typical) 
 	- `025C` - temperature
 	- `1V8` - voltage
-  
+	- optional also the Vth variation
+  ![image](https://user-images.githubusercontent.com/49897923/229147482-775f0f80-a70a-40c5-8ad6-d6460700132c.png)
+
   Other info:
    - technology name 
    -`cell` construct will define all the cells  
@@ -809,6 +811,8 @@ Top waveform if from RTL simulation , bottom is from GLS file.
 # Day 7 - Timings and constraints fundamentals   
 
 ### Timing fundamentals
+STA engine analyses the timing data (from a delay calculator or SDF file) with respect to timing constraints. 
+
 + **Max Delay/Setup Timing** :   
 T<sub>clk</sub> > T<sub>CQ_A</sub>+T<sub>COMBI</sub>+T<sub>SETUP_B</sub>   
 If we want to work at max frequency  F<sub>clk</sub>=200MhZ-> T<sub>clk</sub>=5ns => T<sub>COMBI</sub> < 5-T<sub>CQ</sub>-T<sub>SETUP</sub> - we define the max delay value of the COMBI circuit.  
@@ -840,6 +844,8 @@ For a sequential cell  (DFF, DLATCH) arcs will be formed by:
  - Delay from CLk to Q for DFF  
  - Delay from Clk to Q. Delay from D to Q for DLATCH  
  - Setup and Hold time  
+ - Recovery and Removal arcs (async sequenctial cells) 
+ - Min pulse width for clock pins
 
 |Device        | CLK to Q          |  D to Q          |   Setup          |    Hold          |
 |--------------|-------------------|------------------|------------------|------------------|
@@ -893,6 +899,15 @@ Wave form with parasitics          _____/        \_______/
 ```
 This parameters are modeled inside the library based on the tehcnology behavior.  
 
+Other timing checks:  
+Recovery /Removal: Equivalent of the Setup and Hold timing check but for asynchronous input pins.  
+Pulse width: min clock pulse width  
+Clock gating checks: to ensure clock enable signal timing are enforced.  
+
+Limitation of STA:
+- Can't analyze combinational feedback loops and asynchronous timing issues   
+- Will not check glitching effects on asynchronous pins  
+
 ### Library cell timing related content  
 
 The circuit is structured in hierahical way : top module -> ports -> nets ->pins -> cells (physical or logical)  
@@ -902,6 +917,22 @@ _!!! In Digital Design a net can be connected to only one Driving element. _
 
 + **Undestanding .LIB file**  
 There are 2 library files : `.lib` - human readable file, `.db` - machine/tool readable file.  
+
+Digital libraries only contain "digital" views:
+- Simulation models
+- Timing models
+- Layout abstracts
+
+Timing libraries contain also the electrical DRC rules, max transition /capacitance/fanout requirements.  
+
+"Tapeout kits" Contain additional :
+- Spice models
+- Full layouts
+
+Liberty timing libraries come in a range of variants:
+- Non Linear model (Timing), (Power), (Noise) 
+- Acurate post-route delay models - Curent Source Modelling (Timing, Power, Noise) 
+- Noise models are required for post route Signal Intergity analysis 
 
 Content higlights :  
 - the technology e.g. CMOS  
