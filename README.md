@@ -329,7 +329,13 @@ endmodule
 	- `tt` - typical process from (slow, fast , typical) 
 	- `025C` - temperature
 	- `1V8` - voltage
-	- optional also the Vth variation
+	- optional also the Vth variation  
+ PVT corbers :   
+ 	- WC (speed) SS, VDD -10%, 125C  
+  	- WCL (leackage) SS, VDD +10%, 125C  
+   	- BC (speed) FF, VDD +10%, -40C  
+    	- TC (speed) TT, VDD , 25C  
+
   ![image](https://user-images.githubusercontent.com/49897923/229147482-775f0f80-a70a-40c5-8ad6-d6460700132c.png)
 
   Other info:
