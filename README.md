@@ -330,13 +330,18 @@ endmodule
 	- `025C` - temperature
 	- `1V8` - voltage
 	- optional also the Vth variation  
- PVT corbers :   
+ PVT corners :   
  	- WC (speed) SS, VDD -10%, 125C  
   	- WCL (leackage) SS, VDD +10%, 125C  
    	- BC (speed) FF, VDD +10%, -40C  
     	- TC (speed) TT, VDD , 25C  
 
   ![image](https://user-images.githubusercontent.com/49897923/229147482-775f0f80-a70a-40c5-8ad6-d6460700132c.png)
+
+Wirinng corners  :  
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/8adb749b-9eb5-40fb-a639-f3340072befe)
+
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/a5fa1861-3f53-4e50-b8b7-0586e92a60d3)
 
   Other info:
    - technology name 
