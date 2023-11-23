@@ -321,7 +321,18 @@ endmodule
   - `write_verilog [option] <filename> ` - will generate the verilog file from the netlist , `-noattr` - will reduce the information in the file
 
 # Day 2 - Timing libs(QTMs/ETMs), hierarchical vs flat synthesis and efficient flop coding styles
-### Understanding the libs content 
+### Understanding the libs content  
+
+Design Inputs:  
+	- Verilog Netlist (.v)  
+	- Timing Constraints files (.sdc)  
+	- Scan Chain File (.def)  
+Technology Inputs:    
+	- Tech File (.tf or .left)  
+	- Physical Libraries (Milky way or .left)  
+	- Timing (Liberty) Libraries (.db or .lib)  
+	- RC Extraction Models (.tlupus(Synopsis, CapTables (Cadence), PTF (Mentor))  
+	- Signoff RC Extraction Models (.nxtgrd)  
 
   Library naming `sky130_fd_sc_hd__tt_025C_1v80`:   
 	- `sky130_fd_sc_hd` : process name  
@@ -343,6 +354,21 @@ Wirinng corners  :
 
 ![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/a5fa1861-3f53-4e50-b8b7-0586e92a60d3)
 
+The worst delay corner is context dependent :    
+	- Shorter nets are C - dominated (Cmax)   
+ 	- Longest nets are RC - dominated (RCmax)   
+  
+https://teamvlsi.com/2020/07/ocv-aocv-and-pocv-in-vlsi-comparative.html
+
+Recomended analysis :  
+For Syntesis : WC PVT + WC RC  
+For Physical implemenation:  
+	- WC + RCworst case - VC corner derates and Setup check / BC + RCbest - BC corner derates and  Hold check 
+ 	- WC + RCmin /BC + RCmax - Setup and Hold must be checked additional to sign-off  
+ 	- WCL + RCworst in the low power mode - to asses low power leakage 
+ 	- BC + RCworst - to asses peak power
+  	- Typ+RCworst - to asses average power
+   
   Other info:
    - technology name 
    -`cell` construct will define all the cells  
