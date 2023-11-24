@@ -1635,6 +1635,19 @@ After routing:
 - a new `.db` file must be generated, using prerouting verilog file
 - STA analysis will be done using also the `.SPEF` file
 
+Design Rules:  
+There are basic and complex sets of design rules defined in the process design rules document.  
+The basic design rules are normally divided into 5 main categories (based on .lef):  
+ - Width - minimum size of polygon (in um)  
+ - Spacing - minimum separation between same polygon or different polygon  
+ - Extension - polygon extension from another polygon, e.g. Poly extension of GATE  
+ - Enclosure - complete overlap of a polygon by another polygon, e.g. contact enclosure by metal x  
+ - Overlap - common overlap area of the two polygons overlapping each other  
+The complex sets of design rules are normally related to manufacturing issues and the smaller the process geometry, the more complex sets of design rules defined in the document (Calibre (Siemens, PVS Cadence, IC Validator Synopsis):  
+ - Antena rulles  
+ - Metal Slot Rules (for wide metal)  
+ - Metal/Diff/ Poly desnsity/coverage  
+
 ### **Standard cells design flow**  
 Inputs --> Design  ---> Output  
 _Inputs_ - PDKs:  
