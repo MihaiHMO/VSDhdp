@@ -57,8 +57,8 @@
   + [Day 18-20 Physical design](#physical-design)  
   	- [Oen-source EDA, OpenLANE and Sky130 PDK](#open-source-eda-openlane-and-sky130-pdk)
 	- [Layout and CMOS fabrication process](#layout-and-cmos-fabrication-process)
-	- [Floorplan ](#floorplan-and-introduction-to-library-cells)
-	- [Power distribution] 
+	- [Floorplan ](#floorplan)
+	- [Power distribution](#powerplan) 
 	- [Placement ](#placement)
 	- [Clock tree synthesis](#clock-tree-synthesis)
 	- [STA on real clocks](#sta-analysis-on-real-clocks)
@@ -1465,7 +1465,9 @@ Sputtering - Hitting a material (titanium ) with Argon gas and the titanium mate
 
 ![image](https://user-images.githubusercontent.com/49897923/213123323-8976c58d-1d12-4afb-b2fc-27ef1ccaf8e5.png)
 	
-### Floorplan and introduction to library cells
+### Floorplan 
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/46f68aff-b2fa-4381-8378-50ba4cc39ce6)
+
 For the physical design the first step is to define the **CORE** and **DIE** parameters:
 - _Core Area_ is the available area for circuit implementation, is estimated during synthesis where the tool is estimating and necessary area  
 - _Die Area_ is total silicon area needed on the wafer (including cut area)  
@@ -1475,6 +1477,8 @@ For the physical design the first step is to define the **CORE** and **DIE** par
 ![image](https://user-images.githubusercontent.com/49897923/212889169-873c1219-762d-4a42-9e8a-d092a7ef654d.png)
 
  Floorplan analysis: congestion, wire length, cell density, pin density, timing , flight line  
+ - Congestion :affect the routing dealyes which are not acurate , the real routes will have a detour and add additional delays
+
  
 ![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/e1809a16-de70-41e3-904c-4059b31d965e)
 
@@ -1485,7 +1489,10 @@ Second step is to place the "_Pre-placed cells_" that need a user-defined locati
 
 Placement of Decoupling Capacitors to maintain a necessary voltage levels for the elements of the circuit (local decoupling). The capacitance must be calculated depending on the amount of Id current drawn by the circuit that is served by the decoupling capacitor.  
 
-Power planning is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
+### Power planning   
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/4efecb13-2c54-4f1d-a810-ae3d4f18a6e5)
+
+Is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
 
 ![image](https://user-images.githubusercontent.com/49897923/213926399-b58ade8d-0d0b-4725-a850-059eac44e270.png)
 
@@ -1537,12 +1544,26 @@ Commands:
 During timing anlisys the netlist can change so this has to be saved.  
 
 ### **Clock tree synthesis**  
-The goal of this step is to make sure that clock skew is reduced (usualy 10% of T<sub>CLK</sub>).  
-A good practice is to use cells that have inhibited clocks if they are not used. 
-Clock tree in the IC is usually equilibrated using a H topology - splitting the clock routing at a point were the distance is equal to all flops.  
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/9305f023-803a-4a6d-82d4-894d5602cc33)
+
+The goal of this step is to make sure that clock is evenly distributed to all sequenctial elements.  (usualy 10% of T<sub>CLK</sub>)  
+The clock tree synthesis contains clock tree building and clock tree balancing.  
+The placement data will be given as input for CTS, along with the clock tree constraints: Latency, Skew, Maximum transition, Maximum capacitance, Maximum fan-out, list of buffers and inverters etc.  
+Clock tree can be built by clock tree inverters so as to maintain the exact transition (duty cycle) and clock tree balancing is done by clock tree buffers (CTB) to meet the skew and latency requirements.  
+A good practice is to use cells that have inhibited clocks if they are not used.  
+Clock tree in the IC is usually equilibrated using a H topology - splitting the clock routing at a point were the distance is equal to all flops. But can be also asymmetric. 
 To meet signal integrity clk buffers/repeaters will be used. The clk buffers have the same rise and fall time.  
 ![](Imgs/d20-3.png) 
-	
+
+Global Skew: 
+- The maximum skew between any flip-flop in a clock tree   
+- Irrespective of whether there are any related timing paths  
+- Often used for CTS (and clock tree reporting) -Fastest analysis  
+Local Skew (this really matters):  
+- The maximum skew between related flip-flops in a clock tree   
+- There must be a timing path between the pair of flip-flops  
+- Used for reporting (and useful skew optimisation)  
+ 
 Because the clocks are high energy signals and also high long  dene routed - the clock must be shielded .  
 The crosstalk effects can create glitches (will create false triggers on data line) and delta delays (by delay the clock) .  
 
