@@ -1188,6 +1188,15 @@ In the next example e have a design with multiplexed INPUT and CLK (real example
 - The clocks (both CLK_A and CLK_B) will be propagated by the tools (DC, OpenSTA) downstream based on timing arcs . Even if in really we know hat they will have separate paths.
 - All the timing arcs from the definition point will see the clock propagation by default.
 
+Multi scenario setup:  
+- PVT Library Corner = WC/BC/TC/WCL libraries  
+- RC Extraction Corner = RCWorst, RC Best, C Worst, C Best, Rc typ  
+- Delay corner = PVT Library Corner + RC Extraction Corner  
+- Constraint mode = SDC file (oper1.sdc, oper2.sdc, test.sdc etc.)  
+- Analysis View/Scenario = delay corner + constraint mode  
+ 	- +OCV Derating (local variation for PVT lib and Interconnect)  
+	- +Analysis Options (Setup only / Hold only / Leakage only)  
+
 # Day 10-12 CMOS Tehnology and STA/EDA  
 
 **NMOS Basics**:  
@@ -1464,17 +1473,34 @@ For the physical design the first step is to define the **CORE** and **DIE** par
 - _Utilization factor_ is the _Circuit area_/_Core Area_  
 
 ![image](https://user-images.githubusercontent.com/49897923/212889169-873c1219-762d-4a42-9e8a-d092a7ef654d.png)
-	
+
+ Floorplan analysis: congestion, wire length, cell density, pin density, timing , flight line  
+ 
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/e1809a16-de70-41e3-904c-4059b31d965e)
+
 Second step is to place the "_Pre-placed cells_" that need a user-defined location:
  - Reusable pieces of Logic circuit 
  - Available IP's that will be imported in the _TOP Netlist_ : Memory , Clock-gating- cell, Comparator , Mux etc.  
  - The placement must consider optimized connections between the cells  
 
-Placement of Decoupling Capacitors to maintain a necessary voltage levels for the elements of the circuit (local decoupling). The capacitance must be calculated depending on the amount of Id current drawn by the circuit that is served by the decoupling capacitor.
+Placement of Decoupling Capacitors to maintain a necessary voltage levels for the elements of the circuit (local decoupling). The capacitance must be calculated depending on the amount of Id current drawn by the circuit that is served by the decoupling capacitor.  
 
 Power planning is necessary to maintain the necessary voltage levels across an area of the chip. For this there will be multiple "power sources" that are multiple connections/pins at the die/package level and this multiple sources will be connected with a matrix grid to assure low impedance and to distribute the power supply across the die closer to the circuit blocks.
+
 ![image](https://user-images.githubusercontent.com/49897923/213926399-b58ade8d-0d0b-4725-a850-059eac44e270.png)
 
+Power plan analysis: - congestion, wire length, timing , IR dorp, EM  
+
+![image](https://github.com/MihaiHMO/VSDhdp/assets/49897923/6d717c13-ae99-48d5-a2c3-525129195d3f)
+
+If you are getting congestion around stripes:  
+- Prevent standard cell placement under power stripes  
+- Adjust the via stacks used to connect from the stripes down to the M1  
+tracks, to minimise congestion  
+- Consider using more frequent, but thinner power stripes to produce a finer
+mesh  
+
+Space out power/ground stripes evenly
 Pin/IO placement are the contacts used to connect the die to the package - usually the pins are the signals defined in the verilog file at the interface/PORTs of the deign. The placement depends on the functionality of the IC . 
 Clock I/O cells are usually bigger then generic I/O cells because they have multiple connections, and a lower impedance is needed.
 Around the pins a blocking area is needed so the automated tool will not place cells .
