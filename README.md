@@ -1057,10 +1057,21 @@ Clock Modelling should consider:
 
 **Post CTS** the clock is real, hence **modeled Clock** Skew and Network Latency **MUST BE REMOVED**.  
 	
-| Stage     | Clock Uncertainty |
-|-----------|-------------------|
-| Synthesis | JItter+ Skew      |
-| Poest CTS | Only Jitter       |
+| Stage     | Clock Uncertainty                    |   Sinks/ Leaf cells  |
+|-----------|-------------------                   |-------------         |
+| Synthesis | JItter + Insertion delay (netw lat)  | Trasition Time + Skew  |
+| Poest CTS | Only Jitter + Transition time        |                        |
+
+Ideal vs Propagated:  
+- Synthesis tools by default model clocks as ideal
+- Place and Route used ideal clocks before CTS
+	• After CTS, most place and route tools will automatically analyze the clock in "propagated" mode
+	• However after CTS, there are benefits in manually propagating the clocks, and updating some of the clock modelling constraints
+
+Propagating clock object(s): set_propagated_clock [get_clocks my_clock] - Calculates delays for all clock elements associated with the clock object   
+Propagate all clocks: set_propagated_clock [all_clocks]   
+Propagating clock port(s) :set_propagated_clock [get_ports clk] - Calculates delays for all clock elements in the fanout of the clock port   
+
 ![](Imgs/d7-7.png)
 
 ### Writing SDCs [Synopsys Design Constraints]**   
@@ -1564,8 +1575,12 @@ Local Skew (this really matters):
 - There must be a timing path between the pair of flip-flops  
 - Used for reporting (and useful skew optimisation)  
  
+Clock routing :   
+Increase (double) spacing and witdth .    
 Because the clocks are high energy signals and also high long  dene routed - the clock must be shielded .  
 The crosstalk effects can create glitches (will create false triggers on data line) and delta delays (by delay the clock) .  
+
+Create a CTS Specification file (Buffer/Inverter/ delay cells , Clock latency , clock root etc.)
 
 Openlane Variables/Switches/ Commands:  
 + `CTS_TARGET_SKEW` - The target clock skew in picoseconds.(Default: 200ps)  
@@ -1616,9 +1631,15 @@ To replace the values from the list use TCL command :
 The OpenLane/OpenRoad TritonRoute is using Maze Routing with algos like Lee's Algorithm - the goal is to find :
 	- the shortest path from a _source_ connection to a _target_ connection. 
 	- lest number of routing bends
+ 
+Check the design to make sure that it can be routed:  
+- If ports are obstructed   
+- If all pins are on the routing grid   
+- If cells are out of bounds  
 
 The routing is done in 2 steps:  
-+ Global routing wich is like a guideline (FastRoute)
++ Global routing wich is like a guideline (FastRoute) - just plans the routing path .
+  	- Can cause DRC violations that will be solved during detailed routing   
 + Detailed Routing which will generate the wiring (TritonRoute)
 	- honor the preprocessed route guide (from fast-route)
 	- assume route guide satisfy inter-guide connectivity
@@ -1631,7 +1652,9 @@ At this stage Routing DRC and parasitic extraction will be done.
 	- Constraint: Route guide honoring, connectivity constraint and design rules
 	- Handling Optimized Connectivity: minimized routing resource usage in routing guide
 	- Access Point (AP) : An on-grid point on the metal layer of the route guide, target lower/upper layer segments, pins or I/O ports
-	- Access Point Cluster (APC) : An union of all APs from same sources  
+	- Access Point Cluster (APC) : An union of all APs from same sources
+ 	- Fix Antenna Violations : by Layer Jumping or bridging ( Prevents charge build up getting to the gates) or Inserting diodes (Provides a discharge path for the current)
+  	- Yeld optimization  (Via reduction or Via doubling)
 	
 	![image](https://user-images.githubusercontent.com/49897923/215585570-0519db2f-30a2-475e-a15e-11080f739831.png)
 
